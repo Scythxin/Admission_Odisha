@@ -131,7 +131,7 @@ const About = () => {
       </section>
 
       {/* 2. STATS BAR */}
-      <section className="max-w-[1280px] mx-auto -mt-8 px-4 sm:px-6">
+      <section className="max-w-[1280px] mx-auto mt-8 px-4 sm:px-6 relative z-20">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {stats.map((s, i) => (
             <Link to={s.link} key={i}>
