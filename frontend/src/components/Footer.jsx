@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   FaFacebookF,
   FaInstagram,
@@ -67,19 +68,19 @@ const Footer = () => {
 
             <ul className="space-y-2 text-white/80 text-sm">
               <li>
-                <a href="/">Home</a>
+                <Link to="/">Home</Link>
               </li>
               <li>
-                <a href="/">About</a>
+                <Link to="/about">About</Link>
               </li>
               <li>
-                <a href="/">College</a>
+                <Link to="/colleges">College</Link>
               </li>
               <li>
-                <a href="/">Course</a>
+                <Link to="/course">Course</Link>
               </li>
               <li>
-                <a href="/">Contact</a>
+                <Link to="/contact">Contact</Link>
               </li>
             </ul>
           </div>

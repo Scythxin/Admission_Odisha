@@ -158,7 +158,7 @@ const Contact = () => {
       <div className="max-w-7xl mx-auto px-4 md:px-6 -mt-8 relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { icon: <FaPhone className="text-2xl" />, title: "Call Us", text: "+91 1234567890", sub: "Mon - Sat (10 AM - 6 PM)", bg: "bg-blue-500" },
+            { icon: <FaPhone className="text-2xl" style={{ transform: "scaleX(-1)" }} />, title: "Call Us", text: "+91 1234567890", sub: "Mon - Sat (10 AM - 6 PM)", bg: "bg-blue-500" },
             { icon: <FaEnvelope className="text-2xl" />, title: "Email Us", text: "support@admissionodisha.in", sub: "We reply within 24 hours", bg: "bg-purple-500" },
             { icon: <FaMapMarkerAlt className="text-2xl" />, title: "Visit Us", text: "Bhubaneswar, Odisha, India", sub: "Find us on map", bg: "bg-pink-500" },
             { icon: <FaClock className="text-2xl" />, title: "Support Hours", text: "Mon - Sat (10 AM - 6 PM)", sub: "Sunday Closed", bg: "bg-green-500" },
@@ -272,7 +272,7 @@ const Contact = () => {
                 
                 <div>
                   <div className="flex items-center gap-3 mb-2">
-                    <FaPhone className="text-white/80" />
+                    <FaPhone className="text-white/80" style={{ transform: "scaleX(-1)" }} />
                     <p className="font-semibold">Phone</p>
                   </div>
                   <p className="text-sm text-white/80 pl-8">+91 1234567890</p>
