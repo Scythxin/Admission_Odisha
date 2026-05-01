@@ -137,11 +137,15 @@ const PopularCourses = () => {
         </div>
 
         {/* View All Link - Updated with React Router Link */}
-        <div className="text-center mt-12 md:mt-16">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-12 md:mt-16">
           <Link to="/course">
             <button className="group inline-flex items-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white px-8 md:px-10 py-3 md:py-3.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
               <span>View All Courses</span>
-              <FaArrowRight className="text-sm group-hover:translate-x-1 transition-transform duration-300" />
+            </button>
+          </Link>
+          <Link to="/after12">
+            <button className="group inline-flex items-center gap-2 bg-white border-2 border-[#4F46E5] text-[#4F46E5] px-8 md:px-10 py-3 md:py-3.5 rounded-xl font-semibold shadow hover:shadow-md transition-all duration-300 transform hover:scale-105">
+              <span>Courses After 12th</span>
             </button>
           </Link>
         </div>
