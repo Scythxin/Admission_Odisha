@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   FaCog, FaHeartbeat, FaBriefcase, FaPalette,
@@ -8,7 +8,7 @@ import {
 import after12Img from "../../assets/images/after12img.png";
 
 const fields = [
-  { icon: <FaCog />, color: "bg-[#F3E8FF] text-[#6D28D9]", name: "Engineering &\nTechnology", desc: "Build the future with\ninnovation and technology.", link: "/after12/engineering" },
+  { icon: <FaCog />, color: "bg-[#F3E8FF] text-[#6D28D9]", name: "Engineering &\nTechnology", desc: "Build the future with\ninnovation and technology.", link: "/field/engineering" },
   { icon: <FaHeartbeat />, color: "bg-[#CCFBF1] text-[#0D9488]", name: "Medical &\nHealth", desc: "Serve society and improve\nlives through healthcare." },
   { icon: <FaBriefcase />, color: "bg-[#FFEDD5] text-[#EA580C]", name: "Commerce &\nManagement", desc: "Lead businesses and\ndrive economic growth." },
   { icon: <FaPalette />, color: "bg-[#FCE7F3] text-[#DB2777]", name: "Arts &\nHumanities", desc: "Explore creativity, culture\nand human expression." },
@@ -44,7 +44,11 @@ const FieldCard = ({ icon, color, name, desc, link }) => (
   </Link>
 );
 
-const After12 = () => {
+const Field = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="bg-white min-h-screen font-poppins text-gray-800 pb-12">
       <div className="max-w-[1200px] mx-auto">
@@ -115,4 +119,4 @@ const After12 = () => {
   );
 };
 
-export default After12;
+export default Field;

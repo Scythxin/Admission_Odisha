@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   FaArrowLeft, FaArrowRight, FaInfoCircle,
@@ -59,13 +59,17 @@ const SpecCard = ({ icon, color, name, desc }) => (
 
 /* ── MAIN ── */
 const EngAndTech = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="bg-white min-h-screen font-poppins text-gray-800 pb-12">
       <div className="max-w-[1200px] mx-auto">
         
         {/* BACK */}
         <div className="px-6 md:px-8 lg:px-12 pt-8">
-          <Link to="/after12" className="inline-flex items-center gap-2 text-[15px] font-medium text-[#4F46E5] hover:gap-3 transition-all">
+          <Link to="/field" className="inline-flex items-center gap-2 text-[15px] font-medium text-[#4F46E5] hover:gap-3 transition-all">
             <FaArrowLeft /> Back to Fields
           </Link>
         </div>

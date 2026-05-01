@@ -143,7 +143,7 @@ const PopularCourses = () => {
               <span>View All Courses</span>
             </button>
           </Link>
-          <Link to="/after12">
+          <Link to="/field">
             <button className="group inline-flex items-center gap-2 bg-white border-2 border-[#4F46E5] text-[#4F46E5] px-8 md:px-10 py-3 md:py-3.5 rounded-xl font-semibold shadow hover:shadow-md transition-all duration-300 transform hover:scale-105">
               <span>Courses After 12th</span>
             </button>

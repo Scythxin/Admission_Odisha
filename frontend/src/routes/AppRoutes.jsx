@@ -8,8 +8,8 @@ import Register from "../pages/Auth/Register";
 import Course from "../pages/Course/Course";
 import About from "../pages/About/About";
 import VerifyOtp from "../pages/Auth/VerifyOtp";
-import After12 from "../pages/Course/After12";
-import EngAndTech from "../pages/Course/After12cards/EngAndTech";
+import Field from "../pages/Course/Field";
+import EngAndTech from "../pages/Course/FieldCards/EngAndTech";
 
 
 
@@ -49,15 +49,15 @@ const AppRoutes = () => {
         }
       />
        <Route
-        path="/after12"
+        path="/field"
         element={
           <MainLayout>
-            <After12 />
+            <Field />
           </MainLayout>
         }
       />
        <Route
-        path="/after12/engineering"
+        path="/field/engineering"
         element={
           <MainLayout>
             <EngAndTech />
