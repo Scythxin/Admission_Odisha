@@ -161,7 +161,7 @@ const Contact = () => {
             { icon: <FaPhone className="text-2xl" style={{ transform: "scaleX(-1)" }} />, title: "Call Us", text: "+91 1234567890", sub: "Mon - Sat (10 AM - 6 PM)", bg: "bg-blue-500" },
             { icon: <FaEnvelope className="text-2xl" />, title: "Email Us", text: "support@admissionodisha.in", sub: "We reply within 24 hours", bg: "bg-purple-500" },
             { icon: <FaMapMarkerAlt className="text-2xl" />, title: "Visit Us", text: "Bhubaneswar, Odisha, India", sub: "Find us on map", bg: "bg-pink-500" },
-            { icon: <FaClock className="text-2xl" />, title: "Support Hours", text: "Mon - Sat (10 AM - 6 PM)", sub: "Sunday Closed", bg: "bg-green-500" },
+            { icon: <FaClock className="text-2xl" />, title: "Support Hours", text: "Mon-Sun", sub: "24/7 Support", bg: "bg-green-500" },
           ].map((item, i) => (
             <div key={i} className="bg-white rounded-2xl shadow-lg p-5 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 group cursor-pointer">
               <div className={`${item.bg} w-12 h-12 rounded-xl flex items-center justify-center text-white mb-3 group-hover:scale-110 transition-transform`}>

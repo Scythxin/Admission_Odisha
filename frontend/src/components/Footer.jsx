@@ -91,16 +91,16 @@ const Footer = () => {
 
             <ul className="space-y-2 text-white/80 text-sm">
               <li>
-                <a href="/">Apply Now</a>
+                <Link to="/about">Apply Now</Link>
               </li>
               <li>
-                <a href="/">Scholarships</a>
+                <Link to="/about">Scholarships</Link>
               </li>
               <li>
-                <a href="/">Cut-Off</a>
+                <Link to="/about">Cut-Off</Link>
               </li>
               <li>
-                <a href="/">Help Center</a>
+                <Link to="/about">Help Center</Link>
               </li>
             </ul>
           </div>
@@ -111,16 +111,16 @@ const Footer = () => {
 
             <ul className="space-y-2 text-white/80 text-sm">
               <li>
-                <a href="/">Admission Process</a>
+                <Link to="/about">Admission Process</Link>
               </li>
               <li>
-                <a href="/">Documents Required</a>
+                <Link to="/about">Documents Required</Link>
               </li>
               <li>
-                <a href="/">Fee Structure</a>
+                <Link to="/about">Fee Structure</Link>
               </li>
               <li>
-                <a href="/">FAQs</a>
+                <Link to="/about">FAQs</Link>
               </li>
             </ul>
           </div>
