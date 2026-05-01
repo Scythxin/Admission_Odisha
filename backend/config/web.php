@@ -2,6 +2,7 @@
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
+$secrets = file_exists(__DIR__ . '/secrets.php') ? require __DIR__ . '/secrets.php' : [];
 
 $config = [
     'id' => 'basic',
@@ -31,8 +32,18 @@ $config = [
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,
             'viewPath' => '@app/mail',
-            // send all mails to a file by default.
-            'useFileTransport' => true,
+            // To send real emails, changed 'useFileTransport' to false and configured the 'transport' array below.
+            // When true, it just saves emails as files inside backend/runtime/mail/ so I changed it to false to send real emails.
+            'useFileTransport' => false,
+            
+            // Gmail SMTP Configuration
+            'transport' => [
+                'scheme' => 'smtps',
+                'host' => 'smtp.gmail.com',
+                'username' => '2004bshree@gmail.com', // Your Gmail address
+                'password' => $secrets['gmail_app_password'] ?? 'PUT_YOUR_APP_PASSWORD_HERE',
+                'port' => 465,
+            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

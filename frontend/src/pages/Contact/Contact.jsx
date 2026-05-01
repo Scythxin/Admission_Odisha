@@ -21,6 +21,7 @@ import contact from "../../assets/images/contact.png";import {
 const Contact = () => {
   const [form, setForm] = useState({
     name: "",
+    email: "",
     subject: "",
     message: "",
   });
@@ -62,15 +63,39 @@ const Contact = () => {
     setOpenFaq(openFaq === i ? null : i);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
+    
+    try {
+      const response = await fetch(import.meta.env.VITE_API_BASE_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          subject: form.subject,
+          body: form.message, // Map frontend message to backend body
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.status === 'success') {
+        setSubmitSuccess(true);
+        setForm({ name: "", email: "", subject: "", message: "" });
+        setTimeout(() => setSubmitSuccess(false), 3000);
+      } else {
+        alert(data.message || "Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("Failed to connect to the server. Please check your connection.");
+    } finally {
       setIsSubmitting(false);
-      setSubmitSuccess(true);
-      setForm({ name: "", subject: "", message: "" });
-      setTimeout(() => setSubmitSuccess(false), 3000);
-    }, 1500);
+    }
   };
 
   const faqs = [
@@ -167,6 +192,19 @@ const Contact = () => {
                       name="name"
                       value={form.name}
                       placeholder="Enter your full name"
+                      className="w-full border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={form.email}
+                      placeholder="Enter your email address"
                       className="w-full border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                       onChange={handleChange}
                       required

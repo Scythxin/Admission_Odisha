@@ -9,15 +9,35 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\ApiContactForm;
 
 class SiteController extends Controller
 {
+    /**
+     * @inheritdoc
+     */
+    public function beforeAction($action)
+    {            
+        if ($action->id === 'api-contact') {
+            $this->enableCsrfValidation = false;
+        }
+        return parent::beforeAction($action);
+    }
+
     /**
      * {@inheritdoc}
      */
     public function behaviors()
     {
         return [
+            'corsFilter' => [
+                'class' => \yii\filters\Cors::class,
+                'cors' => [
+                    'Origin' => ['http://localhost:5173', 'http://127.0.0.1:5173'],
+                    'Access-Control-Request-Method' => ['POST', 'OPTIONS'],
+                    'Access-Control-Request-Headers' => ['*'],
+                ],
+            ],
             'access' => [
                 'class' => AccessControl::class,
                 'only' => ['logout'],
@@ -124,5 +144,27 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    /**
+     * Handles API contact form submission.
+     *
+     * @return Response|array
+     */
+    public function actionApiContact()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $model = new ApiContactForm();
+        
+        // Load data from JSON body
+        $requestData = Yii::$app->request->getBodyParams();
+        
+        if ($model->load($requestData, '') && $model->contact(Yii::$app->params['adminEmail'])) {
+            return ['status' => 'success', 'message' => 'Your message has been sent successfully.'];
+        }
+
+        Yii::$app->response->statusCode = 400;
+        return ['status' => 'error', 'message' => 'Failed to send message.', 'errors' => $model->errors];
     }
 }
