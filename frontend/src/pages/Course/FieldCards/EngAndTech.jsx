@@ -12,7 +12,7 @@ import engImg from "../../../assets/images/engandtechimg.png";
 
 /* ── DATA ── */
 const specializations = [
-  { icon: <FaDesktop />, color: "bg-[#EDE9FE] text-[#6D28D9]", name: "Computer Science\nEngineering", desc: "Build software, solve problems\nand shape the digital future." },
+  { icon: <FaDesktop />, color: "bg-[#EDE9FE] text-[#6D28D9]", name: "Computer Science\nEngineering", desc: "Build software, solve problems\nand shape the digital future.", link: "/course/computer-science-engineering" },
   { icon: <FaBuilding />, color: "bg-[#DCFCE7] text-[#16A34A]", name: "Civil Engineering", desc: "Design, build and maintain\nthe world around us." },
   { icon: <FaCog />, color: "bg-[#FEF9C3] text-[#D97706]", name: "Mechanical\nEngineering", desc: "Design machines and systems\nthat power the future." },
   { icon: <FaBolt />, color: "bg-[#FEF3C7] text-[#D97706]", name: "Electrical\nEngineering", desc: "Work with electricity, energy\nand drive innovation." },
@@ -31,31 +31,41 @@ const specializations = [
 ];
 
 /* ── CARD ── */
-const SpecCard = ({ icon, color, name, desc }) => (
-  <div className="group bg-white rounded-2xl p-6 flex flex-col items-center text-center gap-4 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer relative h-full">
-    
-    <div className={`w-[72px] h-[72px] rounded-full flex items-center justify-center text-3xl ${color}`}>
-      {icon}
+const SpecCard = ({ icon, color, name, desc, link }) => {
+  const content = (
+    <div className="group bg-white rounded-2xl p-6 flex flex-col items-center text-center gap-4 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer relative h-full">
+      
+      <div className={`w-[72px] h-[72px] rounded-full flex items-center justify-center text-3xl ${color}`}>
+        {icon}
+      </div>
+
+      <h3 className="text-[17px] font-bold text-[#071B52] leading-snug mt-2">
+        {name.split("\n").map((line, i, arr) => (
+          <React.Fragment key={i}>
+            {line}
+            {i < arr.length - 1 && <br />}
+          </React.Fragment>
+        ))}
+      </h3>
+
+      <p className="text-[13px] text-gray-500 leading-relaxed whitespace-pre-line flex-1 mb-4">
+        {desc}
+      </p>
+
+      <div className="absolute bottom-5 right-5 text-[#4F46E5] text-sm opacity-70 group-hover:opacity-100 transition-opacity">
+        <FaArrowRight />
+      </div>
     </div>
+  );
 
-    <h3 className="text-[17px] font-bold text-[#071B52] leading-snug mt-2">
-      {name.split("\n").map((line, i, arr) => (
-        <React.Fragment key={i}>
-          {line}
-          {i < arr.length - 1 && <br />}
-        </React.Fragment>
-      ))}
-    </h3>
-
-    <p className="text-[13px] text-gray-500 leading-relaxed whitespace-pre-line flex-1 mb-4">
-      {desc}
-    </p>
-
-    <div className="absolute bottom-5 right-5 text-[#4F46E5] text-sm opacity-70 group-hover:opacity-100 transition-opacity">
-      <FaArrowRight />
-    </div>
-  </div>
-);
+  return link ? (
+    <Link to={link} className="block h-full">
+      {content}
+    </Link>
+  ) : (
+    content
+  );
+};
 
 /* ── MAIN ── */
 const EngAndTech = () => {

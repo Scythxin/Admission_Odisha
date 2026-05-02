@@ -10,6 +10,7 @@ import About from "../pages/About/About";
 import VerifyOtp from "../pages/Auth/VerifyOtp";
 import Field from "../pages/Course/Field";
 import EngAndTech from "../pages/Course/FieldCards/EngAndTech";
+import CourseDetail from "../pages/Course/CourseDetail";
 
 
 
@@ -69,6 +70,14 @@ const AppRoutes = () => {
         element={
           <MainLayout>
             <About />
+          </MainLayout>
+        }
+      />
+       <Route
+        path="/course/computer-science-engineering"
+        element={
+          <MainLayout>
+            <CourseDetail />
           </MainLayout>
         }
       />

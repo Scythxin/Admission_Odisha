@@ -33,7 +33,7 @@ const About = () => {
       icon: <School size={24} />, 
       color: "text-[#5B3DF5]",
       bg: "bg-[#5B3DF5]/10",
-      link: "/college"
+      link: "/colleges"
     },
     { 
       label: "1000+", 
