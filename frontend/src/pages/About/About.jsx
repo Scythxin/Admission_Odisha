@@ -28,15 +28,15 @@ const About = () => {
 
   const stats = [
     { 
-      label: "500+", 
+      label: "Trusted", 
       sub: "Colleges", 
       icon: <School size={24} />, 
       color: "text-[#5B3DF5]",
       bg: "bg-[#5B3DF5]/10",
-      link: "/colleges"
+      link: "/college"
     },
     { 
-      label: "1000+", 
+      label: "Diverse", 
       sub: "Courses", 
       icon: <GraduationCap size={24} />, 
       color: "text-[#14B8A6]",
@@ -44,16 +44,16 @@ const About = () => {
       link: "/course"
     },
     { 
-      label: "25k+", 
-      sub: "Students", 
+      label: "Empowering Careers", 
+      sub: "Of Students", 
       icon: <Users size={24} />, 
       color: "text-[#F59E0B]",
       bg: "bg-[#F59E0B]/10",
       link: "/students"
     },
     { 
-      label: "30+", 
-      sub: "Districts", 
+      label: "Across Various ", 
+      sub: "Regions", 
       icon: <MapPin size={24} />, 
       color: "text-[#3B82F6]",
       bg: "bg-[#3B82F6]/10",
