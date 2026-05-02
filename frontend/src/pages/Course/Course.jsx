@@ -27,29 +27,29 @@ const Course = () => {
   }, []);
 
   const streams = [
-    { name: "Engineering", count: "150+", icon: <Laptop size={24} />, color: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
-    { name: "Management", count: "80+", icon: <Briefcase size={24} />, color: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10" },
-    { name: "Science", count: "100+", icon: <FlaskConical size={24} />, color: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
-    { name: "Computer App.", count: "60+", icon: <Laptop size={24} />, color: "text-[#EC4899]", bg: "bg-[#EC4899]/10" },
-    { name: "Pharmacy", count: "50+", icon: <Pill size={24} />, color: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10" },
-    { name: "Education", count: "40+", icon: <BookOpen size={24} />, color: "text-[#10B981]", bg: "bg-[#10B981]/10" },
-    { name: "Arts & Humanities", count: "70+", icon: <Palette size={24} />, color: "text-[#A855F7]", bg: "bg-[#A855F7]/10" },
+    { name: "Engineering",icon: <Laptop size={24} />, color: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
+    { name: "Management",icon: <Briefcase size={24} />, color: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10" },
+    { name: "Science", icon: <FlaskConical size={24} />, color: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
+    { name: "Computer App.", icon: <Laptop size={24} />, color: "text-[#EC4899]", bg: "bg-[#EC4899]/10" },
+    { name: "Pharmacy", icon: <Pill size={24} />, color: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10" },
+    { name: "Education", icon: <BookOpen size={24} />, color: "text-[#10B981]", bg: "bg-[#10B981]/10" },
+    { name: "Arts & Humanities", icon: <Palette size={24} />, color: "text-[#A855F7]", bg: "bg-[#A855F7]/10" },
   ];
 
   const popularCourses = [
-    { t: "B.Tech", sub: "Bachelor of Technology", dur: "4 Years", s: "Engineering & Tech", col: "500+", ic: <GraduationCap size={24} />, c: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
-    { t: "MBA", sub: "Master of Business Admin.", dur: "2 Years", s: "Management", col: "400+", ic: <Briefcase size={24} />, c: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10" },
-    { t: "B.Sc", sub: "Bachelor of Science", dur: "3 Years", s: "Science", col: "300+", ic: <FlaskConical size={24} />, c: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
-    { t: "BCA", sub: "Bachelor of Computer App.", dur: "3 Years", s: "Computer Applications", col: "250+", ic: <Laptop size={24} />, c: "text-[#EC4899]", bg: "bg-[#EC4899]/10" },
-    { t: "B.Pharm", sub: "Bachelor of Pharmacy", dur: "4 Years", s: "Pharmacy", col: "200+", ic: <Pill size={24} />, c: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10" },
-    { t: "Diploma", sub: "Polytechnic Diploma", dur: "3 Years", s: "Various Branches", col: "150+", ic: <Settings size={24} />, c: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
-    { t: "B.Ed", sub: "Bachelor of Education", dur: "2 Years", s: "Education", col: "150+", ic: <BookOpen size={24} />, c: "text-[#10B981]", bg: "bg-[#10B981]/10" },
-    { t: "BA", sub: "Bachelor of Arts", dur: "3 Years", s: "Arts & Humanities", col: "250+", ic: <Palette size={24} />, c: "text-[#A855F7]", bg: "bg-[#A855F7]/10" },
+    { t: "B.Tech", sub: "Bachelor of Technology", dur: "4 Years", s: "Engineering & Tech",  ic: <GraduationCap size={24} />, c: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
+    { t: "MBA", sub: "Master of Business Admin.", dur: "2 Years", s: "Management",  ic: <Briefcase size={24} />, c: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10" },
+    { t: "B.Sc", sub: "Bachelor of Science", dur: "3 Years", s: "Science",  ic: <FlaskConical size={24} />, c: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
+    { t: "BCA", sub: "Bachelor of Computer App.", dur: "3 Years", s: "Computer Applications",  ic: <Laptop size={24} />, c: "text-[#EC4899]", bg: "bg-[#EC4899]/10" },
+    { t: "B.Pharm", sub: "Bachelor of Pharmacy", dur: "4 Years", s: "Pharmacy",  ic: <Pill size={24} />, c: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10" },
+    { t: "Diploma", sub: "Polytechnic Diploma", dur: "3 Years", s: "Various Branches",  ic: <Settings size={24} />, c: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
+    { t: "B.Ed", sub: "Bachelor of Education", dur: "2 Years", s: "Education",  ic: <BookOpen size={24} />, c: "text-[#10B981]", bg: "bg-[#10B981]/10" },
+    { t: "BA", sub: "Bachelor of Arts", dur: "3 Years", s: "Arts & Humanities",  ic: <Palette size={24} />, c: "text-[#A855F7]", bg: "bg-[#A855F7]/10" },
   ];
 
   const whyChooseUs = [
-    { t: "Wide Range", d: "1000+ courses across streams", ic: <BookOpen size={20} />, c: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
-    { t: "Top Colleges", d: "500+ Verified Universities", ic: <Users size={20} />, c: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10" },
+    { t: "Wide Range", d: "Diverse courses across streams", ic: <BookOpen size={20} />, c: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
+    { t: "Top Colleges", d: "Verified Universities", ic: <Users size={20} />, c: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10" },
     { t: "100% Trusted", d: "Verified and secure process", ic: <ShieldCheck size={20} />, c: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
     { t: "Expert Guidance", d: "Help from our counselors", ic: <Headphones size={20} />, c: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10" },
   ];

@@ -8,13 +8,13 @@ import heroImage from "/src/assets/images/heroSectionImg.png";
 const features = [
   {
     icon: <FaGraduationCap />,
-    title: "1000+ Courses",
+    title: "Diverse Courses",
     desc: "Wide range of courses to choose",
     color: "text-[#5B3DF5]",
   },
   {
     icon: <FaUniversity />,
-    title: "500+ Colleges",
+    title: "Trusted Colleges",
     desc: "Government, Private & Deemed Universities",
     color: "text-[#14B8A6]",
   },
