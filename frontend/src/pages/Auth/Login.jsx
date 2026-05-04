@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import API_BASE from "../../config/api";
 import { useContext } from "react";
 
 import login_img from "../../assets/images/login_img.png";
@@ -24,7 +25,7 @@ const [password, setPassword] = useState("");
 const handleLogin = async (e) => {
   e.preventDefault();
 
-  const res = await fetch("http://localhost:8080/index.php?r=auth/login", {
+  const res = await fetch(`${API_BASE}?r=auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"

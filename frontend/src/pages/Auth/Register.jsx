@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import API_BASE from "../../config/api";
 import { Link } from "react-router-dom";
 import login_img from "../../assets/images/login_img.png";
 import { MdEmail, MdPerson, MdLocationCity, MdPhone } from "react-icons/md";
@@ -25,7 +26,7 @@ const Register = () => {
     console.log("Form Submitted", form);
 
     try {
-      const res = await fetch("http://localhost:8080/index.php?r=auth/register", {
+      const res = await fetch(`${API_BASE}?r=auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

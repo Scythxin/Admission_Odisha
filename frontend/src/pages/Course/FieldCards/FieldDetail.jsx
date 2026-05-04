@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import API_BASE from "../../../config/api";
 import {
   FaArrowLeft, FaArrowRight, FaInfoCircle, FaHeadset,
   FaSpinner, FaCog, FaHeartbeat, FaBriefcase, FaPalette,
@@ -192,7 +193,7 @@ const FieldDetail = () => {
       try {
         const encodedName = encodeURIComponent(fieldName);
         const res = await fetch(
-          `http://localhost:8080/index.php?r=site/api-field-detail&field=${encodedName}`
+          `${API_BASE}?r=site/api-field-detail&field=${encodedName}`
         );
         if (!res.ok) {
           const text = await res.text();
