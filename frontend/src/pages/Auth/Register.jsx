@@ -38,8 +38,8 @@ const Register = () => {
       console.log("Response:", data);
 
       if (data.status === "success") {
-        alert("Registered Successfully, please verify your OTP");
-        window.location.href = "/verify-otp";
+        alert("Registered Successfully");
+        window.location.href = "/login";
       } else {
         alert(data.message);
       }
