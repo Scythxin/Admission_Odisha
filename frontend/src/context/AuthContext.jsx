@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from "react";
+import API_BASE from "../config/api";
 
 export const AuthContext = createContext();
 
@@ -20,7 +21,7 @@ const AuthProvider = ({ children }) => {
   const logout = async () => {
   const token = localStorage.getItem("token");
 
-  await fetch("http://localhost:8080/index.php?r=auth/logout", {
+  await fetch(`${API_BASE}?r=auth/logout`, {
     method: "POST",
     headers: {
       Authorization: token
