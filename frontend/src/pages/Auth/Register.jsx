@@ -22,7 +22,7 @@ const Register = () => {
     setForm({ ...form, [name]: value });
   };
 
-  // ✅ SAME BACKEND LOGIC (unchanged)
+  // BACKEND LOGIC
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -38,7 +38,7 @@ const Register = () => {
       const data = await res.json();
 
       if (data.status === "success") {
-        alert("Registered Successfully");
+        alert(data.message);
         window.location.href = "/login";
       } else {
         alert(data.message);
