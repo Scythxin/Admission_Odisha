@@ -1,41 +1,41 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import API_BASE from "../../config/api";
 import { Link } from "react-router-dom";
-import login_img from "../../assets/images/login_img.png";
-import { MdEmail, MdPerson, MdLocationCity, MdPhone } from "react-icons/md";
-import { RiLockPasswordLine } from "react-icons/ri";
-import { HiOutlineUserAdd } from "react-icons/hi";
-import { FaGoogle, FaFacebookF, FaEye, FaEyeSlash } from "react-icons/fa";
+import {
+  FaUser, FaEnvelope, FaPhone, FaLock, FaEye, FaEyeSlash
+} from "react-icons/fa";
+import { MdLocationCity } from "react-icons/md";
 
 const Register = () => {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPass, setShowPass] = useState(false);
+
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
     password: "",
-    city: ""
+    city: "",
   });
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
   };
 
+  // ✅ SAME BACKEND LOGIC (unchanged)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Submitted", form);
 
     try {
       const res = await fetch(`${API_BASE}?r=auth/register`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(form)
+        body: JSON.stringify(form),
       });
 
       const data = await res.json();
-      console.log("Response:", data);
 
       if (data.status === "success") {
         alert("Registered Successfully");
@@ -50,150 +50,119 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-24 md:py-12">
-      {/* Main Card */}
-      <div className="max-w-lg w-full bg-white shadow-xl rounded-2xl overflow-hidden mt-10 md:mt-0">
-        
-        {/* Right Register */}
-        <div className="p-8 md:p-10">
-          
-          {/* Top Icon */}
-          <div className="flex justify-center mb-3">
-            <HiOutlineUserAdd className="text-primary text-3xl" />
-          </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen font-[Poppins]">
 
-          {/* Title */}
-          <div className="mb-6 text-center">
-            <h2 className="text-2xl font-bold text-gray-800">
-              Create an Account
-            </h2>
-            <p className="text-sm text-gray-500">
-              Join us to start exploring colleges
-            </p>
-          </div>
+      {/* LEFT PANEL (UI kept) */}
+      <div className="hidden lg:flex flex-col justify-center px-16 bg-gradient-to-br from-indigo-50 via-indigo-100 to-purple-300">
+        <h1 className="text-4xl font-extrabold text-indigo-900 leading-tight mb-4">
+          Your Dream <br />
+          Our Guidance <br />
+          Your <span className="text-teal-500">Future</span>
+        </h1>
+        <p className="text-gray-600 text-sm">
+          Join thousands of students and start your journey towards a
+          bright future.
+        </p>
+      </div>
 
-          {/* Form */}
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Name */}
-              <div>
-                <label className="text-sm text-gray-600 block mb-1">Full Name</label>
-                <div className="flex items-center border border-gray-200 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-primary">
-                  <MdPerson className="text-gray-400 mr-2" />
-                  <input
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    placeholder="Full Name"
-                    className="w-full outline-none text-sm bg-transparent"
-                  />
-                </div>
-              </div>
+      {/* RIGHT PANEL */}
+      <div className="flex items-center justify-center bg-indigo-50 px-6 py-10">
+        <div className="bg-white rounded-2xl shadow-lg w-full max-w-xl p-8">
 
-              {/* Phone */}
-              <div>
-                <label className="text-sm text-gray-600 block mb-1">Phone</label>
-                <div className="flex items-center border border-gray-200 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-primary">
-                  <MdPhone className="text-gray-400 mr-2" />
-                  <input
-                    name="phone"
-                    value={form.phone}
-                    onChange={handleChange}
-                    placeholder="Phone number"
-                    className="w-full outline-none text-sm bg-transparent"
-                  />
-                </div>
-              </div>
+          <h2 className="text-xl font-bold text-center text-indigo-900">
+            Create Your Account
+          </h2>
+          <p className="text-center text-gray-500 text-sm mb-6">
+            Sign up and start your journey
+          </p>
+
+          {/* FORM CONNECTED */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* Name + Phone */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <Input
+                icon={<FaUser />}
+                label="Full Name"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+              />
+              <Input
+                icon={<FaPhone />}
+                label="Phone"
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+              />
             </div>
 
             {/* Email */}
-            <div>
-              <label className="text-sm text-gray-600 block mb-1">Email Address</label>
-              <div className="flex items-center border border-gray-200 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-primary">
-                <MdEmail className="text-gray-400 mr-2" />
-                <input
-                  name="email"
-                  type="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  className="w-full outline-none text-sm bg-transparent"
-                />
-              </div>
-            </div>
+            <Input
+              icon={<FaEnvelope />}
+              label="Email"
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+            />
 
             {/* City */}
-            <div>
-              <label className="text-sm text-gray-600 block mb-1">City</label>
-              <div className="flex items-center border border-gray-200 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-primary">
-                <MdLocationCity className="text-gray-400 mr-2" />
-                <input
-                  name="city"
-                  value={form.city}
-                  onChange={handleChange}
-                  placeholder="Your city"
-                  className="w-full outline-none text-sm bg-transparent"
-                />
-              </div>
-            </div>
+            <Input
+              icon={<MdLocationCity />}
+              label="City"
+              name="city"
+              value={form.city}
+              onChange={handleChange}
+            />
 
             {/* Password */}
             <div>
-              <label className="text-sm text-gray-600 block mb-1">Password</label>
-              <div className="flex items-center border border-gray-200 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-primary">
-                <RiLockPasswordLine className="text-gray-400 mr-2" />
+              <label className="text-sm font-semibold text-gray-700">Password</label>
+              <div className="flex items-center border rounded-lg px-3 mt-1 focus-within:ring-2 focus-within:ring-indigo-400">
+                <FaLock className="text-gray-400 mr-2" />
                 <input
                   name="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPass ? "text" : "password"}
                   value={form.password}
                   onChange={handleChange}
-                  placeholder="Create a password"
-                  className="w-full outline-none text-sm bg-transparent"
+                  className="w-full py-2 outline-none text-sm bg-transparent"
+                  placeholder="Create password"
                 />
-                <span
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="text-gray-500 cursor-pointer"
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </span>
+                <button type="button" onClick={() => setShowPass(!showPass)}>
+                  {showPass ? <FaEyeSlash /> : <FaEye />}
+                </button>
               </div>
             </div>
 
-            {/* Register Button */}
-            <button type="submit" className="w-full bg-primary text-white py-2.5 rounded-md font-semibold hover:opacity-90 transition mt-4 shadow-md">
+            {/* Submit */}
+            <button className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
               Register
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="text-center text-sm text-gray-400 my-5">
-            or continue with
-          </div>
-
-          {/* Social Login */}
-          <div className="flex gap-3">
-            <button className="flex items-center justify-center gap-2 border w-full py-2 rounded-md hover:bg-gray-50 transition text-sm">
-              <FaGoogle className="text-[#DB4437]" />
-              Google
-            </button>
-            <button className="flex items-center justify-center gap-2 border w-full py-2 rounded-md hover:bg-gray-50 transition text-sm">
-              <FaFacebookF className="text-[#1877F2]" />
-              Facebook
-            </button>
-          </div>
-
-          {/* Login Link */}
+          {/* Login */}
           <p className="text-center text-sm text-gray-500 mt-6">
             Already have an account?{" "}
-            <Link to="/login" className="text-primary font-medium hover:underline">
+            <Link to="/login" className="text-indigo-600 font-semibold">
               Login
             </Link>
           </p>
-
         </div>
       </div>
     </div>
   );
 };
+
+/* Reusable Input */
+const Input = ({ icon, label, ...props }) => (
+  <div>
+    <label className="text-sm font-semibold text-gray-700">{label}</label>
+    <div className="flex items-center border rounded-lg px-3 mt-1 focus-within:ring-2 focus-within:ring-indigo-400">
+      <span className="text-gray-400 mr-2">{icon}</span>
+      <input {...props} className="w-full py-2 outline-none text-sm bg-transparent" />
+    </div>
+  </div>
+);
 
 export default Register;
