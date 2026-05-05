@@ -5,8 +5,6 @@ namespace app\controllers;
 use Yii;
 use yii\web\Controller;
 use yii\web\Response;
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 
 class AuthController extends Controller
 {
@@ -147,8 +145,13 @@ class AuthController extends Controller
                 'is_status' => 1
             ])->execute();
 
-            // We should ideally send the email here too, but for now we assume it's shown in DB or handled by another service
-            // (The user mentioned "otp which is currently shown in the database")
+            // Move email sending to after the response is sent to the user to speed up the process
+            Yii::$app->response->on(Response::EVENT_AFTER_SEND, function() use ($user, $otp) {
+                if (function_exists('fastcgi_finish_request')) {
+                    fastcgi_finish_request();
+                }
+                $this->sendOtpEmail($user['email'], $otp);
+            });
 
             return [
                 "status" => "needs_verification", 
@@ -185,5 +188,49 @@ class AuthController extends Controller
                 "email" => $user['email']
             ]
         ];
+    }
+
+    /**
+     * Helper method to send OTP email
+     */
+    private function sendOtpEmail($toEmail, $otp)
+    {
+        try {
+            return Yii::$app->mailer->compose()
+                ->setTo($toEmail)
+                ->setFrom([Yii::$app->params['senderEmail'] => Yii::$app->params['senderName']])
+                ->setSubject('Your OTP Verification Code - Admission Odisha')
+                ->setHtmlBody("
+                    <div style='font-family: \"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff; color: #1a202c;'>
+                        <div style='text-align: center; margin-bottom: 30px;'>
+                            <h1 style='color: #4f46e5; margin: 0; font-size: 28px; font-weight: 800;'>Admission Odisha</h1>
+                            <p style='color: #718096; margin-top: 8px;'>Secure Account Verification</p>
+                        </div>
+                        
+                        <div style='background-color: #f8fafc; border-radius: 12px; padding: 30px; text-align: center; margin-bottom: 30px; border: 1px dashed #cbd5e0;'>
+                            <p style='margin-bottom: 20px; font-size: 16px; color: #4a5568;'>Your one-time password (OTP) is:</p>
+                            <div style='font-size: 42px; font-weight: 800; letter-spacing: 10px; color: #1a202c; font-family: monospace;'>$otp</div>
+                            <p style='margin-top: 20px; font-size: 14px; color: #e53e3e; font-weight: 600;'>Valid for 5 minutes only</p>
+                        </div>
+
+                        <div style='line-height: 1.6; font-size: 15px;'>
+                            <p>Hello,</p>
+                            <p>To complete your verification, please enter the code above in the application. This code will ensure that only you can access your account.</p>
+                            <p style='color: #718096; font-size: 14px; margin-top: 20px;'>If you didn't request this code, you can safely ignore this email.</p>
+                        </div>
+
+                        <hr style='border: 0; border-top: 1px solid #edf2f7; margin: 30px 0;' />
+                        
+                        <div style='text-align: center; font-size: 12px; color: #a0aec0;'>
+                            <p>&copy; " . date('Y') . " Admission Odisha. All rights reserved.</p>
+                            <p>Bhubaneswar, Odisha, India</p>
+                        </div>
+                    </div>
+                ")
+                ->send();
+        } catch (\Exception $e) {
+            Yii::error("Failed to send OTP email to $toEmail: " . $e->getMessage());
+            return false;
+        }
     }
 }
