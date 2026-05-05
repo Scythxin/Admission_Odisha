@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import API_BASE from "../../config/api";
 import {
   FaGraduationCap, FaBookOpen, FaCheckCircle, FaUniversity,
   FaStar, FaArrowRight, FaSpinner, FaArrowLeft
@@ -44,7 +45,7 @@ const CourseDetail = () => {
       try {
         const encodedName = encodeURIComponent(specializationName);
         const res = await fetch(
-          `http://localhost:8080/index.php?r=site/api-course-detail&name=${encodedName}`
+          `${API_BASE}?r=site/api-course-detail&name=${encodedName}`
         );
 
         if (!res.ok) {

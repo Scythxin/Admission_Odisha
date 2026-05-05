@@ -1,11 +1,12 @@
 import React, { useState } from "react";
+import API_BASE from "../../config/api";
 
 const VerifyOtp = () => {
   const [email,setEmail] = useState("");
   const [otp,setOtp] = useState("");
 
   const verify = async () => {
-    const res = await fetch("http://localhost:8080/index.php?r=auth/verify-otp",{
+    const res = await fetch(`${API_BASE}?r=auth/verify-otp`,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({email,otp})
