@@ -78,8 +78,9 @@ class AuthController extends Controller
             return ["status"=>"error","message"=>"Wrong OTP"];
 
         Yii::$app->db->createCommand()->update('users', [
-            'is_verified'=>1
-        ], ['email'=>$data['email']])->execute();
+            'is_verified' => 1,
+            'verified_at' => date('Y-m-d H:i:s')
+        ], ['email' => $data['email']])->execute();
 
         Yii::$app->db->createCommand()->update('otp_verification', [
             'is_used' => 1
@@ -107,7 +108,8 @@ class AuthController extends Controller
             "user" => [
                 "id" => $user['id'],
                 "name" => $user['name'],
-                "email" => $user['email']
+                "email" => $user['email'],
+                "is_admin" => (int)$user['is_admin']
             ]
         ];
     }
@@ -133,7 +135,18 @@ class AuthController extends Controller
             return ["status" => "error", "message" => "Invalid credentials"];
         }
 
-        if ($user['is_verified'] == 0) {
+        // Check verification expiry (2 hours)
+        $isVerified = (int)$user['is_verified'];
+        if ($isVerified === 1 && !empty($user['verified_at'])) {
+            $verifiedAt = strtotime($user['verified_at']);
+            if (time() - $verifiedAt > 2 * 3600) { // 2 hours
+                $isVerified = 0;
+                // Reset in DB so they are unverified until next OTP
+                Yii::$app->db->createCommand()->update('users', ['is_verified' => 0], ['id' => $user['id']])->execute();
+            }
+        }
+
+        if ($isVerified == 0) {
             // Generate and send new OTP
             $otp = rand(100000, 999999);
             Yii::$app->db->createCommand()->insert('otp_verification', [
@@ -185,7 +198,8 @@ class AuthController extends Controller
             "user" => [
                 "id" => $user['id'],
                 "name" => $user['name'],
-                "email" => $user['email']
+                "email" => $user['email'],
+                "is_admin" => (int)$user['is_admin']
             ]
         ];
     }

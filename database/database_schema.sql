@@ -90,6 +90,8 @@ CREATE TABLE users (
     password VARCHAR(255),
     city VARCHAR(100),   
     is_verified TINYINT DEFAULT 0,
+    verified_at DATETIME,
+    is_admin TINYINT DEFAULT 0,
     last_login DATETIME,
     login_count INT DEFAULT 0,
     created_at DATETIME,
