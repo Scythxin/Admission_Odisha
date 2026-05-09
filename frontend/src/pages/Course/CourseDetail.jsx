@@ -94,7 +94,15 @@ const CourseDetail = () => {
 
   const { specialization, field, details, courses, universities } = courseData;
   const introText = details?.intro || specialization?.short_desc || "No introduction available.";
-  const eligibilityList = details?.eligibility || [];
+  let eligibilityList = details?.eligibility || [];
+  if (typeof eligibilityList === "string") {
+    try {
+      const parsed = JSON.parse(eligibilityList);
+      eligibilityList = Array.isArray(parsed) ? parsed : eligibilityList.split("\n").filter(item => item.trim() !== "");
+    } catch (e) {
+      eligibilityList = eligibilityList.split("\n").filter(item => item.trim() !== "");
+    }
+  }
   const courseList = courses || [];
   const universityList = universities || [];
 
