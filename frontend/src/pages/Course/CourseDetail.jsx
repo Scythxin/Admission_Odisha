@@ -8,14 +8,6 @@ import {
 import cseImg from "../../assets/images/cse_hero.png";
 import ctaBooksImg from "../../assets/images/cta_books.png";
 
-/* ── Converts a URL slug back to a DB specialization name ── */
-// e.g. "computer-science-engineering" → "Computer Science Engineering"
-const slugToName = (slug) =>
-  slug
-    .replace(/-/g, " ")
-    .replace(/\band\b/g, "&")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-
 /* ── COMPONENTS ── */
 const SectionTitle = ({ icon, title }) => (
   <div className="flex items-center gap-4 mb-8">
@@ -33,9 +25,9 @@ const CourseDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Derive the specialization name from URL slug
+  // Derive the specialization name from URL param
   const specializationName = specializationSlug
-    ? slugToName(specializationSlug)
+    ? decodeURIComponent(specializationSlug)
     : "Computer Science Engineering";
 
   useEffect(() => {

@@ -142,9 +142,8 @@ const SPEC_ICON_MAP = {
   "D.El.Ed":                      { icon: <FaGraduationCap />, color: "bg-[#DCFCE7] text-[#15803D]" },
 };
 
-// Converts a specialization name to a URL slug
-const toSlug = (name) =>
-  name.toLowerCase().replace(/[&]/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+// Converts a specialization name to a URL parameter
+const toSlug = (name) => encodeURIComponent(name);
 
 /* ── CARD ── */
 const SpecCard = ({ icon, color, name, desc, link }) => {
