@@ -183,11 +183,11 @@ const Course = () => {
             <h2 className="text-2xl sm:text-3xl font-bold text-[#071B52]">Browse by Stream</h2>
             <p className="text-gray-500 text-sm mt-1">Explore courses by your preferred stream</p>
           </div>
-          <Link to="/streams">
-            <button className="text-[#4F46E5] font-semibold text-sm flex items-center gap-1 hover:gap-2 transition-all duration-300">
-              View All Streams <ChevronRight size={16} />
-            </button>
-          </Link>
+          <Link to="/field">
+  <button className="text-[#4F46E5] font-semibold text-sm flex items-center gap-1 hover:gap-2 transition-all duration-300">
+    View All Streams <ChevronRight size={16} />
+  </button>
+</Link>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
