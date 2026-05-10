@@ -15,8 +15,9 @@ import nit from "/src/assets/images/colleges/nit.jpg";
 import templeImg from "/src/assets/images/temple.png";
 
 const CollegePage = () => {
+  const [allColleges, setAllColleges] = useState([]);
   const [visibleColleges, setVisibleColleges] = useState(8);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedDistrict, setSelectedDistrict] = useState("All Districts");
   const [selectedType, setSelectedType] = useState("All Types");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
@@ -25,6 +26,23 @@ const CollegePage = () => {
   const [loopNum, setLoopNum] = useState(0);
 
   const words = ["Colleges", "Universities", "Institutions", "Dream Colleges"];
+
+  useEffect(() => {
+    const fetchColleges = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=site/api-colleges`);
+        const result = await response.json();
+        if (result.status === 'success') {
+          setAllColleges(result.data);
+        }
+      } catch (error) {
+        console.error("Error fetching colleges:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchColleges();
+  }, []);
 
   useEffect(() => {
     const handleTyping = () => {
@@ -47,6 +65,17 @@ const CollegePage = () => {
     return () => clearTimeout(timer);
   }, [displayText, isDeleting, loopNum]);
 
+  const displayedColleges = allColleges.slice(0, visibleColleges);
+  const hasMore = visibleColleges < allColleges.length;
+
+  const loadMore = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setVisibleColleges(prev => prev + 4);
+      setIsLoading(false);
+    }, 800);
+  };
+
   const stats = [
     { label: "500+", sub: "Colleges", icon: <School size={28} />, color: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
     { label: "30+", sub: "Districts", icon: <MapPin size={28} />, color: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10" },
@@ -68,32 +97,6 @@ const CollegePage = () => {
     "All Categories", "Engineering", "Medical", "Management", "Law", 
     "Pharmacy", "Science", "Arts", "Commerce"
   ];
-
-  const allColleges = [
-    { name: "KIIT University", loc: "Bhubaneswar, Khordha", type: "Deemed University", rating: "4.6", desc: "A leading deemed university known for academic excellence and global placements.", img: kiit },
-    { name: "NIT Rourkela", loc: "Rourkela, Sundargarh", type: "Institute of National Importance", rating: "4.7", desc: "One of the top NITs in India with exceptional engineering programs.", img: nit },
-    { name: "SOA University", loc: "Bhubaneswar, Khordha", type: "Deemed University", rating: "4.5", desc: "NAAC A++ accredited university with modern infrastructure.", img: soa },
-    { name: "VSSUT Burla", loc: "Sambalpur, Sambalpur", type: "Government University", rating: "4.4", desc: "Formerly UCE Burla, a premier engineering institution in Odisha.", img: vssut },
-    { name: "Utkal University", loc: "Bhubaneswar, Khordha", type: "State University", rating: "4.3", desc: "One of the oldest and most prestigious universities in Odisha.", img: utkal },
-    { name: "Ravenshaw University", loc: "Cuttack, Cuttack", type: "Autonomous", rating: "4.2", desc: "A famous autonomous college with a rich legacy of 150+ years.", img: "https://images.unsplash.com/photo-1562774053-701939374585?w=400&h=300&fit=crop" },
-    { name: "Centurion University", loc: "Bhubaneswar, Khordha", type: "Private University", rating: "4.1", desc: "Globally recognized for skill-based education and innovation.", img: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&h=300&fit=crop" },
-    { name: "Kalinga University", loc: "Raipur, Cuttack", type: "Private University", rating: "4.2", desc: "Focus on industry-oriented education and research programs.", img: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&h=300&fit=crop" },
-    { name: "IIT Bhubaneswar", loc: "Bhubaneswar, Khordha", type: "Institute of National Importance", rating: "4.8", desc: "Premier engineering institute with world-class facilities.", img: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400&h=300&fit=crop" },
-    { name: "XIM University", loc: "Bhubaneswar, Khordha", type: "Private University", rating: "4.6", desc: "Top management institute in Eastern India.", img: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&h=300&fit=crop" },
-    { name: "CET Bhubaneswar", loc: "Bhubaneswar, Khordha", type: "Government", rating: "4.0", desc: "College of Engineering and Technology, a premier govt institute.", img: "https://images.unsplash.com/photo-1562774053-701939374585?w=400&h=300&fit=crop" },
-    { name: "GM University", loc: "Sambalpur, Sambalpur", type: "Private", rating: "3.9", desc: "Growing university with diverse course offerings.", img: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&h=300&fit=crop" },
-  ];
-
-  const displayedColleges = allColleges.slice(0, visibleColleges);
-  const hasMore = visibleColleges < allColleges.length;
-
-  const loadMore = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setVisibleColleges(prev => prev + 4);
-      setIsLoading(false);
-    }, 800);
-  };
 
   const handleGetStarted = () => {
     window.location.href = "/register";
@@ -252,10 +255,14 @@ const CollegePage = () => {
       <section className="max-w-[1280px] mx-auto py-10 px-4 sm:px-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6">
           {displayedColleges.map((college, i) => (
-            <div key={i} className="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-[#4F46E5]/20 transition-all duration-500 hover:-translate-y-1 shadow-sm hover:shadow-xl">
+            <Link 
+              key={i} 
+              to={`/colleges/${college.id}`}
+              className="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-[#4F46E5]/20 transition-all duration-500 hover:-translate-y-1 shadow-sm hover:shadow-xl block"
+            >
               <div className="relative h-48 overflow-hidden">
                 <img 
-                  src={college.img} 
+                  src={college.image || kiit} 
                   alt={college.name} 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -276,16 +283,18 @@ const CollegePage = () => {
                 </h3>
                 <div className="flex items-center gap-1 text-gray-500 text-xs mb-3">
                   <MapPin size={12} />
-                  <span>{college.loc}</span>
+                  <span>{college.location}</span>
                 </div>
                 <p className="text-xs text-gray-500 leading-relaxed mb-4 line-clamp-2">
-                  {college.desc}
+                  {college.description}
                 </p>
-                <button className="w-full py-2.5 text-sm font-medium rounded-xl border border-[#4F46E5] text-[#4F46E5] bg-white hover:bg-[#4F46E5] hover:text-white transition-all duration-300">
+                <div 
+                  className="block w-full py-2.5 text-center text-sm font-medium rounded-xl border border-[#4F46E5] text-[#4F46E5] bg-white hover:bg-[#4F46E5] hover:text-white transition-all duration-300"
+                >
                   View Details
-                </button>
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

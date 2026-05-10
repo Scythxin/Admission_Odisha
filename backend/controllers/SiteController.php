@@ -18,7 +18,7 @@ class SiteController extends Controller
      */
     public function beforeAction($action)
     {            
-        if (in_array($action->id, ['api-contact', 'api-course-detail', 'api-field-detail'])) {
+        if (in_array($action->id, ['api-contact', 'api-course-detail', 'api-field-detail', 'api-colleges', 'api-college-detail'])) {
             $this->enableCsrfValidation = false;
         }
         return parent::beforeAction($action);
@@ -259,6 +259,99 @@ class SiteController extends Controller
             'status' => 'success',
             'data' => [
                 'field' => $field,
+                'specializations' => $specializations
+            ]
+        ];
+    }
+    /**
+     * Returns all colleges.
+     *
+     * @return Response|array
+     */
+    public function actionApiColleges()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $colleges = Yii::$app->db->createCommand("SELECT * FROM colleges WHERE is_status = 1")->queryAll();
+        return [
+            'status' => 'success',
+            'data' => $colleges
+        ];
+    }
+
+    /**
+     * Returns a college's details.
+     *
+     * @return Response|array
+     */
+    public function actionApiCollegeDetail()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $id = Yii::$app->request->get('id');
+        
+        $college = Yii::$app->db->createCommand("SELECT * FROM colleges WHERE id = :id AND is_status = 1", [':id' => $id])->queryOne();
+        
+        if (!$college) {
+            Yii::$app->response->statusCode = 404;
+            return ['status' => 'error', 'message' => 'College not found'];
+        }
+
+        if (!empty($college['courses'])) {
+            $decoded = json_decode($college['courses'], true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $college['courses'] = $decoded;
+            }
+        }
+        
+        // Fetch courses offered by this college
+        $sql = "SELECT co.*, cc.id as mapping_id FROM courses co 
+                JOIN college_courses cc ON co.id = cc.course_id 
+                WHERE cc.college_id = :cid AND co.is_status = 1";
+        $courses = Yii::$app->db->createCommand($sql, [':cid' => $id])->queryAll();
+        
+        return [
+            'status' => 'success',
+            'data' => [
+                'college' => $college,
+                'courses' => $courses
+            ]
+        ];
+    }
+    /**
+     * Returns a college's specializations for a specific general course.
+     *
+     * @return Response|array
+     */
+    public function actionApiCollegeCourseSpecializations()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $collegeId = Yii::$app->request->get('college_id');
+        $courseName = Yii::$app->request->get('course_name');
+        
+        $college = Yii::$app->db->createCommand("SELECT * FROM colleges WHERE id = :id AND is_status = 1", [':id' => $collegeId])->queryOne();
+        
+        if (!$college) {
+            Yii::$app->response->statusCode = 404;
+            return ['status' => 'error', 'message' => 'College not found'];
+        }
+
+        $course = Yii::$app->db->createCommand("SELECT * FROM general_courses WHERE name = :name", [':name' => $courseName])->queryOne();
+        
+        if (!$course) {
+            Yii::$app->response->statusCode = 404;
+            return ['status' => 'error', 'message' => 'Course not found'];
+        }
+        
+        $sql = "SELECT s.name, s.image, ccs.total_seats, ccs.short_desc 
+                FROM college_course_specializations ccs
+                JOIN specializations s ON ccs.specialization_id = s.id
+                WHERE ccs.college_id = :cid AND ccs.course_id = :course_id AND ccs.is_status = 1";
+        $specializations = Yii::$app->db->createCommand($sql, [':cid' => $collegeId, ':course_id' => $course['id']])->queryAll();
+        
+        return [
+            'status' => 'success',
+            'data' => [
+                'college' => $college,
+                'course' => $course,
                 'specializations' => $specializations
             ]
         ];
