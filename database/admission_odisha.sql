@@ -55,12 +55,12 @@ CREATE TABLE `colleges` (
 --
 
 INSERT INTO `colleges` (`id`, `name`, `location`, `rating`, `image`, `banner_image`, `description`, `type`, `established_year`, `approved_by`, `campus_size`, `website`, `address`, `rankings`, `courses`, `created_at`, `is_status`) VALUES
-(1, 'Odisha University of Technology', 'Bhubaneswar', 4.5, NULL, 'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&h=400&fit=crop', 'OUTR (formerly CET Bhubaneswar) is a premier technical university in Odisha focused on innovation and technology.', 'State University', 1981, 'UGC, AICTE', '100 Acres', 'www.outr.ac.in', 'Ghatikia, Bhubaneswar, Odisha', 'Premier Technical University', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "M.Tech", "duration": "2 Years"}, {"name": "MCA", "duration": "2 Years"}]', '2026-05-03 22:56:50', 1),
+(1, 'Odisha University of Technology and Research', 'Bhubaneswar', 4.5, NULL, 'uploads/banners/outr_banner.png', 'OUTR (formerly CET Bhubaneswar) is a premier technical university in Odisha focused on innovation and technology.', 'State University', 1981, 'UGC, AICTE', '100 Acres', 'www.outr.ac.in', 'Ghatikia, Bhubaneswar, Odisha', 'Premier Technical University', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "M.Sc", "duration": "2 Years"}, {"name": "M.Tech", "duration": "2 Years"}, {"name": "E-Master", "duration": "1-2 Years"}, {"name": "Ph.D", "duration": "3 Years"}]', '2026-05-03 22:56:50', 1),
 (2, 'Kalinga Institute of Medical Sciences', 'Bhubaneswar', 4.8, NULL, 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&h=400&fit=crop', 'KIMS provides high-quality medical education and healthcare services with state-of-the-art facilities.', 'Deemed University', 2007, 'NMC, UGC', '50+ Acres', 'www.kims.kiit.ac.in', 'Patia, Bhubaneswar, Odisha', 'Top Medical College in Odisha', '[{"name": "MBBS", "duration": "5.5 Years"}, {"name": "MD", "duration": "3 Years"}, {"name": "MS", "duration": "3 Years"}]', '2026-05-03 22:56:50', 1),
-(3, 'National Institute of Technology', 'Rourkela', 4.7, NULL, 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&h=400&fit=crop', 'National Institute of Technology Rourkela is a premier technical institute in India. It was established as Regional Engineering College Rourkela in 1961.', 'Institute of National Importance', 1961, 'Ministry of Education, NIRF Ranked', '1200+ Acres', 'www.nitrkl.ac.in', 'Sector 1, Rourkela, Sundargarh, Odisha - 769008', 'Ranked 16th in NIRF Engineering 2023', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "M.Tech", "duration": "2 Years"}, {"name": "Ph.D", "duration": "3 Years"}]', '2026-05-03 22:56:50', 1),
-(4, 'KIIT University', 'Bhubaneswar', 4.6, NULL, 'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&h=400&fit=crop', 'KIIT University, Bhubaneswar (Kalinga Institute of Industrial Technology) is a deemed to be university established in 1992. It is recognized as an Institution of Eminence by the Government of India. KIIT is known for its academic excellence, world-class infrastructure, global exposure and excellent placement record.', 'Deemed University', 1992, 'UGC, AICTE, NAAC A++', '100+ Acres', 'www.kiit.ac.in', 'KIIT University, Patia, Bhubaneswar, Khorda, Odisha - 751024', 'Among Top 20 Universities in India (NIRF 2024)', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "BBA", "duration": "3 Years"}, {"name": "MBA", "duration": "2 Years"}]', '2026-05-03 22:56:50', 1),
-(5, 'SOA University', 'Bhubaneswar', 4.4, NULL, 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&h=400&fit=crop', 'Siksha ''O'' Anusandhan is a private deemed university located in Bhubaneswar. It is known for its high quality research and education.', 'Deemed University', 2007, 'UGC, NAAC A++', '127 Acres', 'www.soa.ac.in', 'Khandagiri, Bhubaneswar, Odisha - 751030', 'Among Top 15 Universities in India (NIRF)', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "MBA", "duration": "2 Years"}, {"name": "BCA", "duration": "3 Years"}]', '2026-05-03 22:56:50', 1),
-(6, 'VSSUT Burla', 'Sambalpur', 4.3, NULL, 'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&h=400&fit=crop', 'Veer Surendra Sai University of Technology (VSSUT) is a premier government engineering university. It was established in 1956 as University College of Engineering (UCE) Burla.', 'State University', 1956, 'UGC, AICTE', '184 Acres', 'www.vssut.ac.in', 'Burla, Sambalpur, Odisha - 768018', 'Premier Government Technical University in Odisha', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "M.Tech", "duration": "2 Years"}]', '2026-05-03 22:56:50', 1),
+(3, 'National Institute of Technology', 'Rourkela', 4.7, 'uploads/colleges/nit.jpg', 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&h=400&fit=crop', 'National Institute of Technology Rourkela is a premier technical institute in India. It was established as Regional Engineering College Rourkela in 1961.', 'Institute of National Importance', 1961, 'Ministry of Education, NIRF Ranked', '1200+ Acres', 'www.nitrkl.ac.in', 'Sector 1, Rourkela, Sundargarh, Odisha - 769008', 'Ranked 16th in NIRF Engineering 2023', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "M.Tech", "duration": "2 Years"}, {"name": "Ph.D", "duration": "3 Years"}]', '2026-05-03 22:56:50', 1),
+(4, 'KIIT University', 'Bhubaneswar', 4.6, 'uploads/colleges/kiit.jpg', 'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&h=400&fit=crop', 'KIIT University, Bhubaneswar (Kalinga Institute of Industrial Technology) is a deemed to be university established in 1992. It is recognized as an Institution of Eminence by the Government of India. KIIT is known for its academic excellence, world-class infrastructure, global exposure and excellent placement record.', 'Deemed University', 1992, 'UGC, AICTE, NAAC A++', '100+ Acres', 'www.kiit.ac.in', 'KIIT University, Patia, Bhubaneswar, Khorda, Odisha - 751024', 'Among Top 20 Universities in India (NIRF 2024)', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "BBA", "duration": "3 Years"}, {"name": "MBA", "duration": "2 Years"}]', '2026-05-03 22:56:50', 1),
+(5, 'SOA University', 'Bhubaneswar', 4.4, 'uploads/colleges/soa.jpg', 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&h=400&fit=crop', 'Siksha ''O'' Anusandhan is a private deemed university located in Bhubaneswar. It is known for its high quality research and education.', 'Deemed University', 2007, 'UGC, NAAC A++', '127 Acres', 'www.soa.ac.in', 'Khandagiri, Bhubaneswar, Odisha - 751030', 'Among Top 15 Universities in India (NIRF)', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "MBA", "duration": "2 Years"}, {"name": "BCA", "duration": "3 Years"}]', '2026-05-03 22:56:50', 1),
+(6, 'VSSUT Burla', 'Sambalpur', 4.3, 'uploads/colleges/vssut.jpg', 'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&h=400&fit=crop', 'Veer Surendra Sai University of Technology (VSSUT) is a premier government engineering university. It was established in 1956 as University College of Engineering (UCE) Burla.', 'State University', 1956, 'UGC, AICTE', '184 Acres', 'www.vssut.ac.in', 'Burla, Sambalpur, Odisha - 768018', 'Premier Government Technical University in Odisha', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "M.Tech", "duration": "2 Years"}]', '2026-05-03 22:56:50', 1),
 (7, 'CET Bhubaneswar', 'Bhubaneswar', 4.1, NULL, 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&h=400&fit=crop', 'College of Engineering and Technology, Bhubaneswar is now OUTR. It is a premier government engineering college.', 'Government', 1981, 'UGC, AICTE', '100 Acres', 'www.cet.edu.in', 'Ghatikia, Bhubaneswar, Odisha', 'Leading Government Engineering College', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "B.Arch", "duration": "5 Years"}]', '2026-05-03 22:56:50', 1),
 (8, 'Centurion University', 'Bhubaneswar', 4, NULL, 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&h=400&fit=crop', 'Centurion University is a multi-sector, private state university from Odisha. It focus on skill-based education.', 'Private University', 2010, 'UGC, NAAC A', '100+ Acres', 'www.cutm.ac.in', 'Jatni, Bhubaneswar, Odisha', 'Skill-based Education Pioneer', '[{"name": "B.Sc", "duration": "3 Years"}, {"name": "B.Tech", "duration": "4 Years"}]', '2026-05-03 22:56:50', 1),
 (9, 'Ravenshaw University', 'Cuttack', 4.2, NULL, 'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&h=400&fit=crop', 'Ravenshaw University is one of the oldest and most prestigious educational institutions in India, located in Cuttack.', 'State University', 1868, 'UGC, NAAC A', '87 Acres', 'www.ravenshawuniversity.ac.in', 'College Square, Cuttack, Odisha', 'Historic Educational Institution', '[{"name": "B.A", "duration": "3 Years"}, {"name": "B.Com", "duration": "3 Years"}, {"name": "B.Sc", "duration": "3 Years"}]', '2026-05-03 22:56:50', 1),
@@ -1575,7 +1575,10 @@ INSERT INTO `general_courses` (`id`, `name`, `full_name`, `duration`, `degree_le
 (1, 'B.Tech', 'Bachelor of Technology', '4 Years', 'UG Degree', 'Full Time'),
 (2, 'M.Tech', 'Master of Technology', '2 Years', 'PG Degree', 'Full Time'),
 (3, 'MBA', 'Master of Business Administration', '2 Years', 'PG Degree', 'Full Time'),
-(4, 'MBBS', 'Bachelor of Medicine and Bachelor of Surgery', '5.5 Years', 'UG Degree', 'Full Time');
+(4, 'MBBS', 'Bachelor of Medicine and Bachelor of Surgery', '5.5 Years', 'UG Degree', 'Full Time'),
+(5, 'M.Sc', 'Master of Science', '2 Years', 'PG Degree', 'Full Time'),
+(6, 'Ph.D', 'Doctor of Philosophy', '3 Years', 'Doctoral', 'Full Time'),
+(7, 'E-Master', 'Executive Master Program', '1-2 Years', 'Postgraduate', 'Online/Part-time');
 
 -- --------------------------------------------------------
 
@@ -1607,7 +1610,50 @@ INSERT INTO `college_course_specializations` (`college_id`, `course_id`, `specia
 (4, 1, 14, 90, 'Deals with electronics, communication systems, signal processing and embedded systems.'), 
 (4, 1, 20, 60, 'Covers design, manufacturing, thermal, fluids and mechanical systems.'), 
 (4, 1, 11, 60, 'Focuses on infrastructure, construction, transportation and structural engineering.'), 
-(4, 1, 13, 60, 'Deals with electrical systems, power generation, control systems and more.');
+(4, 1, 13, 60, 'Deals with electrical systems, power generation, control systems and more.'),
+(1, 1, 11, 60, 'Civil Engineering: Foundations of infrastructure, structural design, and construction management.'),
+(1, 1, 20, 60, 'Mechanical Engineering: Design, analysis, and manufacturing of mechanical systems and machinery.'),
+(1, 1, 17, 40, 'Electronics & Instrumentation Engineering: Focus on electronic instruments, automation, and measurement systems.'),
+(1, 1, 22, 40, 'Metallurgical & Materials Engineering: Study of metals, alloys, and advanced material science for industrial use.'),
+(1, 1, 13, 60, 'Electrical Engineering: Power generation, transmission, and electrical equipment design.'),
+(1, 1, 12, 120, 'Computer Engineering: Hardware and software integration, system design, and computer architecture.'),
+(1, 1, 28, 30, 'Mechanical Engineering (Al & Robotics): Advanced mechanical engineering with a focus on robotics and artificial intelligence.'),
+(1, 1, 14, 90, 'Electronics & Communication Engineering: Design of communication devices, signal processing, and networking.'),
+(1, 1, 29, 40, 'Textile Engineering: Study of fiber production, fabric design, and textile manufacturing processes.'),
+(1, 1, 32, 60, 'Biotechnology: Applying biological systems and organisms to develop innovative products.'),
+(1, 1, 12, 120, 'Computer Science Engineering: Comprehensive study of computer software, algorithms, and data structures.'),
+(1, 1, 4, 60, 'Computer Science Engineering (AI & ML): Specialization in artificial intelligence, machine learning, and data analytics.'),
+(1, 1, 34, 60, 'Information Technology: Management of information systems, networking, and software applications.'),
+(1, 1, 82, 30, 'Fashion & Apparel Technology: Design and technology behind fashion garments and apparel manufacturing.'),
+(1, 5, 26, 30, 'Chemistry: Advanced study of chemical substances and laboratory analysis.'),
+(1, 5, 26, 30, 'Physics: Theoretical and experimental study of matter, energy, and physical phenomena.'),
+(1, 5, 43, 30, 'Mathematics & Computing: Interdisciplinary study of mathematical modeling and high-performance computing.'),
+(1, 5, 10, 30, 'Industrial chemistry: Chemical processes for the large-scale production of industrial materials.'),
+(1, 2, 14, 20, 'Electronics & Communication Engineering: Advanced electronics and telecommunication systems for the digital age.'),
+(1, 2, 13, 18, 'Energy System and Management: Sustainable energy solutions, power management, and renewable systems.'),
+(1, 2, 17, 18, 'Instumentation and Control Engineering: Advanced control systems, industrial automation, and sensor technologies.'),
+(1, 2, 20, 18, 'Mechanical systems Design: Advanced design and analysis of complex mechanical components and systems.'),
+(1, 2, 28, 18, 'Mechatronics & Machine Learning: Integration of mechanical systems with electronics and intelligent algorithms.'),
+(1, 2, 13, 18, 'Power System Engineering: Power grid management, electrical distribution, and high-voltage engineering.'),
+(1, 2, 29, 18, 'Textile Engineering: Advanced textile processing, fabric innovation, and fiber technology.'),
+(1, 2, 29, 18, 'Textile Chemical Engineering: Chemical processing and finishing techniques in the textile industry.'),
+(1, 2, 13, 18, 'Power Electronics & Drives: Power conversion technology and control of industrial electrical drives.'),
+(1, 2, 20, 18, 'Thermal engineering: Study of thermodynamics, heat transfer, and thermal power systems.'),
+(1, 2, 14, 18, 'VLSI Design & Embedded System: Microelectronic circuit design and dedicated computer system architecture.'),
+(1, 2, 11, 18, 'Water Resources Engineering: Management of water systems, hydrology, and irrigation engineering.'),
+(1, 2, 32, 18, 'Biotechnology: Advanced research in bioprocessing, genetics, and molecular biology.'),
+(1, 2, 12, 18, 'Computer Science & Engineering: Advanced computer science concepts and research in software systems.'),
+(1, 2, 15, 18, 'Industrial Engineering & Management: Optimization of industrial processes and management of operations.'),
+(1, 2, 34, 18, 'Information Technology: Advanced information systems and enterprise technology management.'),
+(1, 2, 11, 18, 'Structural Engineering: Advanced structural analysis and design for modern architecture.'),
+(1, 2, 15, 18, 'Industrial Engineering & Management (Part Time): Evening/Weekend program for working professionals in industrial management.'),
+(1, 2, 34, 18, 'Information Technology (Part time): Part-time program focused on advanced enterprise IT systems.'),
+(1, 2, 17, 18, 'Instrumentation & Control Engineering (Part Time): Professional part-time study in automation and control systems.'),
+(1, 2, 11, 18, 'Water Resources Engineering (Part time): Flexible program for professionals in water resource management.'),
+(1, 7, 34, 50, 'School of computer sciences - Data sciences: Executive master program in big data, analytics, and data-driven insights.'),
+(1, 7, 35, 50, 'School of computer sciences - Cyber Security: Advanced executive training in digital forensics and information security.'),
+(1, 7, 87, 50, 'School of Mechanical Sciences - Business Finance and Management: Executive management program focused on finance and business strategy.'),
+(1, 6, 34, 20, 'All branch of Science, Technology and Humanities: Advanced research opportunities across Science, Technology, and Humanities.');
 
 
 

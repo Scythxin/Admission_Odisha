@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Search, MapPin, Star, Heart, 
-  School, CheckCircle, GraduationCap, 
-  Filter, ChevronDown, ArrowRight
-} from 'lucide-react';
+import { Search, MapPin, Star, Heart, School, CheckCircle, GraduationCap, Filter, ChevronDown, ArrowRight } from 'lucide-react';
+import { ASSETS_BASE } from '../../config/api';
 
 // Import your images
 import kiit from "/src/assets/images/colleges/kiit.jpg";
@@ -100,6 +97,12 @@ const CollegePage = () => {
 
   const handleGetStarted = () => {
     window.location.href = "/register";
+  };
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return kiit;
+    if (imagePath.startsWith('http')) return imagePath;
+    return `${ASSETS_BASE}/${imagePath}`;
   };
 
   return (
@@ -262,7 +265,7 @@ const CollegePage = () => {
             >
               <div className="relative h-48 overflow-hidden">
                 <img 
-                  src={college.image || kiit} 
+                  src={getImageUrl(college.image)} 
                   alt={college.name} 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />

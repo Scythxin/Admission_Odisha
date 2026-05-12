@@ -7,6 +7,7 @@ import {
   TrendingUp, HelpCircle, Phone, Mail,
   Calendar, Building, Maximize, ExternalLink
 } from 'lucide-react';
+import { ASSETS_BASE } from '../../config/api';
 
 const CollegeDetail = () => {
   const { id } = useParams();
@@ -32,6 +33,16 @@ const CollegeDetail = () => {
     fetchCollegeDetail();
     window.scrollTo(0, 0);
   }, [id]);
+
+  const getImageUrl = (imagePath, isBanner = false) => {
+    if (!imagePath) {
+      return isBanner 
+        ? 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&h=400&fit=crop'
+        : '/src/assets/images/temple.png';
+    }
+    if (imagePath.startsWith('http')) return imagePath;
+    return `${ASSETS_BASE}/${imagePath}`;
+  };
 
   if (isLoading) {
     return (
@@ -79,7 +90,7 @@ const CollegeDetail = () => {
           {/* Banner Image */}
           <div className="h-64 md:h-96 w-full relative">
             <img 
-              src={college.banner_image || 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&h=400&fit=crop'} 
+              src={getImageUrl(college.banner_image, true)} 
               alt={college.name} 
               className="w-full h-full object-cover"
             />
@@ -91,7 +102,7 @@ const CollegeDetail = () => {
             {/* Logo/Icon */}
             <div className="bg-white p-4 rounded-2xl shadow-2xl relative z-10 w-24 h-24 md:w-32 md:h-32 flex items-center justify-center border-4 border-white">
               <img 
-                src={college.image || '/src/assets/images/temple.png'} 
+                src={getImageUrl(college.image)} 
                 alt="logo" 
                 className="w-full h-full object-contain"
               />
