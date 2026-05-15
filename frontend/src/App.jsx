@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import AppRoutes from "./routes/AppRoutes";
 import AuthProvider from "./context/AuthContext";
+import { EnquiryProvider } from "./context/EnquiryContext";
 
 function App() {
   useEffect(() => {
@@ -13,7 +14,9 @@ function App() {
 
   return (
     <AuthProvider>
-      <AppRoutes />
+      <EnquiryProvider>
+        <AppRoutes />
+      </EnquiryProvider>
     </AuthProvider>
   );
 }

@@ -59,7 +59,7 @@ INSERT INTO `colleges` (`id`, `name`, `location`, `rating`, `image`, `banner_ima
 (2, 'Kalinga Institute of Medical Sciences', 'Bhubaneswar', 4.8, 'uploads/banners/kims_banner.jpeg', 'uploads/banners/kims_banner.jpeg', 'KIMS provides high-quality medical education and healthcare services with state-of-the-art facilities.', 'Deemed University', 2007, 'NMC, UGC', '400 Acres', 'www.kims.kiit.ac.in', 'Patia, Bhubaneswar, Odisha', 'Top Medical College in Odisha', '[{"name": "MBBS", "duration": "5.5 Years"}, {"name": "PG (Medical)", "duration": "3 Years"}, {"name": "MD", "duration": "3 Years"}, {"name": "MS", "duration": "3 Years"}, {"name": "Allied Medical Courses", "duration": "2-3 Years"}]', '2026-05-03 22:56:50', 1),
 (3, 'National Institute of Technology', 'Rourkela', 4.7, 'uploads/colleges/nit.jpg', 'uploads/banners/nitr_banner.jpeg', 'National Institute of Technology Rourkela is a premier technical institute in India. It was established as Regional Engineering College Rourkela in 1961.', 'Institute of National Importance', 1961, 'Ministry of Education, NIRF Ranked', '650 Acres', 'www.nitrkl.ac.in', 'Sector 1, Rourkela, Sundargarh, Odisha - 769008', 'Ranked 16th in NIRF Engineering 2023', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "B.Tech & M.Tech Dual Degree", "duration": "5 Years"}, {"name": "M.Tech", "duration": "2 Years"}, {"name": "MBA", "duration": "2 Years"}, {"name": "M.Sc", "duration": "2 Years"}]', '2026-05-03 22:56:50', 1),
 (4, 'KIIT University', 'Bhubaneswar', 4.6, 'uploads/colleges/kiit.jpg', 'uploads/banners/kiit_banner.jpeg', 'KIIT University, Bhubaneswar (Kalinga Institute of Industrial Technology) is a deemed to be university established in 1992. It is recognized as an Institution of Eminence by the Government of India. KIIT is known for its academic excellence, world-class infrastructure, global exposure and excellent placement record.', 'Deemed University', 1992, 'UGC, AICTE, NAAC A++', '100+ Acres', 'www.kiit.ac.in', 'KIIT University, Patia, Bhubaneswar, Khorda, Odisha - 751024', 'Among Top 20 Universities in India (NIRF 2024)', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "B.A", "duration": "3 Years"}]', '2026-05-03 22:56:50', 1),
-(5, 'SOA University', 'Bhubaneswar', 4.4, 'uploads/colleges/soa.jpg', 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&h=400&fit=crop', 'Siksha ''O'' Anusandhan is a private deemed university located in Bhubaneswar. It is known for its high quality research and education.', 'Deemed University', 2007, 'UGC, NAAC A++', '127 Acres', 'www.soa.ac.in', 'Khandagiri, Bhubaneswar, Odisha - 751030', 'Among Top 15 Universities in India (NIRF)', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "MBA", "duration": "2 Years"}, {"name": "BCA", "duration": "3 Years"}]', '2026-05-03 22:56:50', 1),
+(5, 'ITER University', 'Bhubaneswar', 4.4, 'uploads/colleges/soa.jpg', 'uploads/banners/iter_banner.jpeg', 'The Institute of Technical Education and Research (ITER) is the flagship faculty of Engineering and Technology of Siksha ''O'' Anusandhan (SOA) Deemed-to-be University. It is recognized as a premier engineering institution in Eastern India.', 'Deemed University', 1996, 'UGC, AICTE, NAAC A++', '127 Acres', 'www.soa.ac.in', 'Khandagiri, Bhubaneswar, Odisha - 751030', 'Among Top 15 Universities in India (NIRF)', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "BCA", "duration": "3 Years"}, {"name": "M.Sc", "duration": "2 Years"}, {"name": "MCA", "duration": "2 Years"}, {"name": "M.Tech", "duration": "2 Years"}, {"name": "Ph.D", "duration": "3 Years"}]', '2026-05-03 22:56:50', 1),
 (6, 'VSSUT Burla', 'Sambalpur', 4.3, 'uploads/colleges/vssut.jpg', 'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&h=400&fit=crop', 'Veer Surendra Sai University of Technology (VSSUT) is a premier government engineering university. It was established in 1956 as University College of Engineering (UCE) Burla.', 'State University', 1956, 'UGC, AICTE', '184 Acres', 'www.vssut.ac.in', 'Burla, Sambalpur, Odisha - 768018', 'Premier Government Technical University in Odisha', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "M.Tech", "duration": "2 Years"}]', '2026-05-03 22:56:50', 1),
 (7, 'CET Bhubaneswar', 'Bhubaneswar', 4.1, NULL, 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&h=400&fit=crop', 'College of Engineering and Technology, Bhubaneswar is now OUTR. It is a premier government engineering college.', 'Government', 1981, 'UGC, AICTE', '100 Acres', 'www.cet.edu.in', 'Ghatikia, Bhubaneswar, Odisha', 'Leading Government Engineering College', '[{"name": "B.Tech", "duration": "4 Years"}, {"name": "B.Arch", "duration": "5 Years"}]', '2026-05-03 22:56:50', 1),
 (8, 'Centurion University', 'Bhubaneswar', 4, NULL, 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&h=400&fit=crop', 'Centurion University is a multi-sector, private state university from Odisha. It focus on skill-based education.', 'Private University', 2010, 'UGC, NAAC A', '100+ Acres', 'www.cutm.ac.in', 'Jatni, Bhubaneswar, Odisha', 'Skill-based Education Pioneer', '[{"name": "B.Sc", "duration": "3 Years"}, {"name": "B.Tech", "duration": "4 Years"}]', '2026-05-03 22:56:50', 1),
@@ -1584,7 +1584,9 @@ INSERT INTO `general_courses` (`id`, `name`, `full_name`, `duration`, `degree_le
 (10, 'PG (Medical)', 'Post Graduate Medical (DM/M.Ch)', '3 Years', 'Super Specialty', 'Full Time'),
 (11, 'MD', 'Doctor of Medicine', '3 Years', 'PG Degree', 'Full Time'),
 (12, 'MS', 'Master of Surgery', '3 Years', 'PG Degree', 'Full Time'),
-(13, 'Allied Medical Courses', 'Allied Health Sciences', '2-3 Years', 'Various', 'Full Time');
+(13, 'Allied Medical Courses', 'Allied Health Sciences', '2-3 Years', 'Various', 'Full Time'),
+(14, 'BCA', 'Bachelor of Computer Applications', '3 Years', 'UG Degree', 'Full Time'),
+(15, 'MCA', 'Master of Computer Applications', '2 Years', 'PG Degree', 'Full Time');
 
 -- --------------------------------------------------------
 
@@ -1640,6 +1642,7 @@ INSERT INTO `college_course_specializations` (`college_id`, `course_id`, `specia
 (4, 8, 99, 40, 'Sociology (Hons): Scientific study of society, social patterns, and social interactions.'),
 (4, 8, 99, 40, 'Psychology (Hons): Scientific study of the human mind and its functions, especially behavior.'),
 (4, 8, 99, 40, 'English (Hons): Advanced study of English literature, language, and linguistics.'),
+
 (1, 1, 11, 60, 'Civil Engineering: Foundations of infrastructure, structural design, and construction management.'),
 (1, 1, 20, 60, 'Mechanical Engineering: Design, analysis, and manufacturing of mechanical systems and machinery.'),
 (1, 1, 17, 40, 'Electronics & Instrumentation Engineering: Focus on electronic instruments, automation, and measurement systems.'),
@@ -1683,6 +1686,7 @@ INSERT INTO `college_course_specializations` (`college_id`, `course_id`, `specia
 (1, 7, 35, 50, 'School of computer sciences - Cyber Security: Advanced executive training in digital forensics and information security.'),
 (1, 7, 87, 50, 'School of Mechanical Sciences - Business Finance and Management: Executive management program focused on finance and business strategy.'),
 (1, 6, 34, 20, 'All branch of Science, Technology and Humanities: Advanced research opportunities across Science, Technology, and Humanities.'),
+
 (3, 1, 7, 40, 'Biomedical Engineering: Applying engineering principles to healthcare for medical devices and diagnostic tools.'),
 (3, 1, 8, 40, 'Biotechnology: Utilizing biological systems and organisms to develop innovative healthcare and industrial products.'),
 (3, 1, 11, 100, 'Civil Engineering: Infrastructure design, structural analysis, and sustainable construction management.'),
@@ -1748,6 +1752,7 @@ INSERT INTO `college_course_specializations` (`college_id`, `course_id`, `specia
 (3, 5, 43, 30, 'Mathematics: Theoretical and applied mathematics including analysis, algebra, and topology.'),
 (3, 5, 43, 30, 'Computational Mathematics and Data Science: Focus on numerical methods and data analysis for complex problems.'),
 (3, 5, 26, 30, 'Physics: Advanced study of matter, energy, and fundamental physical laws.'),
+
 (2, 10, 114, 10, 'D.M. Endocrinology: Advanced study of endocrine systems and hormonal disorders.'),
 (2, 10, 114, 10, 'D.M. Nephrology: Specialized medical care for kidney diseases and renal replacement therapy.'),
 (2, 10, 114, 10, 'DM. Cardiology: Advanced diagnosis and treatment of heart and vascular system disorders.'),
@@ -1794,9 +1799,49 @@ INSERT INTO `college_course_specializations` (`college_id`, `course_id`, `specia
 (2, 13, 21, 20, 'Certified EEG Technicians (CEEGT): Technical assistance in performing electroencephalograms.'),
 (2, 13, 21, 20, 'Certified EMG Technicians (CEMGT): Technical assistance in performing electromyograms.'),
 (2, 13, 114, 20, 'Certified Ward Technician (CWT): Basic healthcare support and assistance in hospital wards.'),
-(2, 13, 21, 20, 'Certified Blood Collection Assistant (CBCA): Technical assistance in phlebotomy and blood collection procedures.');
+(2, 13, 21, 20, 'Certified Blood Collection Assistant (CBCA): Technical assistance in phlebotomy and blood collection procedures.'),
 
+-- ITER University (ID 5)
+(5, 1, 11, 60, 'Civil Engineering: Planning, design, and construction of sustainable infrastructure and structural systems.'),
+(5, 1, 20, 60, 'Mechanical Engineering: Design, analysis, and manufacturing of energy-efficient machines and mechanical systems.'),
+(5, 1, 13, 60, 'Electrical Engineering: Focus on power systems, electrical machinery, and energy transmission.'),
+(5, 1, 13, 60, 'Electrical and Electronics Engineering: Combined study of electrical power and electronic control systems.'),
+(5, 1, 14, 60, 'Electronics and Communication Engineering: Design of communication devices, signal processing, and networking technologies.'),
+(5, 1, 12, 120, 'Computer Science and Engineering: Core study of computation, algorithms, software development, and hardware design.'),
+(5, 1, 34, 60, 'Computer Science and Information Technology: Focus on information systems, software engineering, and network management.'),
+(5, 1, 4, 60, 'CSE (Artificial Intelligence and Machine Learning): Advanced computing with a focus on AI algorithms and intelligent systems.'),
+(5, 1, 12, 60, 'CSE (Data Science): Extraction of insights from large datasets using statistical and computational methods.'),
+(5, 1, 12, 60, 'CSE (Internet of Things): Design and development of connected smart devices and sensor networks.'),
+(5, 1, 35, 60, 'CSE (Cyber Security): Focus on protecting systems, networks, and data from digital attacks and threats.'),
+(5, 14, 33, 60, 'Computer Applications: Comprehensive study of computer applications and software development.'),
+(5, 5, 26, 30, 'Physics: Advanced study of fundamental physical laws, energy, and matter.'),
+(5, 5, 26, 30, 'Chemistry: Research-oriented study of chemical substances, synthesis, and laboratory analysis.'),
+(5, 5, 43, 30, 'Mathematics: Advanced mathematical modeling, analysis, and computational mathematics.'),
+(5, 15, 33, 60, 'Computer Applications: Advanced training in computer applications, software engineering, and system management.'),
+(5, 2, 11, 18, 'Structural Engineering: Advanced structural analysis and design for modern civil engineering projects.'),
+(5, 2, 12, 18, 'Computer Science and Engineering: Advanced research in software systems, algorithms, and computational theory.'),
+(5, 2, 14, 18, 'Embedded System and VLSI Design: Design of dedicated hardware systems and microelectronic circuits.'),
+(5, 2, 13, 18, 'Electric Vehicle Technology: Specialized study in EV powertrains, battery management, and green energy.'),
+(5, 2, 20, 18, 'Machine Design and Robotics: Focus on advanced mechanical design and industrial robotics.'),
+(5, 6, 26, 10, 'General Sciences: Advanced doctoral research across fundamental and applied science disciplines.'),
+(5, 6, 12, 10, 'Engineering and Technology: Research-driven doctoral program in advanced engineering and technological innovation.'),
+(5, 6, 99, 10, 'Humanities and Social Sciences: Advanced research in languages, social structures, and cultural studies.');
 
+--
+-- Table structure for table `enquiries`
+--
+
+CREATE TABLE `enquiries` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `full_name` varchar(255) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `courses` varchar(255) DEFAULT NULL,
+  `colleges` varchar(255) DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `guidance` varchar(10) DEFAULT 'yes',
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 COMMIT;
 

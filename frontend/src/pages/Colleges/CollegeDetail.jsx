@@ -8,12 +8,14 @@ import {
   Calendar, Building, Maximize, ExternalLink
 } from 'lucide-react';
 import { ASSETS_BASE } from '../../config/api';
+import { useEnquiry } from '../../context/EnquiryContext';
 
 const CollegeDetail = () => {
   const { id } = useParams();
   const [college, setCollege] = useState(null);
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { openEnquiry } = useEnquiry();
 
   useEffect(() => {
     const fetchCollegeDetail = async () => {
@@ -134,7 +136,10 @@ const CollegeDetail = () => {
                 <Heart size={20} />
                 <span>Add to Wishlist</span>
               </button>
-              <button className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-indigo-700 transition-all shadow-lg active:scale-95">
+              <button 
+                onClick={openEnquiry}
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-indigo-700 transition-all shadow-lg active:scale-95"
+              >
                 Enquire Now
               </button>
             </div>

@@ -6,11 +6,13 @@ import {
   Search, Info, ExternalLink, ChevronRight,
   Target, Award, Building, Globe
 } from 'lucide-react';
+import { useEnquiry } from '../../context/EnquiryContext';
 
 const CollegeCourseSpecializations = () => {
   const { collegeId, courseName } = useParams();
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { openEnquiry } = useEnquiry();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -216,7 +218,10 @@ const CollegeCourseSpecializations = () => {
             <h3 className="text-2xl md:text-3xl font-bold text-[#071B52] mb-2">Have Questions About {course.name} Admissions?</h3>
             <p className="text-gray-500">Our admission experts are here to help you choose the right branch for your future.</p>
           </div>
-          <button className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 flex items-center gap-3">
+          <button 
+            onClick={openEnquiry}
+            className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 flex items-center gap-3"
+          >
             Enquire Now
             <ChevronRight size={20} />
           </button>
