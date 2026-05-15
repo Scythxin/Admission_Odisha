@@ -1827,7 +1827,21 @@ INSERT INTO `college_course_specializations` (`college_id`, `course_id`, `specia
 (5, 6, 12, 10, 'Engineering and Technology: Research-driven doctoral program in advanced engineering and technological innovation.'),
 (5, 6, 99, 10, 'Humanities and Social Sciences: Advanced research in languages, social structures, and cultural studies.');
 
+--
+-- Table structure for table `enquiries`
+--
 
+CREATE TABLE `enquiries` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `full_name` varchar(255) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `courses` varchar(255) DEFAULT NULL,
+  `colleges` varchar(255) DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `guidance` varchar(10) DEFAULT 'yes',
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 COMMIT;
 

@@ -109,6 +109,7 @@ class AuthController extends Controller
                 "id" => $user['id'],
                 "name" => $user['name'],
                 "email" => $user['email'],
+                "phone" => $user['phone'],
                 "is_admin" => (int)$user['is_admin']
             ]
         ];
@@ -199,6 +200,7 @@ class AuthController extends Controller
                 "id" => $user['id'],
                 "name" => $user['name'],
                 "email" => $user['email'],
+                "phone" => $user['phone'],
                 "is_admin" => (int)$user['is_admin']
             ]
         ];

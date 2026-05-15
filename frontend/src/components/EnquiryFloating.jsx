@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useEnquiry } from "../context/EnquiryContext";
 
 const fields = [
@@ -69,15 +69,67 @@ export default function EnquiryFloating() {
   const [form, setForm] = useState({ fullName: "", phone: "", courses: "", colleges: "", location: "" });
   const [guidance, setGuidance] = useState("yes");
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setForm(prev => ({
+          ...prev,
+          fullName: user.name || user.full_name || user.fullName || prev.fullName,
+          phone: user.phone || user.mobile || user.phone_number || prev.phone
+        }));
+      } catch (e) {
+        console.error("Failed to parse user data", e);
+      }
+    }
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitted(true);
-    setTimeout(() => {
+    
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=site/api-submit-enquiry`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...form,
+          guidance,
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (result.status === 'success') {
+        setTimeout(() => {
+          setSubmitted(false);
+          closeEnquiry();
+          setForm(prev => {
+            const userStr = localStorage.getItem("user");
+            let autofillName = "";
+            let autofillPhone = "";
+            if (userStr) {
+              try {
+                const user = JSON.parse(userStr);
+                autofillName = user.name || user.full_name || user.fullName || "";
+                autofillPhone = user.phone || user.mobile || user.phone_number || "";
+              } catch (e) {}
+            }
+            return { fullName: autofillName, phone: autofillPhone, courses: "", colleges: "", location: "" };
+          });
+          setGuidance("yes");
+        }, 2000);
+      } else {
+        console.error('Submission failed:', result.message);
+        setSubmitted(false);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
       setSubmitted(false);
-      closeEnquiry();
-      setForm({ fullName: "", phone: "", courses: "", colleges: "", location: "" });
-      setGuidance("yes");
-    }, 2000);
+    }
   };
 
   return (
