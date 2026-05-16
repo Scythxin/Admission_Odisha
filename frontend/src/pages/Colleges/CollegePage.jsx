@@ -74,10 +74,10 @@ const CollegePage = () => {
   };
 
   const stats = [
-    { label: "500+", sub: "Colleges", icon: <School size={28} />, color: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
-    { label: "30+", sub: "Districts", icon: <MapPin size={28} />, color: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10" },
-    { label: "1000+", sub: "Courses", icon: <GraduationCap size={28} />, color: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
-    { label: "100%", sub: "Verified", icon: <CheckCircle size={28} />, color: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10" },
+    { label: "Trusted", sub: "Colleges", icon: <School size={28} />, color: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
+    { label: "Across Various", sub: "Districts", icon: <MapPin size={28} />, color: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10" },
+    { label: "Diverse", sub: "Courses", icon: <GraduationCap size={28} />, color: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
+    { label: "Trusted", sub: "Platform", icon: <CheckCircle size={28} />, color: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10" },
   ];
 
   const districts = [
@@ -223,7 +223,7 @@ const CollegePage = () => {
               <div className={`${s.bg} w-14 h-14 md:w-16 md:h-16 rounded-xl flex items-center justify-center ${s.color} mb-4`}>
                 {s.icon}
               </div>
-              <p className="text-2xl md:text-3xl font-bold text-[#071B52] leading-none">{s.label}</p>
+              <p className="text-xl md:text-xl font-bold text-[#071B52] leading-none">{s.label}</p>
               <p className="text-sm md:text-base text-gray-500 font-semibold mt-1">{s.sub}</p>
             </div>
           ))}

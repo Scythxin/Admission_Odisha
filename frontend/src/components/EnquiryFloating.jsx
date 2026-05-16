@@ -135,7 +135,48 @@ export default function EnquiryFloating() {
   return (
     <>
 
-      {/* Modal */}
+      {/* Floating Trigger Button */}
+      {!isOpen && (
+        <button
+          onClick={openEnquiry}
+          className="enquiry-floating-btn"
+          style={{
+            position: "fixed",
+            right: "-5.5em",
+            top: "50%",
+            transform: "translateY(-50%) rotate(-90deg)",
+            background: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
+            color: "white",
+            padding: "14px 28px",
+            borderRadius: "16px 16px 0 0",
+            fontWeight: "800",
+            fontSize: "14px",
+            letterSpacing: "1.5px",
+            cursor: "pointer",
+            zIndex: 9998,
+            boxShadow: "0 -8px 25px rgba(99, 102, 241, 0.4)",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            outline: "none",
+            textTransform: "uppercase"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.right = "-5em";
+            e.currentTarget.style.boxShadow = "0 -12px 30px rgba(99, 102, 241, 0.6)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.right = "-5.5em";
+            e.currentTarget.style.boxShadow = "0 -8px 25px rgba(99, 102, 241, 0.4)";
+          }}
+        >
+            
+          Enquiry Now
+        </button>
+      )}
+
       {isOpen && (
         <div
           style={{
@@ -247,6 +288,20 @@ export default function EnquiryFloating() {
           </div>
         </div>
       )}
+
+      <style jsx>{`
+        @keyframes pulse-gentle {
+          0% { transform: translateY(-50%) rotate(-90deg) scale(1); }
+          50% { transform: translateY(-50%) rotate(-90deg) scale(1.05); }
+          100% { transform: translateY(-50%) rotate(-90deg) scale(1); }
+        }
+        .enquiry-floating-btn {
+          animation: pulse-gentle 3s infinite ease-in-out;
+        }
+        .enquiry-floating-btn:hover {
+          animation: none;
+        }
+      `}</style>
     </>
   );
 }

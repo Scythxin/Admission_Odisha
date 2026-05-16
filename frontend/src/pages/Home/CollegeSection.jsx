@@ -1,48 +1,41 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FaStar, FaMapMarkerAlt, FaArrowRight } from "react-icons/fa";
+import { ASSETS_BASE } from "../../config/api";
 
 import kiit from "/src/assets/images/colleges/kiit.jpg";
-import vssut from "/src/assets/images/colleges/vssut.jpg";
-import utkal from "/src/assets/images/colleges/utkal.jpg";
-import soa from "/src/assets/images/colleges/soa.jpg";
-import nit from "/src/assets/images/colleges/nit.jpg";
-
-const colleges = [
-  {
-    name: "KIIT University",
-    location: "Bhubaneswar",
-    rating: "4.6",
-    image: kiit,
-  },
-  {
-    name: "VSSUT Burla",
-    location: "Sambalpur",
-    rating: "4.4",
-    image: vssut,
-  },
-  {
-    name: "Utkal University",
-    location: "Bhubaneswar",
-    rating: "4.3",
-    image: utkal,
-  },
-  {
-    name: "SOA University",
-    location: "Bhubaneswar",
-    rating: "4.5",
-    image: soa,
-  },
-  {
-    name: "NIT Rourkela",
-    location: "Rourkela",
-    rating: "4.7",
-    image: nit,
-  },
-];
 
 const TopColleges = () => {
+  const [colleges, setColleges] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchColleges = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=site/api-colleges`);
+        const result = await response.json();
+        if (result.status === 'success') {
+          // Show only top 5 colleges on home page
+          setColleges(result.data.slice(0, 5));
+        }
+      } catch (error) {
+        console.error("Error fetching colleges:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchColleges();
+  }, []);
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return kiit;
+    if (imagePath.startsWith('http')) return imagePath;
+    return `${ASSETS_BASE}/${imagePath}`;
+  };
+
   const handleExploreColleges = () => {
-    window.location.href = "/colleges";
+    navigate("/colleges");
   };
 
   return (
@@ -69,50 +62,59 @@ const TopColleges = () => {
         </div>
 
         {/* College Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 md:gap-6">
-          {colleges.map((college, index) => (
-            <div
-              key={index}
-              className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden cursor-pointer"
-              style={{
-                animationDelay: `${index * 0.05}s`,
-              }}
-            >
-              {/* Image Container */}
-              <div className="relative overflow-hidden h-[200px] sm:h-[180px] md:h-[200px]">
-                <img
-                  src={college.image}
-                  alt={college.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 md:gap-6">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="bg-white rounded-2xl h-[320px] animate-pulse border border-gray-100"></div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 md:gap-6">
+            {colleges.map((college, index) => (
+              <div
+                key={college.id || index}
+                onClick={() => navigate(`/colleges/${college.id}`)}
+                className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden cursor-pointer"
+                style={{
+                  animationDelay: `${index * 0.05}s`,
+                }}
+              >
+                {/* Image Container */}
+                <div className="relative overflow-hidden h-[200px] sm:h-[180px] md:h-[200px]">
+                  <img
+                    src={getImageUrl(college.image)}
+                    alt={college.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                {/* Rating Badge */}
-                <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-2.5 py-1.5 rounded-xl flex items-center gap-1 shadow-lg">
-                  <FaStar className="text-yellow-400 text-sm" />
-                  <span className="text-[#071B52] font-bold text-sm">{college.rating}</span>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-5">
-                <h3 className="font-bold text-[#071B52] text-lg mb-2 group-hover:text-[#4F46E5] transition-colors duration-300 line-clamp-1">
-                  {college.name}
-                </h3>
-
-                <div className="flex items-center gap-1.5 text-gray-500 text-sm mb-4">
-                  <FaMapMarkerAlt className="text-xs" />
-                  <span>{college.location}</span>
+                  {/* Rating Badge */}
+                  <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-2.5 py-1.5 rounded-xl flex items-center gap-1 shadow-lg">
+                    <FaStar className="text-yellow-400 text-sm" />
+                    <span className="text-[#071B52] font-bold text-sm">{college.rating}</span>
+                  </div>
                 </div>
 
-                <button className="w-full py-2.5 text-sm font-medium rounded-xl border border-[#4F46E5] text-[#4F46E5] bg-white/50 group-hover:bg-[#4F46E5] group-hover:text-white transition-all duration-300">
-                  View Details
-                </button>
+                {/* Content */}
+                <div className="p-5">
+                  <h3 className="font-bold text-[#071B52] text-lg mb-2 group-hover:text-[#4F46E5] transition-colors duration-300 line-clamp-1">
+                    {college.name}
+                  </h3>
+
+                  <div className="flex items-center gap-1.5 text-gray-500 text-sm mb-4">
+                    <FaMapMarkerAlt className="text-xs" />
+                    <span>{college.location}</span>
+                  </div>
+
+                  <button className="w-full py-2.5 text-sm font-medium rounded-xl border border-[#4F46E5] text-[#4F46E5] bg-white/50 group-hover:bg-[#4F46E5] group-hover:text-white transition-all duration-300">
+                    View Details
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* CTA Section */}
         <div className="mt-12 md:mt-16 bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] rounded-2xl p-6 md:p-8 text-center">

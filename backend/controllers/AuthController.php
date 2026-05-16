@@ -72,16 +72,11 @@ class AuthController extends Controller
             'is_status' => 1
         ])->execute();
 
-        return [
-            "status" => "success",
-            "token" => $token,
-            "user" => [
-                "id" => $user['id'],
-                "name" => $user['name'],
-                "email" => $user['email'],
-                "is_admin" => (int)$user['is_admin']
-            ]
-        ];
+       return [
+    "status" => "success",
+    "message" => "Registration successful"
+];
+        
     }
 
     // =========================
