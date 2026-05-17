@@ -10,12 +10,161 @@ import {
 import { ASSETS_BASE } from '../../config/api';
 import { useEnquiry } from '../../context/EnquiryContext';
 
+// ── Thank You Success Modal ───────────────────────────────────────────────────
+const EnquirySuccessModal = ({ open, onClose }) => {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (open) setTimeout(() => setVisible(true), 10);
+    else setVisible(false);
+  }, [open]);
+  if (!open) return null;
+  return (
+    <div
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+      style={{
+        position: "fixed", inset: 0, zIndex: 999999,
+        display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
+        background: "rgba(10,10,30,0.55)", backdropFilter: "blur(6px)",
+        transition: "opacity 0.3s ease", opacity: visible ? 1 : 0,
+      }}
+    >
+      <div style={{
+        position: "relative", width: "100%", maxWidth: 440,
+        background: "white", borderRadius: 28, overflow: "hidden",
+        boxShadow: "0 32px 80px rgba(108,77,246,0.18), 0 8px 32px rgba(0,0,0,0.12)",
+        transform: visible ? "scale(1) translateY(0)" : "scale(0.88) translateY(28px)",
+        transition: "transform 0.45s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease",
+        opacity: visible ? 1 : 0,
+      }}>
+        <button onClick={onClose} style={{
+          position: "absolute", top: 14, right: 14, zIndex: 10,
+          width: 30, height: 30, borderRadius: "50%",
+          background: "#F3F4F6", border: "none", cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center", color: "#9CA3AF",
+        }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+        <div style={{
+          background: "linear-gradient(160deg, #FFF5F7 0%, #F5F3FF 100%)",
+          padding: "40px 24px 24px", display: "flex", flexDirection: "column",
+          alignItems: "center", position: "relative",
+        }}>
+          <span style={{ position: "absolute", top: 20, left: 24, fontSize: 18, animation: "floatUp 2s ease-in-out infinite" }}>💗</span>
+          <span style={{ position: "absolute", top: 30, right: 28, fontSize: 13, animation: "floatUp 2.5s ease-in-out infinite 0.5s" }}>✨</span>
+          <span style={{ position: "absolute", bottom: 30, left: 20, fontSize: 11, animation: "floatUp 3s ease-in-out infinite 1s" }}>⭐</span>
+          <div style={{
+            width: 140, height: 140, borderRadius: "50%", marginBottom: 12,
+            background: "radial-gradient(circle, #FFD6DE 0%, #FFF0F3 65%, transparent 100%)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <svg width="110" height="95" viewBox="0 0 110 95" fill="none">
+              <rect x="12" y="38" width="86" height="52" rx="7" fill="#FFB3C6"/>
+              <path d="M12 38 L55 14 L98 38" fill="#FF8FAB"/>
+              <path d="M12 38 L55 58 L98 38" fill="#FFCCD8"/>
+              <rect x="26" y="10" width="58" height="68" rx="5" fill="white" opacity="0.97"/>
+              <circle cx="55" cy="36" r="17" fill="#FFE4EC"/>
+              <path d="M48 33 Q49.5 30.5 51 33" stroke="#FF6B8A" strokeWidth="1.8" strokeLinecap="round" fill="none"/>
+              <path d="M59 33 Q60.5 30.5 62 33" stroke="#FF6B8A" strokeWidth="1.8" strokeLinecap="round" fill="none"/>
+              <path d="M49 40 Q55 46 61 40" stroke="#FF6B8A" strokeWidth="1.8" strokeLinecap="round" fill="none"/>
+              <circle cx="46" cy="42" r="4" fill="#FFB3C6" opacity="0.5"/>
+              <circle cx="64" cy="42" r="4" fill="#FFB3C6" opacity="0.5"/>
+              <path d="M52 21 C52 18.5 55 17 55 20 C55 17 58 18.5 58 21 C58 23.5 55 26 55 26 C55 26 52 23.5 52 21Z" fill="#FF6B8A"/>
+              <g transform="translate(80, 5) rotate(-25)">
+                <path d="M0 0 L22 9 L0 18 L5 9 Z" fill="#FF8FAB"/>
+                <path d="M0 18 L5 9 L22 9" fill="#FF6B8A" opacity="0.5"/>
+              </g>
+              <g transform="translate(6, 72)">
+                <path d="M8 18 C8 18 8 5 8 0" stroke="#C5CEFF" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M8 12 C4 8 0 10 1 14 C2 18 8 16 8 12Z" fill="#C5CEFF" opacity="0.7"/>
+                <path d="M8 7 C12 3 16 5 15 9 C14 13 8 11 8 7Z" fill="#A0AAEE" opacity="0.6"/>
+              </g>
+              <g transform="translate(88, 72)">
+                <path d="M8 18 C8 18 8 5 8 0" stroke="#FFB3C6" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M8 12 C12 8 16 10 15 14 C14 18 8 16 8 12Z" fill="#FFB3C6" opacity="0.7"/>
+                <path d="M8 7 C4 3 0 5 1 9 C2 13 8 11 8 7Z" fill="#FF8FAB" opacity="0.6"/>
+              </g>
+              <text x="4" y="26" fontSize="11">✨</text>
+              <text x="88" y="62" fontSize="9">💕</text>
+            </svg>
+          </div>
+          <h2 style={{ margin: "0 0 4px", fontSize: 30, fontWeight: 800, color: "#1a1a3e", fontFamily: "Georgia, serif" }}>
+            Thank You! 💖
+          </h2>
+          <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: "#FF6B8A" }}>
+            Your enquiry has been received.
+          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
+            <div style={{ width: 40, height: 1.5, background: "linear-gradient(90deg, transparent, #FFB3C6)" }}/>
+            <span style={{ fontSize: 12 }}>💗</span>
+            <div style={{ width: 40, height: 1.5, background: "linear-gradient(90deg, #FFB3C6, transparent)" }}/>
+          </div>
+        </div>
+        <div style={{ padding: "22px 28px 20px", background: "white" }}>
+          <div style={{
+            display: "flex", alignItems: "flex-start", gap: 14,
+            borderRadius: 16, padding: "16px 18px", marginBottom: 18,
+            background: "linear-gradient(135deg, #F5F3FF 0%, #FFF5F7 100%)",
+            border: "1px solid #E8E4FF",
+          }}>
+            <span style={{ fontSize: 36, flexShrink: 0, lineHeight: 1 }}>⭐</span>
+            <div>
+              <p style={{ margin: "0 0 4px", fontSize: 14, fontWeight: 800, color: "#1a1a3e" }}>Dream it. Believe it. Achieve it.</p>
+              <p style={{ margin: 0, fontSize: 13, color: "#6B7280", lineHeight: 1.6 }}>
+                We'll connect with you soon and help you take the next step towards your dreams. ✨
+              </p>
+            </div>
+          </div>
+          <div style={{ textAlign: "center", marginBottom: 16 }}>
+            <p style={{ margin: "0 0 4px", fontSize: 13, color: "#9CA3AF" }}>❤️ Keep learning, keep growing.</p>
+            <p style={{ margin: 0, fontSize: 14, color: "#6B7280" }}>
+              <strong style={{ color: "#6C4DF6" }}>Admission Odisha</strong> is with you always! 🌟
+            </p>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", paddingTop: 8 }}>
+            <svg width="32" height="42" viewBox="0 0 32 42" fill="none">
+              <path d="M16 42 L16 18" stroke="#C5CEFF" strokeWidth="1.8" strokeLinecap="round"/>
+              <path d="M16 30 C10 24 4 26 6 32 C8 38 16 35 16 30Z" fill="#C5CEFF" opacity="0.65"/>
+              <path d="M16 23 C22 17 28 19 26 25 C24 31 16 28 16 23Z" fill="#A0AAEE" opacity="0.55"/>
+            </svg>
+            <svg width="26" height="24" viewBox="0 0 26 24" fill="none">
+              <path d="M13 22 C13 22 1 14 1 7 C1 3.5 4 1 7 1 C10 1 13 4 13 4 C13 4 16 1 19 1 C22 1 25 3.5 25 7 C25 14 13 22 13 22Z" stroke="#C5CEFF" strokeWidth="1.8" fill="none"/>
+            </svg>
+            <svg width="32" height="42" viewBox="0 0 32 42" fill="none">
+              <path d="M16 42 L16 18" stroke="#FFB3C6" strokeWidth="1.8" strokeLinecap="round"/>
+              <path d="M16 30 C22 24 28 26 26 32 C24 38 16 35 16 30Z" fill="#FFB3C6" opacity="0.65"/>
+              <path d="M16 23 C10 17 4 19 6 25 C8 31 16 28 16 23Z" fill="#FF8FAB" opacity="0.55"/>
+            </svg>
+          </div>
+        </div>
+        <div style={{ height: 20, background: "linear-gradient(135deg, #F5F3FF 0%, #FFF5F7 100%)", borderRadius: "0 0 28px 28px" }}/>
+        <style>{`
+          @keyframes floatUp {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+          }
+        `}</style>
+      </div>
+    </div>
+  );
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
 const CollegeDetail = () => {
   const { id } = useParams();
   const [college, setCollege] = useState(null);
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { openEnquiry } = useEnquiry();
+  const [successOpen, setSuccessOpen] = useState(false);
+  const { openEnquiry, isOpen, closeEnquiry } = useEnquiry();
+
+  // Listen for successful enquiry submission from EnquiryFloating
+  useEffect(() => {
+    const handleSuccess = () => setSuccessOpen(true);
+    window.addEventListener("enquiry-submitted", handleSuccess);
+    return () => window.removeEventListener("enquiry-submitted", handleSuccess);
+  }, []);
 
   useEffect(() => {
     const fetchCollegeDetail = async () => {
@@ -38,7 +187,7 @@ const CollegeDetail = () => {
 
   const getImageUrl = (imagePath, isBanner = false) => {
     if (!imagePath) {
-      return isBanner 
+      return isBanner
         ? 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&h=400&fit=crop'
         : '/src/assets/images/temple.png';
     }
@@ -73,6 +222,10 @@ const CollegeDetail = () => {
 
   return (
     <div className="bg-[#F8F9FC] min-h-screen pb-20">
+
+      {/* Thank You Modal */}
+      <EnquirySuccessModal open={successOpen} onClose={() => setSuccessOpen(false)} />
+
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
@@ -89,28 +242,14 @@ const CollegeDetail = () => {
       {/* Hero Banner Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
         <div className="relative rounded-3xl overflow-hidden shadow-xl bg-white border border-gray-100">
-          {/* Banner Image */}
           <div className="h-64 md:h-96 w-full relative">
-            <img 
-              src={getImageUrl(college.banner_image, true)} 
-              alt={college.name} 
-              className="w-full h-full object-cover"
-            />
+            <img src={getImageUrl(college.banner_image, true)} alt={college.name} className="w-full h-full object-cover"/>
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
           </div>
-
-          {/* College Profile Info Overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 flex flex-col md:flex-row items-start md:items-end gap-6">
-            {/* Logo/Icon */}
             <div className="bg-white p-4 rounded-2xl shadow-2xl relative z-10 w-24 h-24 md:w-32 md:h-32 flex items-center justify-center border-4 border-white">
-              <img 
-                src={getImageUrl(college.image)} 
-                alt="logo" 
-                className="w-full h-full object-contain"
-              />
+              <img src={getImageUrl(college.image)} alt="logo" className="w-full h-full object-contain"/>
             </div>
-
-            {/* Title & Stats */}
             <div className="flex-1 text-white">
               <div className="flex flex-wrap items-center gap-3 mb-2">
                 <span className="bg-indigo-600/90 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
@@ -129,14 +268,14 @@ const CollegeDetail = () => {
                 </div>
               </div>
             </div>
-
             {/* Action Buttons */}
             <div className="flex items-center gap-3 w-full md:w-auto">
               <button className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white text-[#071B52] font-bold px-6 py-3 rounded-xl hover:bg-gray-100 transition-all shadow-lg active:scale-95">
                 <Heart size={20} />
                 <span>Add to Wishlist</span>
               </button>
-              <button 
+              {/* ✅ Opens enquiry form → on success shows thank you modal */}
+              <button
                 onClick={openEnquiry}
                 className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-indigo-700 transition-all shadow-lg active:scale-95"
               >
@@ -155,9 +294,7 @@ const CollegeDetail = () => {
             { label: 'Campus Size', value: college.campus_size || '100+ Acres', icon: <Maximize size={20} />, bg: 'bg-amber-50', color: 'text-amber-600' },
           ].map((item, index) => (
             <div key={index} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition">
-              <div className={`${item.bg} ${item.color} p-3 rounded-xl`}>
-                {item.icon}
-              </div>
+              <div className={`${item.bg} ${item.color} p-3 rounded-xl`}>{item.icon}</div>
               <div>
                 <p className="text-xs text-gray-500 font-medium">{item.label}</p>
                 <p className="text-sm font-bold text-[#071B52]">{item.value}</p>
@@ -170,10 +307,10 @@ const CollegeDetail = () => {
       {/* Main Content Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* Left Column - Detailed Info */}
+
+          {/* Left Column */}
           <div className="lg:col-span-2 space-y-8">
-            
+
             {/* About Section */}
             <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
               <h2 className="text-2xl font-bold text-[#071B52] mb-6 flex items-center gap-3">
@@ -184,11 +321,8 @@ const CollegeDetail = () => {
                 <p>{college.description}</p>
               </div>
               <button className="mt-6 text-indigo-600 font-bold flex items-center gap-1 hover:gap-2 transition-all group">
-                Read More 
-                <TrendingUp size={18} className="group-hover:translate-x-1 transition-transform" />
+                Read More <TrendingUp size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              
-              {/* Key Highlights Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-10 pt-10 border-t border-gray-50">
                 {[
                   { label: 'Accredited', value: 'NAAC A++', icon: <Award className="text-indigo-500" /> },
@@ -201,9 +335,7 @@ const CollegeDetail = () => {
                   { label: 'Research', value: '24+', icon: <Maximize className="text-red-500" /> },
                 ].map((highlight, idx) => (
                   <div key={idx} className="bg-gray-50 p-4 rounded-2xl flex flex-col items-center text-center group hover:bg-white hover:shadow-md border border-transparent hover:border-indigo-100 transition duration-300">
-                    <div className="p-2 bg-white rounded-xl shadow-sm mb-3 group-hover:scale-110 transition duration-300">
-                      {highlight.icon}
-                    </div>
+                    <div className="p-2 bg-white rounded-xl shadow-sm mb-3 group-hover:scale-110 transition duration-300">{highlight.icon}</div>
                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{highlight.label}</p>
                     <p className="text-sm font-bold text-[#071B52]">{highlight.value}</p>
                   </div>
@@ -211,7 +343,7 @@ const CollegeDetail = () => {
               </div>
             </div>
 
-            {/* Courses Offered Section */}
+            {/* Courses Offered */}
             <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
               <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                 <div>
@@ -225,21 +357,15 @@ const CollegeDetail = () => {
                   View All Courses
                 </button>
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {college.courses && college.courses.length > 0 ? college.courses.map((course, idx) => (
-                  <Link 
-                    key={idx} 
-                    to={`/colleges/${college.id}/courses/${course.name}`}
-                    className="p-6 border border-gray-100 rounded-2xl hover:border-indigo-200 hover:bg-indigo-50/30 transition-all group cursor-pointer block"
-                  >
+                  <Link key={idx} to={`/colleges/${college.id}/courses/${course.name}`}
+                    className="p-6 border border-gray-100 rounded-2xl hover:border-indigo-200 hover:bg-indigo-50/30 transition-all group cursor-pointer block">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-3 bg-white rounded-2xl shadow-sm text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
                         <GraduationCap size={24} />
                       </div>
-                      <div className="text-right">
-                        <span className="text-xs font-medium text-gray-600">{course.duration}</span>
-                      </div>
+                      <div className="text-right"><span className="text-xs font-medium text-gray-600">{course.duration}</span></div>
                     </div>
                     <h3 className="text-lg font-bold text-[#071B52] mb-2 group-hover:text-indigo-600 transition-colors">{course.name}</h3>
                     <p className="text-sm text-gray-500 line-clamp-2">Click to view available specializations and detailed curriculum.</p>
@@ -255,9 +381,7 @@ const CollegeDetail = () => {
             {/* Why Choose Us */}
             <div className="bg-indigo-900 rounded-3xl p-8 md:p-10 text-white relative overflow-hidden shadow-2xl">
               <div className="relative z-10">
-                <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
-                  Why Choose {college.name}?
-                </h2>
+                <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">Why Choose {college.name}?</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[
                     'NAAC A++ accredited with world-class infrastructure',
@@ -268,31 +392,24 @@ const CollegeDetail = () => {
                     'Industry-oriented programs and innovation hub'
                   ].map((item, idx) => (
                     <div key={idx} className="flex items-start gap-3">
-                      <div className="mt-1 bg-green-500 rounded-full p-0.5">
-                        <CheckCircle size={14} className="text-white" />
-                      </div>
+                      <div className="mt-1 bg-green-500 rounded-full p-0.5"><CheckCircle size={14} className="text-white" /></div>
                       <p className="text-indigo-100 text-sm font-medium leading-relaxed">{item}</p>
                     </div>
                   ))}
                 </div>
               </div>
-              {/* Abstract decorative circles */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-800 rounded-full -mr-32 -mt-32 opacity-20"></div>
               <div className="absolute bottom-0 left-0 w-32 h-32 bg-white rounded-full -ml-16 -mb-16 opacity-5"></div>
             </div>
-
           </div>
 
-          {/* Right Column - Quick Info & Sidebar */}
+          {/* Right Sidebar */}
           <div className="space-y-8">
-            
-            {/* Quick Information Card */}
             <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm sticky top-8">
               <h3 className="text-xl font-bold text-[#071B52] mb-8 flex items-center gap-3">
                 <Info size={24} className="text-indigo-600" />
                 Quick Information
               </h3>
-              
               <div className="space-y-6">
                 {[
                   { label: 'University Type', value: college.type || 'Deemed University', icon: <School size={18} /> },
@@ -303,15 +420,12 @@ const CollegeDetail = () => {
                   { label: 'Address', value: college.address || 'Patia, Bhubaneswar, Odisha', icon: <MapPin size={18} /> },
                 ].map((info, idx) => (
                   <div key={idx} className="flex items-start gap-4 group">
-                    <div className="mt-0.5 text-indigo-400 group-hover:text-indigo-600 transition-colors">
-                      {info.icon}
-                    </div>
+                    <div className="mt-0.5 text-indigo-400 group-hover:text-indigo-600 transition-colors">{info.icon}</div>
                     <div className="flex-1">
                       <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{info.label}</p>
                       {info.isLink ? (
                         <a href={`https://${info.value}`} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-indigo-600 hover:underline flex items-center gap-1">
-                          {info.value}
-                          <ExternalLink size={12} />
+                          {info.value}<ExternalLink size={12} />
                         </a>
                       ) : (
                         <p className="text-sm font-bold text-[#071B52] leading-tight mt-1">{info.value}</p>
@@ -320,10 +434,10 @@ const CollegeDetail = () => {
                   </div>
                 ))}
               </div>
-              
               <div className="mt-10 pt-8 border-t border-gray-50 text-center">
                 <p className="text-sm font-bold text-[#071B52] mb-4">Have Questions? We're here to help!</p>
                 <div className="flex flex-col gap-3">
+                  {/* Call Now — dials phone */}
                   <a href="tel:+911234567890" className="flex items-center justify-center gap-2 bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-md active:scale-95">
                     <Phone size={18} />
                     Call Now
@@ -336,18 +450,21 @@ const CollegeDetail = () => {
               </div>
             </div>
 
-            {/* Similar Colleges Section (Optional) */}
+            {/* Need Guidance Card */}
             <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
               <h3 className="font-bold text-[#071B52] mb-4 px-2">Need Guidance?</h3>
               <div className="bg-indigo-50 rounded-2xl p-6 relative overflow-hidden">
                 <p className="text-xs text-indigo-800 font-medium relative z-10">Get free counseling and find the right career path with our expert advisors.</p>
-                <button className="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-lg text-xs font-bold relative z-10 hover:bg-indigo-700 transition">
+                {/* ✅ Talk to Expert — opens enquiry form */}
+                <button
+                  onClick={openEnquiry}
+                  className="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-lg text-xs font-bold relative z-10 hover:bg-indigo-700 transition"
+                >
                   Talk to Expert
                 </button>
                 <HelpCircle size={80} className="absolute -bottom-4 -right-4 text-indigo-200/50" />
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -356,3 +473,5 @@ const CollegeDetail = () => {
 };
 
 export default CollegeDetail;
+
+
