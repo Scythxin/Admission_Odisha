@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, MapPin, Star, Heart, School, CheckCircle, GraduationCap, Filter, ChevronDown, ArrowRight } from 'lucide-react';
 import { ASSETS_BASE } from '../../config/api';
+import { AuthContext } from '../../context/AuthContext';
 
 // Import your images
 import kiit from "/src/assets/images/colleges/kiit.jpg";
@@ -21,6 +22,8 @@ const CollegePage = () => {
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [loopNum, setLoopNum] = useState(0);
+
+  const { wishlist, toggleWishlist } = useContext(AuthContext);
 
   const words = ["Colleges", "Universities", "Institutions", "Dream Colleges"];
 
@@ -272,8 +275,18 @@ const CollegePage = () => {
                 <div className="absolute top-3 left-3 bg-[#4F46E5] text-white text-[10px] font-bold px-3 py-1 rounded-full">
                   {college.type}
                 </div>
-                <button className="absolute top-3 right-3 bg-white/90 p-2 rounded-full text-gray-400 hover:text-red-500 transition-all duration-300">
-                  <Heart size={16} />
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleWishlist(college.id);
+                  }}
+                  className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-300 ${
+                    wishlist?.includes(parseInt(college.id, 10)) 
+                      ? 'bg-red-50 text-red-500' 
+                      : 'bg-white/90 text-gray-400 hover:text-red-500'
+                  }`}
+                >
+                  <Heart size={16} className={wishlist?.includes(parseInt(college.id, 10)) ? 'fill-current' : ''} />
                 </button>
                 <div className="absolute bottom-3 right-3 bg-white/95 px-2 py-1 rounded-lg flex items-center gap-1">
                   <Star size={12} className="text-yellow-400 fill-yellow-400" />

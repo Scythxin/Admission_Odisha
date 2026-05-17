@@ -128,6 +128,7 @@ const Register = () => {
                   onChange={handleChange}
                   className="w-full py-2 outline-none text-sm bg-transparent"
                   placeholder="Create password"
+                  required
                 />
                 <button type="button" onClick={() => setShowPass(!showPass)}>
                   {showPass ? <FaEyeSlash /> : <FaEye />}
@@ -160,7 +161,7 @@ const Input = ({ icon, label, ...props }) => (
     <label className="text-sm font-semibold text-gray-700">{label}</label>
     <div className="flex items-center border rounded-lg px-3 mt-1 focus-within:ring-2 focus-within:ring-indigo-400">
       <span className="text-gray-400 mr-2">{icon}</span>
-      <input {...props} className="w-full py-2 outline-none text-sm bg-transparent" />
+      <input {...props} className="w-full py-2 outline-none text-sm bg-transparent" required />
     </div>
   </div>
 );

@@ -29,8 +29,14 @@ class AuthController extends Controller
     {
         $data = json_decode(Yii::$app->request->getRawBody(), true);
 
-        if (!$data || !isset($data['email']) || !isset($data['password'])) {
-            return ["status" => "error", "message" => "Required fields missing"];
+        if (
+            empty($data['name']) || 
+            empty($data['email']) || 
+            empty($data['phone']) || 
+            empty($data['password']) || 
+            empty($data['city'])
+        ) {
+            return ["status" => "error", "message" => "All fields are required"];
         }
 
         $existing = Yii::$app->db->createCommand("
@@ -42,11 +48,11 @@ class AuthController extends Controller
         }
 
         Yii::$app->db->createCommand()->insert('users', [
-            'name' => $data['name'] ?? null,
+            'name' => $data['name'],
             'email' => $data['email'],
-            'phone' => $data['phone'] ?? null,
+            'phone' => $data['phone'],
             'password' => password_hash($data['password'], PASSWORD_DEFAULT),
-            'city' => $data['city'] ?? null,
+            'city' => $data['city'],
             'created_at' => date('Y-m-d H:i:s'),
             'is_verified' => 0,
             'login_count' => 0,

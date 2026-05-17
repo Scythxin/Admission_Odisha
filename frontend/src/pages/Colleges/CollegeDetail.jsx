@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
   MapPin, Star, Heart, Share2, 
@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { ASSETS_BASE } from '../../config/api';
 import { useEnquiry } from '../../context/EnquiryContext';
+import { AuthContext } from '../../context/AuthContext';
 
 // ── Thank You Success Modal ───────────────────────────────────────────────────
 const EnquirySuccessModal = ({ open, onClose }) => {
@@ -158,6 +159,7 @@ const CollegeDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [successOpen, setSuccessOpen] = useState(false);
   const { openEnquiry, isOpen, closeEnquiry } = useEnquiry();
+  const { wishlist, toggleWishlist } = useContext(AuthContext);
 
   // Listen for successful enquiry submission from EnquiryFloating
   useEffect(() => {
@@ -270,9 +272,16 @@ const CollegeDetail = () => {
             </div>
             {/* Action Buttons */}
             <div className="flex items-center gap-3 w-full md:w-auto">
-              <button className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white text-[#071B52] font-bold px-6 py-3 rounded-xl hover:bg-gray-100 transition-all shadow-lg active:scale-95">
-                <Heart size={20} />
-                <span>Add to Wishlist</span>
+              <button 
+                onClick={() => toggleWishlist(college.id)}
+                className={`flex-1 md:flex-none flex items-center justify-center gap-2 font-bold px-6 py-3 rounded-xl transition-all shadow-lg active:scale-95 ${
+                  wishlist?.includes(parseInt(college.id, 10))
+                    ? 'bg-red-50 text-red-500 hover:bg-red-100'
+                    : 'bg-white text-[#071B52] hover:bg-gray-100'
+                }`}
+              >
+                <Heart size={20} className={wishlist?.includes(parseInt(college.id, 10)) ? 'fill-current' : ''} />
+                <span>{wishlist?.includes(parseInt(college.id, 10)) ? 'Wishlisted' : 'Add to Wishlist'}</span>
               </button>
               {/* ✅ Opens enquiry form → on success shows thank you modal */}
               <button
