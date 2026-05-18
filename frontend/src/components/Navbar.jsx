@@ -9,6 +9,7 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [lang, setLang] = useState("EN");
   const [user, setUser] = useState(null);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -135,16 +136,36 @@ const Navbar = () => {
 
             {/* Auth Buttons */}
             {token ? (
-              <button
-                onClick={() => {
-                  localStorage.removeItem("token");
-                  localStorage.removeItem("user");
-                  window.location.reload();
-                }}
-                className="border border-red-500 text-red-500 px-5 py-2 rounded-md text-sm font-semibold hover:bg-red-50"
-              >
-                Logout
-              </button>
+              <div className="relative">
+                <button
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  className="bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white px-5 py-2 rounded-md text-sm font-semibold shadow-md hover:opacity-90 transition flex items-center gap-2"
+                >
+                  Profile
+                  <span className="text-xs">▾</span>
+                </button>
+                {profileOpen && (
+                  <div className="absolute right-0 mt-2 w-32 bg-white border rounded-md shadow-md z-50 overflow-hidden">
+                    <Link
+                      to="/wishlist"
+                      onClick={() => setProfileOpen(false)}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Wishlist
+                    </Link>
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem("token");
+                        localStorage.removeItem("user");
+                        window.location.reload();
+                      }}
+                      className="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <>
                 <Link
@@ -236,16 +257,26 @@ const Navbar = () => {
               {/* Auth Buttons */}
               <div className="flex gap-3 px-6 py-3">
                 {token ? (
-                  <button
-                    className="w-full border border-red-500 text-red-500 py-2 rounded-md"
-                    onClick={() => {
-                      localStorage.removeItem("token");
-                      localStorage.removeItem("user");
-                      window.location.reload();
-                    }}
-                  >
-                    Logout
-                  </button>
+                  <div className="flex flex-col w-full gap-3">
+                    <Link to="/wishlist" className="w-full">
+                      <button 
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="w-full border border-[#6C4DF6] text-[#6C4DF6] py-2 rounded-md hover:bg-[#F5F3FF]"
+                      >
+                        Wishlist
+                      </button>
+                    </Link>
+                    <button
+                      className="w-full border border-red-500 text-red-500 py-2 rounded-md hover:bg-red-50"
+                      onClick={() => {
+                        localStorage.removeItem("token");
+                        localStorage.removeItem("user");
+                        window.location.reload();
+                      }}
+                    >
+                      Logout
+                    </button>
+                  </div>
                 ) : (
                   <>
                     <Link to="/login" className="flex-1">

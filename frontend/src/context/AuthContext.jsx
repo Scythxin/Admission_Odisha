@@ -84,8 +84,24 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const clearWishlist = async () => {
+    if (!token) return;
+    try {
+      const response = await fetch(`${API_BASE}?r=site/api-clear-wishlist`, {
+        method: "POST",
+        headers: { Authorization: token }
+      });
+      const data = await response.json();
+      if (data.status === 'success') {
+        setWishlist([]);
+      }
+    } catch (e) {
+      console.error('Error clearing wishlist', e);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ token, login, logout, wishlist, toggleWishlist }}>
+    <AuthContext.Provider value={{ token, login, logout, wishlist, toggleWishlist, clearWishlist }}>
       {children}
     </AuthContext.Provider>
   );

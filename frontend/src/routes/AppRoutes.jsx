@@ -14,6 +14,7 @@ import CourseDetail from "../pages/Course/CourseDetail";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import CollegeDetail from "../pages/Colleges/CollegeDetail";
 import CollegeCourseSpecializations from "../pages/Colleges/CollegeCourseSpecializations";
+import CollegeWishlist from "../pages/Colleges/CollegeWishlist";
 import { Navigate } from "react-router-dom";
 
 const AppRoutes = () => {
@@ -24,6 +25,7 @@ const AppRoutes = () => {
       <Route path="/colleges" element={<MainLayout><CollegeList /></MainLayout>} />
       <Route path="/colleges/:id" element={<MainLayout><CollegeDetail /></MainLayout>} />
       <Route path="/colleges/:collegeId/courses/:courseName" element={<MainLayout><CollegeCourseSpecializations /></MainLayout>} />
+      <Route path="/wishlist" element={<MainLayout><CollegeWishlist /></MainLayout>} />
       <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
       <Route path="/streams" element={<Navigate to="/field" replace />} />
       <Route path="/course" element={<MainLayout><Course /></MainLayout>} />

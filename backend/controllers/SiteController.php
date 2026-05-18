@@ -18,7 +18,7 @@ class SiteController extends Controller
      */
     public function beforeAction($action)
     {            
-        if (in_array($action->id, ['api-contact', 'api-course-detail', 'api-field-detail', 'api-colleges', 'api-college-detail', 'api-college-course-specializations', 'api-submit-enquiry', 'api-get-wishlist', 'api-toggle-wishlist'])) {
+        if (in_array($action->id, ['api-contact', 'api-course-detail', 'api-field-detail', 'api-colleges', 'api-college-detail', 'api-college-course-specializations', 'api-submit-enquiry', 'api-get-wishlist', 'api-toggle-wishlist', 'api-get-wishlist-colleges', 'api-clear-wishlist'])) {
             $this->enableCsrfValidation = false;
         }
         return parent::beforeAction($action);
@@ -477,5 +477,70 @@ class SiteController extends Controller
             ])->execute();
             return ['status' => 'success', 'message' => 'Added to wishlist', 'is_wishlisted' => true];
         }
+    }
+
+    /**
+     * Handles API to get full college details for user's wishlist
+     */
+    public function actionApiGetWishlistColleges()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $token = Yii::$app->request->headers->get('Authorization');
+        
+        if (!$token) {
+            Yii::$app->response->statusCode = 401;
+            return ['status' => 'error', 'message' => 'Unauthorized'];
+        }
+        
+        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
+            ->bindValue(':token', $token)->queryOne();
+            
+        if (!$userLogin) {
+            Yii::$app->response->statusCode = 401;
+            return ['status' => 'error', 'message' => 'Invalid token'];
+        }
+        
+        $colleges = Yii::$app->db->createCommand("
+            SELECT c.* FROM colleges c
+            JOIN wishlist w ON c.id = w.college_id
+            WHERE w.user_id = :uid AND c.is_status = 1
+        ")->bindValue(':uid', $userLogin['user_id'])->queryAll();
+            
+        foreach ($colleges as &$college) {
+            if (!empty($college['courses']) && is_string($college['courses'])) {
+                $decoded = json_decode($college['courses'], true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $college['courses'] = $decoded;
+                }
+            }
+        }
+            
+        return ['status' => 'success', 'data' => $colleges];
+    }
+
+    /**
+     * Handles API to clear user's wishlist
+     */
+    public function actionApiClearWishlist()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
+        $token = Yii::$app->request->headers->get('Authorization');
+        if (!$token) {
+            Yii::$app->response->statusCode = 401;
+            return ['status' => 'error', 'message' => 'Unauthorized'];
+        }
+        
+        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
+            ->bindValue(':token', $token)->queryOne();
+            
+        if (!$userLogin) {
+            Yii::$app->response->statusCode = 401;
+            return ['status' => 'error', 'message' => 'Invalid token'];
+        }
+        
+        Yii::$app->db->createCommand()->delete('wishlist', ['user_id' => $userLogin['user_id']])->execute();
+        
+        return ['status' => 'success', 'message' => 'Wishlist cleared'];
     }
 }
