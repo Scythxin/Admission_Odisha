@@ -17,11 +17,11 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
+
   // OTP States
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [otp, setOtp] = useState("");
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(120);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -40,6 +40,9 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+    // Show the OTP modal immediately without waiting for the backend response
+    setShowOtpModal(true);
+    setTimer(120);
 
     try {
       const res = await fetch(`${API_BASE}?r=auth/login`, {
@@ -53,22 +56,25 @@ const Login = () => {
       const data = await res.json();
 
       if (data.status === "success") {
+        setShowOtpModal(false);
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         alert("Login Successful");
-        
+
         if (data.user.is_admin === 1) {
           window.location.href = "/dashboard";
         } else {
           window.location.href = "/";
         }
       } else if (data.status === "needs_verification") {
-        setShowOtpModal(true);
-        setTimer(60); // Reset timer
+        // Modal is already open and timer is already running, so nothing more to do
       } else {
+        // Close the modal and show the error message if login fails
+        setShowOtpModal(false);
         alert(data.message);
       }
     } catch (err) {
+      setShowOtpModal(false);
       alert("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
@@ -94,7 +100,7 @@ const Login = () => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         alert("OTP Verified! Login Successful.");
-        
+
         if (data.user.is_admin === 1) {
           window.location.href = "/dashboard";
         } else {
@@ -110,7 +116,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f5f3ff] px-4 relative">
-      
+
       {/* OTP Modal */}
       {showOtpModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
@@ -140,7 +146,7 @@ const Login = () => {
 
               <div className="text-center">
                 <span className={`text-sm font-medium ${timer < 10 ? "text-red-500" : "text-gray-500"}`}>
-                  Expires in: 00:{timer < 10 ? `0${timer}` : timer}
+                  Expires in: {Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, "0")}
                 </span>
               </div>
 
@@ -223,7 +229,7 @@ const Login = () => {
               </label>
 
               <div className="flex items-center border border-gray-200 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-primary">
-                
+
                 <RiLockPasswordLine className="text-gray-400 mr-2" />
 
                 <input
@@ -251,7 +257,7 @@ const Login = () => {
             </div>
 
             {/* Login Button */}
-            <button 
+            <button
               disabled={loading}
               className="w-full bg-primary text-white py-2 rounded-md font-semibold hover:opacity-90 transition mt-4 disabled:opacity-50"
             >
@@ -266,7 +272,7 @@ const Login = () => {
 
           {/* Social Login */}
           <div className="flex gap-3">
-            
+
             {/* Google */}
             <button className="flex items-center justify-center gap-2 border w-full py-2 rounded-md hover:bg-gray-50 transition text-sm">
               <FaGoogle className="text-[#DB4437]" />
@@ -298,4 +304,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Login;
