@@ -277,6 +277,7 @@ export default function EnquiryFloating() {
       <div style={{ position: "fixed", right: 0, top: "50%", transform: "translateY(-50%)", zIndex: 9999 }}>
         <button
           onClick={openEnquiry}
+          className="enquiry-floating-btn"
           style={{
             writingMode: "vertical-rl",
             textOrientation: "mixed",
@@ -296,6 +297,24 @@ export default function EnquiryFloating() {
           Enquiry Now
         </button>
       </div>
+
+      <style>{`
+        @keyframes pulse-gentle {
+          0% { transform: rotate(180deg) scale(1); }
+          50% { transform: rotate(180deg) scale(1.06); }
+          100% { transform: rotate(180deg) scale(1); }
+        }
+        .enquiry-floating-btn {
+          animation: pulse-gentle 2.5s infinite ease-in-out;
+          transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease !important;
+        }
+        .enquiry-floating-btn:hover {
+          animation: none !important;
+          transform: rotate(180deg) scale(1.1) !important;
+          background: linear-gradient(180deg, #5B45C4, #7C3AED) !important;
+          box-shadow: -6px 0 25px rgba(108,77,246,0.6) !important;
+        }
+      `}</style>
 
       {/* Enquiry Form Modal */}
       {isOpen && (

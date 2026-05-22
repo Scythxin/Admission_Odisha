@@ -95,7 +95,82 @@ const CourseDetail = () => {
       eligibilityList = eligibilityList.split("\n").filter(item => item.trim() !== "");
     }
   }
-  const courseList = courses || [];
+  const courseList = (courses || []).filter((c) => {
+    const level = (c.degree_level || "").toLowerCase().trim();
+    const name = (c.name || "").toLowerCase().trim();
+
+    // 1. Check degree_level exclusions (exact matches)
+    const excludedLevels = [
+      "postgraduate",
+      "doctoral",
+      "postgraduate diploma",
+      "postgraduate certificate",
+      "executive program",
+      "postgraduate/doctoral",
+      "multiple",
+      "competitive exam",
+      "varies",
+    ];
+    if (excludedLevels.includes(level)) {
+      return false;
+    }
+
+    // 2. Check course names that start with or indicate postgraduate / post-graduation courses
+    const mastersRegex = /^(m\.(tech|e|sc|arch|phil|f\.sc|p\.ed|ed|s|d)|mba|mca|llm|mpt|msw|mlisc|mlsc|dm|mch|dnb|md|ms|mds|m\.a\.|masters?\b)/i;
+    if (mastersRegex.test(name)) {
+      return false;
+    }
+
+    if (/\b(ph\.?d|doctor|lld)\b/i.test(name)) {
+      return false;
+    }
+
+    // 3. Specific undergraduate degrees that require a prior graduation degree
+    if (/\bb\.?ed\b/i.test(name) || name.includes("bachelor of education")) {
+      if (!name.includes("integrated") && !name.includes("dual")) {
+        return false;
+      }
+    }
+
+    if (/\b(ll\.?b|b\.?g\.?l)\b/i.test(name) || name.includes("bachelor of law") || name.includes("bachelor of general laws")) {
+      if (!name.includes("integrated") && !name.includes("ba llb") && !name.includes("bsc llb") && !name.includes("bba llb")) {
+        return false;
+      }
+    }
+
+    if (/\b(blisc|blsc)\b/i.test(name) || name.includes("bachelor of library")) {
+      return false;
+    }
+
+    // 4. Specific strings / descriptions that indicate post-graduation requirements
+    if (
+      name.includes("for graduates") ||
+      name.includes("after finishing graduation") ||
+      name.includes("post graduate") ||
+      name.includes("post-graduate") ||
+      name.includes("pg research") ||
+      name.includes("pg diploma") ||
+      name.includes("pg certificate")
+    ) {
+      return false;
+    }
+
+    if (name.includes("equal to mca") || name.includes("equal to m.tech")) {
+      return false;
+    }
+
+    // 5. Exclude professional certifications requiring graduation (CFA, CPA, UPSC etc.)
+    if (level === "professional") {
+      const excludedProfessionalNames = [
+        "cfa", "cpa", "c-rim", "ctm", "cib", "cpm", "global strategic management"
+      ];
+      if (excludedProfessionalNames.some(p => name.includes(p))) {
+        return false;
+      }
+    }
+
+    return true;
+  });
   const universityList = universities || [];
 
   // Map field name to slug for back link
