@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import API_BASE from "../../config/api";
+import AdminField from "./AdminField";
 import {
   FaBook, FaLayerGroup, FaGraduationCap, FaUniversity,
   FaHome, FaList, FaUsers, FaClock, FaEnvelope,
@@ -28,7 +29,7 @@ const quickActions = [
 ];
 
 const navItems = [
-  { label: "Dashboard", icon: <FaHome />, active: true, section: null },
+  { label: "Dashboard", icon: <FaHome />, section: null },
   { label: "CONTENT MANAGEMENT", section: true },
   { label: "Fields",                    icon: <FaList /> },
   { label: "Specializations",           icon: <FaLayerGroup /> },
@@ -207,7 +208,7 @@ const Dashboard = () => {
             <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-500 hover:text-gray-700 transition">
               <FaBars className="text-lg" />
             </button>
-            <h1 className="text-xl font-bold text-gray-800">Dashboard</h1>
+            <h1 className="text-xl font-bold text-gray-800">{activeNav}</h1>
           </div>
           <div className="flex items-center gap-4">
             {/* Search */}
@@ -265,165 +266,179 @@ const Dashboard = () => {
         {/* ── CONTENT ── */}
         <main className="flex-1 overflow-y-auto p-6 space-y-6">
 
-          {/* STAT CARDS */}
-          <div className="flex gap-5">
-            <StatCard icon={<FaBook />}          iconBg="bg-indigo-500"  lineColor="#818cf8" label="Total Fields"          value={stats.totalFields}  sub="Active Fields" />
-            <StatCard icon={<FaLayerGroup />}    iconBg="bg-pink-500"    lineColor="#f472b6" label="Total Specializations" value={stats.totalSpecializations}  sub="Active Specializations" />
-            <StatCard icon={<FaGraduationCap />} iconBg="bg-green-500"   lineColor="#4ade80" label="Total Courses"         value={stats.totalCourses} sub="Active Courses" />
-            <StatCard icon={<FaUniversity />}    iconBg="bg-yellow-500"  lineColor="#fbbf24" label="Total Colleges"        value={stats.totalColleges} sub="Active Colleges" />
-          </div>
-
-          {/* CHARTS ROW */}
-          <div className="grid grid-cols-12 gap-5">
-            {/* Line Chart */}
-            <div className="col-span-6 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-bold text-gray-800">Overview</h2>
-                <button className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 rounded-lg px-3 py-1.5 hover:bg-gray-50">
-                  Last 7 Days <FaChevronDown className="text-xs" />
-                </button>
+          {activeNav === "Dashboard" && (
+            <>
+              {/* STAT CARDS */}
+              <div className="flex gap-5">
+                <StatCard icon={<FaBook />}          iconBg="bg-indigo-500"  lineColor="#818cf8" label="Total Fields"          value={stats.totalFields}  sub="Active Fields" />
+                <StatCard icon={<FaLayerGroup />}    iconBg="bg-pink-500"    lineColor="#f472b6" label="Total Specializations" value={stats.totalSpecializations}  sub="Active Specializations" />
+                <StatCard icon={<FaGraduationCap />} iconBg="bg-green-500"   lineColor="#4ade80" label="Total Courses"         value={stats.totalCourses} sub="Active Courses" />
+                <StatCard icon={<FaUniversity />}    iconBg="bg-yellow-500"  lineColor="#fbbf24" label="Total Colleges"        value={stats.totalColleges} sub="Active Colleges" />
               </div>
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={overviewData} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                  <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ borderRadius: "10px", border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: "12px" }} />
-                  <Line type="monotone" dataKey="val" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 4, fill: "#6366f1", strokeWidth: 0 }} activeDot={{ r: 6 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
 
-            {/* Top Fields Donut */}
-            <div className="col-span-3 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-              <h2 className="font-bold text-gray-800 mb-3">Top Fields</h2>
-              <PieChart width={220} height={180}>
-                <Pie data={topFieldsData} cx={90} cy={85} innerRadius={55} outerRadius={80} paddingAngle={2} dataKey="value">
-                  {topFieldsData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                </Pie>
-                <DonutLabel cx={90} cy={85} total={12845} label="Total" />
-              </PieChart>
-              <div className="space-y-1 mt-1">
-                {topFieldsData.map((f, i) => (
-                  <div key={i} className="flex items-center justify-between text-xs text-gray-600">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: f.color }} />
-                      {f.name}
-                    </div>
-                    <span className="font-semibold">{f.value}%</span>
+              {/* CHARTS ROW */}
+              <div className="grid grid-cols-12 gap-5">
+                {/* Line Chart */}
+                <div className="col-span-6 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="font-bold text-gray-800">Overview</h2>
+                    <button className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 rounded-lg px-3 py-1.5 hover:bg-gray-50">
+                      Last 7 Days <FaChevronDown className="text-xs" />
+                    </button>
                   </div>
-                ))}
-              </div>
-            </div>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <LineChart data={overviewData} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                      <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+                      <Tooltip contentStyle={{ borderRadius: "10px", border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: "12px" }} />
+                      <Line type="monotone" dataKey="val" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 4, fill: "#6366f1", strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
 
-            {/* User Activity Donut */}
-            <div className="col-span-3 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-              <h2 className="font-bold text-gray-800 mb-3">User Activity</h2>
-              <PieChart width={220} height={180}>
-                <Pie data={userActivityData} cx={90} cy={85} innerRadius={55} outerRadius={80} paddingAngle={2} dataKey="value">
-                  {userActivityData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                </Pie>
-                <DonutLabel cx={90} cy={85} total={12845} label="Total" />
-              </PieChart>
-              <div className="space-y-1 mt-1">
-                {userActivityData.map((f, i) => (
-                  <div key={i} className="flex items-center justify-between text-xs text-gray-600">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: f.color }} />
-                      {f.name}
-                    </div>
-                    <span className="font-semibold">{f.value}%</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* TABLES ROW */}
-          <div className="grid grid-cols-12 gap-5">
-            {/* Recent Enquiries */}
-            <div className="col-span-7 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-bold text-gray-800">Recent Enquiries</h2>
-                <button className="text-sm text-indigo-600 border border-indigo-200 rounded-lg px-4 py-1.5 hover:bg-indigo-50 font-medium transition">View All</button>
-              </div>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-gray-400 text-xs font-semibold border-b border-gray-100">
-                    <th className="text-left pb-2 pr-3">Name</th>
-                    <th className="text-left pb-2 pr-3">Email</th>
-                    <th className="text-left pb-2 pr-3">Subject</th>
-                    <th className="text-left pb-2 pr-3">Date</th>
-                    <th className="text-left pb-2">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {stats?.recentEnquiries?.map((e, i) => (
-                    <tr key={i} className="hover:bg-gray-50/50 transition">
-                      <td className="py-2.5 pr-3 font-medium text-gray-700 whitespace-nowrap">{e.name}</td>
-                      <td className="py-2.5 pr-3 text-gray-400 text-xs">{e.email}</td>
-                      <td className="py-2.5 pr-3 text-gray-600 whitespace-nowrap">{e.subject}</td>
-                      <td className="py-2.5 pr-3 text-gray-400 text-xs whitespace-nowrap">{e.date}</td>
-                      <td className="py-2.5">
-                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${e.statusColor}`}>{e.status}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Recent Users */}
-            <div className="col-span-5 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-bold text-gray-800">Recent Users</h2>
-                <button className="text-sm text-indigo-600 border border-indigo-200 rounded-lg px-4 py-1.5 hover:bg-indigo-50 font-medium transition">View All</button>
-              </div>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-gray-400 text-xs font-semibold border-b border-gray-100">
-                    <th className="text-left pb-2 pr-3">Name</th>
-                    <th className="text-left pb-2 pr-3">Joined On</th>
-                    <th className="text-left pb-2">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {stats?.recentUsers?.map((u, i) => (
-                    <tr key={i} className="hover:bg-gray-50/50 transition">
-                      <td className="py-2.5 pr-3">
-                        <div className="flex items-center gap-2">
-                          <Avatar name={u.name} />
-                          <div className="min-w-0">
-                            <p className="font-medium text-gray-700 truncate text-xs">{u.name}</p>
-                            <p className="text-gray-400 text-[10px] truncate">{u.email}</p>
-                          </div>
+                {/* Top Fields Donut */}
+                <div className="col-span-3 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                  <h2 className="font-bold text-gray-800 mb-3">Top Fields</h2>
+                  <PieChart width={220} height={180}>
+                    <Pie data={topFieldsData} cx={90} cy={85} innerRadius={55} outerRadius={80} paddingAngle={2} dataKey="value">
+                      {topFieldsData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                    </Pie>
+                    <DonutLabel cx={90} cy={85} total={12845} label="Total" />
+                  </PieChart>
+                  <div className="space-y-1 mt-1">
+                    {topFieldsData.map((f, i) => (
+                      <div key={i} className="flex items-center justify-between text-xs text-gray-600">
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: f.color }} />
+                          {f.name}
                         </div>
-                      </td>
-                      <td className="py-2.5 pr-3 text-gray-400 text-xs whitespace-nowrap">{u.joined}</td>
-                      <td className="py-2.5">
-                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${u.statusColor}`}>{u.status}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* QUICK ACTIONS */}
-          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-            <h2 className="font-bold text-gray-800 mb-4">Quick Actions</h2>
-            <div className="grid grid-cols-8 gap-4">
-              {quickActions.map((a, i) => (
-                <button key={i} className="flex flex-col items-center gap-2 group cursor-pointer">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition group-hover:scale-110 group-hover:shadow-md ${a.color}`}>
-                    {a.icon}
+                        <span className="font-semibold">{f.value}%</span>
+                      </div>
+                    ))}
                   </div>
-                  <span className="text-xs text-gray-500 text-center font-medium leading-tight group-hover:text-gray-800 transition">{a.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+                </div>
+
+                {/* User Activity Donut */}
+                <div className="col-span-3 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                  <h2 className="font-bold text-gray-800 mb-3">User Activity</h2>
+                  <PieChart width={220} height={180}>
+                    <Pie data={userActivityData} cx={90} cy={85} innerRadius={55} outerRadius={80} paddingAngle={2} dataKey="value">
+                      {userActivityData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                    </Pie>
+                    <DonutLabel cx={90} cy={85} total={12845} label="Total" />
+                  </PieChart>
+                  <div className="space-y-1 mt-1">
+                    {userActivityData.map((f, i) => (
+                      <div key={i} className="flex items-center justify-between text-xs text-gray-600">
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: f.color }} />
+                          {f.name}
+                        </div>
+                        <span className="font-semibold">{f.value}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* TABLES ROW */}
+              <div className="grid grid-cols-12 gap-5">
+                {/* Recent Enquiries */}
+                <div className="col-span-7 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="font-bold text-gray-800">Recent Enquiries</h2>
+                    <button className="text-sm text-indigo-600 border border-indigo-200 rounded-lg px-4 py-1.5 hover:bg-indigo-50 font-medium transition">View All</button>
+                  </div>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-gray-400 text-xs font-semibold border-b border-gray-100">
+                        <th className="text-left pb-2 pr-3">Name</th>
+                        <th className="text-left pb-2 pr-3">Email</th>
+                        <th className="text-left pb-2 pr-3">Subject</th>
+                        <th className="text-left pb-2 pr-3">Date</th>
+                        <th className="text-left pb-2">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                      {stats?.recentEnquiries?.map((e, i) => (
+                        <tr key={i} className="hover:bg-gray-50/50 transition">
+                          <td className="py-2.5 pr-3 font-medium text-gray-700 whitespace-nowrap">{e.name}</td>
+                          <td className="py-2.5 pr-3 text-gray-400 text-xs">{e.email}</td>
+                          <td className="py-2.5 pr-3 text-gray-600 whitespace-nowrap">{e.subject}</td>
+                          <td className="py-2.5 pr-3 text-gray-400 text-xs whitespace-nowrap">{e.date}</td>
+                          <td className="py-2.5">
+                            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${e.statusColor}`}>{e.status}</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Recent Users */}
+                <div className="col-span-5 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="font-bold text-gray-800">Recent Users</h2>
+                    <button className="text-sm text-indigo-600 border border-indigo-200 rounded-lg px-4 py-1.5 hover:bg-indigo-50 font-medium transition">View All</button>
+                  </div>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-gray-400 text-xs font-semibold border-b border-gray-100">
+                        <th className="text-left pb-2 pr-3">Name</th>
+                        <th className="text-left pb-2 pr-3">Joined On</th>
+                        <th className="text-left pb-2">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                      {stats?.recentUsers?.map((u, i) => (
+                        <tr key={i} className="hover:bg-gray-50/50 transition">
+                          <td className="py-2.5 pr-3">
+                            <div className="flex items-center gap-2">
+                              <Avatar name={u.name} />
+                              <div className="min-w-0">
+                                <p className="font-medium text-gray-700 truncate text-xs">{u.name}</p>
+                                <p className="text-gray-400 text-[10px] truncate">{u.email}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-2.5 pr-3 text-gray-400 text-xs whitespace-nowrap">{u.joined}</td>
+                          <td className="py-2.5">
+                            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${u.statusColor}`}>{u.status}</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* QUICK ACTIONS */}
+              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                <h2 className="font-bold text-gray-800 mb-4">Quick Actions</h2>
+                <div className="grid grid-cols-8 gap-4">
+                  {quickActions.map((a, i) => (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        if (a.label === "Add Field") {
+                          setActiveNav("Fields");
+                        }
+                      }}
+                      className="flex flex-col items-center gap-2 group cursor-pointer"
+                    >
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition group-hover:scale-110 group-hover:shadow-md ${a.color}`}>
+                        {a.icon}
+                      </div>
+                      <span className="text-xs text-gray-500 text-center font-medium leading-tight group-hover:text-gray-800 transition">{a.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {activeNav === "Fields" && <AdminField />}
 
           {/* FOOTER */}
           <div className="flex items-center justify-between text-xs text-gray-400 py-2">
