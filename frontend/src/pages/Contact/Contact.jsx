@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import contact from "../../assets/images/contact.png";import {
+import contact from "../../assets/images/contact.png"; import {
   FaPhone,
   FaEnvelope,
   FaMapMarkerAlt,
@@ -51,7 +51,7 @@ const Contact = () => {
         }
       }
     };
-    
+
     const timer = setTimeout(handleTyping, 100);
     return () => clearTimeout(timer);
   }, [displayText, isDeleting, loopNum]);
@@ -66,7 +66,7 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=site/api-contact`, {
         method: 'POST',
@@ -123,11 +123,11 @@ const Contact = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      
+
       {/* Breadcrumb & Hero Section */}
       <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4 md:px-6 py-8 md:py-12">
         <div className="max-w-7xl mx-auto">
-         
+
 
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="text-left">
@@ -144,11 +144,11 @@ const Contact = () => {
               </p>
             </div>
             <div className="hidden md:flex justify-center">
-               <img
-                              src={contact}
-                              alt="Students"
-                              className="relative z-10 w-[280px] sm:w-[380px] md:w-[460px] object-contain drop-shadow-2xl"
-                            />
+              <img
+                src={contact}
+                alt="Students"
+                className="relative z-10 w-[280px] sm:w-[380px] md:w-[460px] object-contain drop-shadow-2xl"
+              />
             </div>
           </div>
         </div>
@@ -178,12 +178,12 @@ const Contact = () => {
       {/* Main Content - Form & Contact Info */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-16">
         <div className="grid lg:grid-cols-3 gap-8">
-          
+
           {/* Contact Form */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-3xl shadow-xl p-6 md:p-8">
               <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Send Us a Message</h2>
-              
+
               <form onSubmit={handleSubmit}>
                 <div className="space-y-5">
                   <div>
@@ -197,7 +197,7 @@ const Contact = () => {
                       required
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
                     <input
@@ -210,7 +210,7 @@ const Contact = () => {
                       required
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Subject</label>
                     <input
@@ -222,7 +222,7 @@ const Contact = () => {
                       required
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Message</label>
                     <textarea
@@ -234,7 +234,7 @@ const Contact = () => {
                       required
                     />
                   </div>
-                  
+
                   <button
                     type="submit"
                     disabled={isSubmitting}
@@ -242,7 +242,7 @@ const Contact = () => {
                   >
                     {isSubmitting ? "Sending..." : <><FaPaperPlane /> Send Message</>}
                   </button>
-                  
+
                   {submitSuccess && (
                     <div className="bg-green-50 text-green-600 p-3 rounded-xl flex items-center gap-2 animate-bounce">
                       <FaCheckCircle /> Message sent successfully! We'll contact you soon.
@@ -257,7 +257,7 @@ const Contact = () => {
           <div className="space-y-6">
             <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl shadow-xl p-6 text-white">
               <h3 className="text-xl font-bold mb-6">Get In Touch</h3>
-              
+
               <div className="space-y-5">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
@@ -269,7 +269,7 @@ const Contact = () => {
                     Bhubaneswar, Odisha, India - 751001
                   </p>
                 </div>
-                
+
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <FaPhone className="text-white/80" style={{ transform: "scaleX(-1)" }} />
@@ -277,7 +277,7 @@ const Contact = () => {
                   </div>
                   <p className="text-sm text-white/80 pl-8">+91 1234567890</p>
                 </div>
-                
+
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <FaEnvelope className="text-white/80" />
@@ -285,7 +285,7 @@ const Contact = () => {
                   </div>
                   <p className="text-sm text-white/80 pl-8">support@admissionodisha.in</p>
                 </div>
-                
+
                 <div>
                   <div className="flex items-center gap-3 mb-3">
                     <FaFacebook className="text-white/80" />
@@ -337,7 +337,7 @@ const Contact = () => {
                 </h2>
                 <p className="text-gray-500">Quick answers to common questions.</p>
               </div>
-              
+
               <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                 {faqs.map((faq, i) => (
                   <div key={i} className="border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition">
@@ -352,15 +352,13 @@ const Contact = () => {
                         </span>
                       </div>
                       <FaChevronDown
-                        className={`text-indigo-600 transition-transform duration-300 flex-shrink-0 ${
-                          openFaq === i ? "rotate-180" : ""
-                        }`}
+                        className={`text-indigo-600 transition-transform duration-300 flex-shrink-0 ${openFaq === i ? "rotate-180" : ""
+                          }`}
                       />
                     </button>
                     <div
-                      className={`overflow-hidden transition-all duration-300 ${
-                        openFaq === i ? "max-h-40" : "max-h-0"
-                      }`}
+                      className={`overflow-hidden transition-all duration-300 ${openFaq === i ? "max-h-40" : "max-h-0"
+                        }`}
                     >
                       <p className="px-4 pb-4 text-gray-600 text-sm leading-relaxed pl-11">
                         {faq.a}
@@ -369,7 +367,7 @@ const Contact = () => {
                   </div>
                 ))}
               </div>
-              
+
               <div className="mt-6">
                 <Link to="/help-center">
                   <button className="text-indigo-600 font-semibold flex items-center gap-2 hover:gap-3 transition-all">
@@ -381,7 +379,7 @@ const Contact = () => {
 
             {/* Right Side - Simple Image */}
             <div className="bg-gradient-to-br from-indigo-100 to-purple-100 p-6 md:p-8 flex items-center justify-center">
-              <img 
+              <img
                 src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=500&h=400&fit=crop"
                 alt="Students discussing and learning together"
                 className="rounded-2xl shadow-2xl w-full max-w-md mx-auto hover:scale-105 transition-transform duration-500"
