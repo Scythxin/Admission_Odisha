@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import API_BASE from "../../config/api";
 import AdminField from "./AdminField";
+import AdminSpecializations from "./AdminSpecializations";
 import {
   FaBook, FaLayerGroup, FaGraduationCap, FaUniversity,
   FaHome, FaList, FaUsers, FaClock, FaEnvelope,
@@ -439,6 +440,7 @@ const Dashboard = () => {
           )}
 
           {activeNav === "Fields" && <AdminField />}
+          {activeNav === "Specializations" && <AdminSpecializations />}
 
           {/* FOOTER */}
           <div className="flex items-center justify-between text-xs text-gray-400 py-2">
