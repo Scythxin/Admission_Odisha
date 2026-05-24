@@ -1,15 +1,83 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import API_BASE from "../../config/api";
+import {
+  FaCog, FaHeartbeat, FaBriefcase, FaPalette,
+  FaFlask, FaBalanceScale, FaPencilAlt, FaConciergeBell,
+  FaDesktop, FaGraduationCap, FaQuestionCircle
+} from "react-icons/fa";
 
-const initialFields = [
-  { id: 1, icon: "⚙️", color: "bg-violet-100", name: "Engineering & Technology", description: "Build the future with innovation and technology.", status: "Active" },
-  { id: 2, icon: "💊", color: "bg-emerald-100", name: "Medical & Health", description: "Serve society and improve lives through healthcare.", status: "Active" },
-  { id: 3, icon: "💼", color: "bg-orange-100", name: "Commerce & Management", description: "Lead businesses and drive economic growth.", status: "Active" },
-  { id: 4, icon: "🎨", color: "bg-pink-100", name: "Arts & Humanities", description: "Explore creativity, culture and human expression.", status: "Active" },
-  { id: 5, icon: "🔬", color: "bg-blue-100", name: "Science", description: "Discover, learn and expand the boundaries of knowledge.", status: "Active" },
-  { id: 6, icon: "⚖️", color: "bg-indigo-100", name: "Law", description: "Uphold justice and build a career in legal profession.", status: "Active" },
-  { id: 7, icon: "✏️", color: "bg-rose-100", name: "Design", description: "Turn ideas into reality with creativity and imagination.", status: "Active" },
-  { id: 8, icon: "🍽️", color: "bg-amber-100", name: "Hospitality", description: "Create memorable experiences and build a global career.", status: "Active" },
-];
+function getIconAndColor(icon, index = 0) {
+  const defaultColors = [
+    "bg-violet-100 text-violet-600",
+    "bg-emerald-100 text-emerald-600",
+    "bg-orange-100 text-orange-600",
+    "bg-pink-100 text-pink-600",
+    "bg-blue-100 text-blue-600",
+    "bg-indigo-100 text-indigo-600",
+    "bg-rose-100 text-rose-600",
+    "bg-amber-100 text-amber-600",
+    "bg-teal-100 text-teal-600",
+    "bg-sky-100 text-sky-600"
+  ];
+  
+  let reactIcon = null;
+  let colorClass = defaultColors[index % defaultColors.length];
+
+  switch (icon) {
+    case 'fa-cogs':
+    case '⚙️':
+      reactIcon = <FaCog />;
+      colorClass = "bg-violet-100 text-violet-600";
+      break;
+    case 'fa-heartbeat':
+    case '💊':
+      reactIcon = <FaHeartbeat />;
+      colorClass = "bg-emerald-100 text-emerald-600";
+      break;
+    case 'fa-briefcase':
+    case '💼':
+      reactIcon = <FaBriefcase />;
+      colorClass = "bg-orange-100 text-orange-600";
+      break;
+    case 'fa-palette':
+    case '🎨':
+      reactIcon = <FaPalette />;
+      colorClass = "bg-pink-100 text-pink-600";
+      break;
+    case 'fa-flask':
+    case '🔬':
+      reactIcon = <FaFlask />;
+      colorClass = "bg-blue-100 text-blue-600";
+      break;
+    case 'fa-balance-scale':
+    case '⚖️':
+      reactIcon = <FaBalanceScale />;
+      colorClass = "bg-indigo-100 text-indigo-600";
+      break;
+    case 'fa-pencil-alt':
+    case '✏️':
+      reactIcon = <FaPencilAlt />;
+      colorClass = "bg-rose-100 text-rose-600";
+      break;
+    case 'fa-concierge-bell':
+    case '🍽️':
+      reactIcon = <FaConciergeBell />;
+      colorClass = "bg-amber-100 text-amber-600";
+      break;
+    case 'fa-desktop':
+      reactIcon = <FaDesktop />;
+      colorClass = "bg-teal-100 text-teal-600";
+      break;
+    case 'fa-graduation-cap':
+      reactIcon = <FaGraduationCap />;
+      colorClass = "bg-indigo-100 text-indigo-600";
+      break;
+    default:
+      reactIcon = icon ? <span>{icon}</span> : <FaQuestionCircle />;
+  }
+
+  return { icon: reactIcon, color: colorClass };
+}
 
 
 function Modal({ mode, field, onClose, onSave }) {
@@ -71,7 +139,9 @@ function Modal({ mode, field, onClose, onSave }) {
 }
 
 export default function AdminField() {
-  const [fields, setFields] = useState(initialFields);
+  const [fields, setFields] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [modal, setModal] = useState(null); // { mode: 'add'|'edit', field? }
   const [deleteId, setDeleteId] = useState(null);
   const [page, setPage] = useState(1);
@@ -79,25 +149,111 @@ export default function AdminField() {
   const totalPages = Math.ceil(fields.length / perPage);
   const paginated = fields.slice((page - 1) * perPage, page * perPage);
 
-  function handleSave({ name, description, status }) {
-    if (modal.mode === "add") {
-      const colors = ["bg-violet-100","bg-emerald-100","bg-orange-100","bg-pink-100","bg-blue-100","bg-indigo-100","bg-rose-100","bg-amber-100"];
-      const icons = ["⚙️","📚","🌐","🎯","💡","🔧","🌱","🏆"];
-      setFields(prev => [...prev, {
-        id: Date.now(),
-        icon: icons[prev.length % icons.length],
-        color: colors[prev.length % colors.length],
-        name, description, status
-      }]);
-    } else {
-      setFields(prev => prev.map(f => f.id === modal.field.id ? { ...f, name, description, status } : f));
+  async function fetchFields() {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetch(`${API_BASE}?r=dashboard/get-fields`);
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+      const result = await res.json();
+      if (result.status === "success") {
+        setFields(result.data);
+      } else {
+        throw new Error(result.message || "Failed to fetch fields.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-    setModal(null);
   }
 
-  function handleDelete(id) {
-    setFields(prev => prev.filter(f => f.id !== id));
-    setDeleteId(null);
+  useEffect(() => {
+    fetchFields();
+  }, []);
+
+  async function handleSave({ name, description, status }) {
+    try {
+      if (modal.mode === "add") {
+        const icons = [
+          "fa-cogs", "fa-book", "fa-globe", "fa-bullseye",
+          "fa-lightbulb", "fa-wrench", "fa-seedling", "fa-trophy",
+          "fa-graduation-cap", "fa-desktop"
+        ];
+        const newIcon = icons[fields.length % icons.length];
+
+        const res = await fetch(`${API_BASE}?r=dashboard/create-field`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            description,
+            status,
+            icon: newIcon,
+          }),
+        });
+
+        if (!res.ok) throw new Error("Failed to create field");
+        const result = await res.json();
+        if (result.status === "success") {
+          fetchFields();
+        } else {
+          throw new Error(result.message || "Failed to create field");
+        }
+      } else {
+        const res = await fetch(`${API_BASE}?r=dashboard/update-field`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: modal.field.id,
+            name,
+            description,
+            status,
+          }),
+        });
+
+        if (!res.ok) throw new Error("Failed to update field");
+        const result = await res.json();
+        if (result.status === "success") {
+          fetchFields();
+        } else {
+          throw new Error(result.message || "Failed to update field");
+        }
+      }
+      setModal(null);
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Error saving field");
+    }
+  }
+
+  async function handleDelete(id) {
+    try {
+      const res = await fetch(`${API_BASE}?r=dashboard/delete-field`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      if (!res.ok) throw new Error("Failed to delete field");
+      const result = await res.json();
+      if (result.status === "success") {
+        fetchFields();
+      } else {
+        throw new Error(result.message || "Failed to delete field");
+      }
+      setDeleteId(null);
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Error deleting field");
+    }
   }
 
   return (
@@ -130,53 +286,79 @@ export default function AdminField() {
             </tr>
           </thead>
           <tbody>
-            {paginated.map((field, idx) => (
-              <tr key={field.id} className="border-b border-gray-50 hover:bg-gray-50/60 transition-colors">
-                <td className="px-5 py-4 text-gray-400 font-medium">{(page - 1) * perPage + idx + 1}</td>
-                <td className="px-4 py-4">
-                  <div className={`w-10 h-10 ${field.color} rounded-xl flex items-center justify-center text-xl`}>
-                    {field.icon}
-                  </div>
-                </td>
-                <td className="px-4 py-4 font-semibold text-gray-800">{field.name}</td>
-                <td className="px-4 py-4 text-gray-500 max-w-xs">{field.description}</td>
-                <td className="px-4 py-4">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                    field.status === "Active"
-                      ? "bg-emerald-50 text-emerald-600"
-                      : "bg-gray-100 text-gray-500"
-                  }`}>
-                    {field.status === "Active" && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>}
-                    {field.status}
-                  </span>
-                </td>
-                <td className="px-4 py-4">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setModal({ mode: "edit", field })}
-                      className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-indigo-500 hover:bg-indigo-50 hover:border-indigo-200 transition-colors"
-                      title="Edit"
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      onClick={() => setDeleteId(field.id)}
-                      className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
-                      title="Delete"
-                    >
-                      🗑️
-                    </button>
+            {loading ? (
+              <tr>
+                <td colSpan="6" className="text-center py-10 text-gray-500">
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                    Loading fields...
                   </div>
                 </td>
               </tr>
-            ))}
+            ) : error ? (
+              <tr>
+                <td colSpan="6" className="text-center py-10 text-red-500 font-medium">
+                  Error: {error}
+                </td>
+              </tr>
+            ) : paginated.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="text-center py-10 text-gray-400">
+                  No fields found.
+                </td>
+              </tr>
+            ) : (
+              paginated.map((field, idx) => {
+                const { icon, color } = getIconAndColor(field.icon, idx);
+                return (
+                  <tr key={field.id} className="border-b border-gray-50 hover:bg-gray-50/60 transition-colors">
+                    <td className="px-5 py-4 text-gray-400 font-medium">{(page - 1) * perPage + idx + 1}</td>
+                    <td className="px-4 py-4">
+                      <div className={`w-10 h-10 ${color} rounded-xl flex items-center justify-center text-xl`}>
+                        {icon}
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 font-semibold text-gray-800">{field.name}</td>
+                    <td className="px-4 py-4 text-gray-500 max-w-xs">{field.description}</td>
+                    <td className="px-4 py-4">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                        field.status === "Active"
+                          ? "bg-emerald-50 text-emerald-600"
+                          : "bg-gray-100 text-gray-500"
+                      }`}>
+                        {field.status === "Active" && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>}
+                        {field.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setModal({ mode: "edit", field })}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-indigo-500 hover:bg-indigo-50 hover:border-indigo-200 transition-colors"
+                          title="Edit"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          onClick={() => setDeleteId(field.id)}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
+                          title="Delete"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
 
         {/* Footer */}
         <div className="flex items-center justify-between px-5 py-3.5 border-t border-gray-100 bg-gray-50/40">
           <p className="text-xs text-gray-400">
-            Showing {(page - 1) * perPage + 1} to {Math.min(page * perPage, fields.length)} of {fields.length} fields
+            Showing {fields.length === 0 ? 0 : (page - 1) * perPage + 1} to {Math.min(page * perPage, fields.length)} of {fields.length} fields
           </p>
           <div className="flex items-center gap-1.5">
             <button
@@ -201,7 +383,7 @@ export default function AdminField() {
             ))}
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
+              disabled={page === totalPages || totalPages === 0}
               className="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 disabled:opacity-30 hover:bg-gray-100 transition-colors text-xs"
             >
               ›
