@@ -1855,6 +1855,34 @@ CREATE TABLE `wishlist` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Table structure for table `course_details`
+--
+
+CREATE TABLE `course_details` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `slug` varchar(100) DEFAULT NULL,
+  `category` varchar(100) DEFAULT NULL,
+  `short_name` varchar(100) DEFAULT NULL,
+  `full_name` varchar(255) DEFAULT NULL,
+  `rating` decimal(3,1) DEFAULT NULL,
+  `reviews_count` int(11) DEFAULT NULL,
+  `badge` varchar(100) DEFAULT NULL,
+  `short_description` text DEFAULT NULL,
+  `about_description` text DEFAULT NULL,
+  `fees_range` varchar(255) DEFAULT NULL,
+  `career_opportunities` json DEFAULT NULL,
+  `eligibility` json DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `course_details`
+--
+
+INSERT INTO `course_details` (`id`, `slug`, `category`, `short_name`, `full_name`, `rating`, `reviews_count`, `badge`, `short_description`, `about_description`, `fees_range`, `career_opportunities`, `eligibility`) VALUES
+(1, 'btech', 'Engineering', 'B.Tech', 'Bachelor of Technology', 4.6, 256, '🔥 Most Popular', 'B.Tech is a 4-year undergraduate program that provides engineering skills and technical knowledge in various specializations.', 'B.Tech programs prepare students with a strong foundation in engineering principles, problem-solving skills, and practical knowledge to build successful careers in the tech and innovation-driven world.', '₹ 60,000 - 1,50,000', '[{"icon": "💼", "desc": "Design, develop and maintain software applications.", "title": "Software Engineer"}, {"icon": "🌐", "desc": "Build and manage websites and web applications.", "title": "Web Developer"}, {"icon": "🗄️", "desc": "Analyze data and extract valuable insights.", "title": "Data Scientist"}, {"icon": "🛡️", "desc": "Protect systems and data from cyber threats.", "title": "Cyber Security Analyst"}, {"icon": "🤖", "desc": "Work on intelligent systems and machine learning models.", "title": "AI / ML Engineer"}, {"icon": "•••", "desc": "Explore countless career paths in engineering.", "title": "And Many More"}]', '["10+2 with Physics, Chemistry and Mathematics (PCM)", "Minimum 50% aggregate", "Entrance Exam (JEE Main / OJEE)", "Seat allocation through counselling"]');
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
