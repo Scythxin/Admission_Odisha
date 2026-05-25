@@ -18,7 +18,7 @@ class SiteController extends Controller
      */
     public function beforeAction($action)
     {            
-        if (in_array($action->id, ['api-contact', 'api-course-detail', 'api-field-detail', 'api-colleges', 'api-college-detail', 'api-college-course-specializations', 'api-submit-enquiry', 'api-get-wishlist', 'api-toggle-wishlist', 'api-get-wishlist-colleges', 'api-clear-wishlist'])) {
+        if (in_array($action->id, ['api-contact', 'api-course-detail', 'api-general-course-detail', 'api-field-detail', 'api-colleges', 'api-college-detail', 'api-college-course-specializations', 'api-submit-enquiry', 'api-get-wishlist', 'api-toggle-wishlist', 'api-get-wishlist-colleges', 'api-clear-wishlist'])) {
             $this->enableCsrfValidation = false;
         }
         return parent::beforeAction($action);
@@ -234,6 +234,83 @@ class SiteController extends Controller
                 'courses' => $courses,
                 'universities' => $universities
             ]
+        ];
+    }
+
+    /**
+     * Handles API general course detail fetching (e.g. B.Tech).
+     *
+     * @return Response|array
+     */
+    public function actionApiGeneralCourseDetail()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
+        $slug = Yii::$app->request->get('slug', 'btech');
+        
+        $course = Yii::$app->db->createCommand("SELECT * FROM course_details WHERE slug = :slug", [':slug' => $slug])->queryOne();
+        
+        if (!$course) {
+            Yii::$app->response->statusCode = 404;
+            return ['status' => 'error', 'message' => 'Course not found'];
+        }
+        
+        // Fetch general course data for duration, level, mode, degree
+        $generalCourse = Yii::$app->db->createCommand("SELECT * FROM general_courses WHERE LOWER(REPLACE(name, '.', '')) = :slug OR name = :sname", [
+            ':slug' => $slug,
+            ':sname' => $course['short_name']
+        ])->queryOne();
+        
+        if ($generalCourse) {
+            $course['duration'] = $generalCourse['duration'];
+            $course['degree'] = $generalCourse['name'];
+            $course['mode'] = $generalCourse['course_type'];
+            $course['level'] = $generalCourse['degree_level'];
+        }
+
+        // Fetch top specializations dynamically
+        $specializations = Yii::$app->db->createCommand("
+            SELECT s.name as label 
+            FROM specializations s 
+            JOIN courses c ON c.specialization_id = s.id 
+            WHERE c.name LIKE :cname OR c.name = :cname2
+            GROUP BY s.id 
+            LIMIT 5
+        ", [
+            ':cname' => $course['short_name'] . ' %',
+            ':cname2' => $course['short_name']
+        ])->queryAll();
+        
+        $course['top_specializations'] = $specializations;
+
+        // Fetch top colleges dynamically
+        $colleges = Yii::$app->db->createCommand("
+            SELECT name, location as city, rating 
+            FROM colleges 
+            WHERE courses LIKE :cname 
+            AND is_status = 1
+            ORDER BY rating DESC 
+            LIMIT 6
+        ", [
+            ':cname' => '%"' . $course['short_name'] . '"%'
+        ])->queryAll();
+
+        $course['top_colleges'] = $colleges;
+        
+        // Decode remaining JSON fields
+        $jsonFields = ['career_opportunities', 'eligibility'];
+        foreach ($jsonFields as $field) {
+            if (!empty($course[$field])) {
+                $decoded = json_decode($course[$field], true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $course[$field] = $decoded;
+                }
+            }
+        }
+        
+        return [
+            'status' => 'success',
+            'data' => $course
         ];
     }
 
