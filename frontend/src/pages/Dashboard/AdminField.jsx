@@ -80,60 +80,334 @@ function getIconAndColor(icon, index = 0) {
 }
 
 
+const icons = [
+  {
+    id: "engineering", label: "Engineering", color: "#6C63FF", bg: "#EEF0FF", iconCode: "fa-cogs",
+    render: (size) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+      </svg>
+    ),
+  },
+  {
+    id: "medical", label: "Medical", color: "#E91E8C", bg: "#FDEEF6", iconCode: "fa-heartbeat",
+    render: (size) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+      </svg>
+    ),
+  },
+  {
+    id: "commerce", label: "Commerce", color: "#F57C00", bg: "#FFF3E0", iconCode: "fa-briefcase",
+    render: (size) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <rect x="2" y="7" width="20" height="14" rx="2" />
+        <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" strokeLinecap="round" />
+        <line x1="12" y1="12" x2="12" y2="16" strokeLinecap="round" />
+        <line x1="10" y1="14" x2="14" y2="14" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    id: "science", label: "Science", color: "#0288D1", bg: "#E1F5FE", iconCode: "fa-flask",
+    render: (size) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 3h6v11l4 7H5l4-7V3z" />
+        <path d="M9 9h6" />
+      </svg>
+    ),
+  },
+  {
+    id: "law", label: "Law", color: "#43A047", bg: "#E8F5E9", iconCode: "fa-balance-scale",
+    render: (size) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+        <path d="M12 3v18" />
+        <path d="M5 7l14 10M19 7L5 17" />
+        <path d="M5 7l-2 4h4L5 7zM19 7l-2 4h4l-2-4z" fill="currentColor" stroke="none" />
+        <path d="M8 21h8" />
+      </svg>
+    ),
+  },
+  {
+    id: "arts", label: "Arts", color: "#E53935", bg: "#FFEBEE", iconCode: "fa-palette",
+    render: (size) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 3a9 9 0 000 18c1.5 0 2.5-1.5 2.5-3 0-1-.5-2-1.5-2.5H17c1.1 0 2-.9 2-2 0-3.87-3.13-7-7-7" strokeLinecap="round" />
+        <circle cx="8" cy="9" r="1" fill="currentColor" stroke="none" />
+        <circle cx="10" cy="6.5" r="1" fill="currentColor" stroke="none" />
+        <circle cx="14" cy="6.5" r="1" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    id: "education", label: "Education", color: "#3949AB", bg: "#E8EAF6", iconCode: "fa-graduation-cap",
+    render: (size) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z" />
+        <path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5" />
+      </svg>
+    ),
+  },
+  {
+    id: "agriculture", label: "Agriculture", color: "#2E7D32", bg: "#E8F5E9", iconCode: "fa-seedling",
+    render: (size) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22V12M12 12C12 7 17 3 21 3c0 4-3 8-9 9M12 12C12 7 7 3 3 3c0 4 3 8 9 9" />
+      </svg>
+    ),
+  },
+];
+
+
 function Modal({ mode, field, onClose, onSave }) {
-  const [name, setName] = useState(field?.name || "");
+  const [fieldName, setFieldName] = useState(field?.name || "");
   const [description, setDescription] = useState(field?.description || "");
   const [status, setStatus] = useState(field?.status || "Active");
+  
+  const defaultIcon = field?.icon ? (icons.find(i => i.iconCode === field.icon)?.id || "engineering") : "engineering";
+  const [selectedIcon, setSelectedIcon] = useState(defaultIcon);
+  const [saved, setSaved] = useState(false);
+
+  const selected = icons.find((i) => i.id === selectedIcon);
+
+  const handleSave = () => {
+    setSaved(true);
+    setTimeout(() => { 
+      setSaved(false); 
+      onSave({ name: fieldName, description, status, icon: selected?.iconCode || "fa-cogs" }); 
+    }, 800);
+  };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-bold text-gray-800">{mode === "add" ? "Add New Field" : "Edit Field"}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
-        </div>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Field Name</label>
-            <input
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="e.g. Engineering & Technology"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Short Description</label>
-            <textarea
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 resize-none"
-              rows={3}
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Brief description..."
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Status</label>
-            <select
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              value={status}
-              onChange={e => setStatus(e.target.value)}
-            >
-              <option>Active</option>
-              <option>Inactive</option>
-            </select>
-          </div>
-        </div>
-        <div className="flex gap-3 mt-6">
-          <button onClick={onClose} className="flex-1 border border-gray-200 text-gray-600 rounded-lg py-2 text-sm font-medium hover:bg-gray-50 transition-colors">Cancel</button>
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 50,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+        fontFamily: "'Segoe UI', system-ui, sans-serif",
+      }}
+    >
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        style={{
+          position: "absolute", inset: 0,
+          background: "rgba(30,27,75,0.3)",
+          backdropFilter: "blur(3px)",
+        }}
+      />
+
+      {/* Modal */}
+      <div
+        style={{
+          position: "relative", zIndex: 10, background: "white",
+          borderRadius: 20, boxShadow: "0 24px 60px rgba(0,0,0,0.15)",
+          width: "100%", maxWidth: 760, overflow: "hidden",
+          animation: "fadeUp .22s cubic-bezier(.22,1,.36,1) both",
+        }}
+      >
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "24px 32px 20px", borderBottom: "1px solid #f0f0f5" }}>
+          <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: "#1a1a2e", letterSpacing: "-0.3px" }}>
+            {mode === "add" ? "Add New Field" : "Edit Field"}
+          </h2>
           <button
-            onClick={() => onSave({ name, description, status })}
-            className="flex-1 bg-indigo-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-indigo-700 transition-colors"
+            onClick={onClose}
+            style={{ width: 32, height: 32, borderRadius: "50%", border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#9ca3af" }}
+            onMouseEnter={e => { e.currentTarget.style.background = "#f3f4f6"; e.currentTarget.style.color = "#374151"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#9ca3af"; }}
           >
-            {mode === "add" ? "Add Field" : "Save Changes"}
+            <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Body */}
+        <div style={{ display: "flex", borderBottom: "1px solid #f0f0f5" }}>
+
+          {/* Left: Form */}
+          <div style={{ flex: 1, padding: "24px 32px", borderRight: "1px solid #f0f0f5", display: "flex", flexDirection: "column", gap: 20 }}>
+
+            {/* Field Name */}
+            <div>
+              <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 13, fontWeight: 600, color: "#1f2937", marginBottom: 6 }}>
+                Field Name <span style={{ color: "#ef4444" }}>*</span>
+              </label>
+              <input
+                type="text" value={fieldName} onChange={e => setFieldName(e.target.value)}
+                placeholder="e.g., Engineering & Technology"
+                style={{ width: "100%", padding: "10px 14px", borderRadius: 12, border: "1.5px solid #e5e7eb", background: "#f9fafb", fontSize: 13, color: "#111827", outline: "none", boxSizing: "border-box" }}
+                onFocus={e => { e.target.style.border = "1.5px solid #5B4EFF"; e.target.style.background = "#fff"; e.target.style.boxShadow = "0 0 0 3px rgba(91,78,255,0.08)"; }}
+                onBlur={e => { e.target.style.border = "1.5px solid #e5e7eb"; e.target.style.background = "#f9fafb"; e.target.style.boxShadow = "none"; }}
+              />
+              <p style={{ margin: "6px 0 0", fontSize: 11, color: "#9ca3af" }}>Enter the name of the field.</p>
+            </div>
+
+            {/* Short Description */}
+            <div>
+              <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 13, fontWeight: 600, color: "#1f2937", marginBottom: 6 }}>
+                Short Description <span style={{ color: "#ef4444" }}>*</span>
+              </label>
+              <textarea
+                rows={3} value={description} onChange={e => setDescription(e.target.value)}
+                placeholder="e.g., Build the future with innovation and technology."
+                style={{ width: "100%", padding: "10px 14px", borderRadius: 12, border: "1.5px solid #e5e7eb", background: "#f9fafb", fontSize: 13, color: "#111827", outline: "none", resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
+                onFocus={e => { e.target.style.border = "1.5px solid #5B4EFF"; e.target.style.background = "#fff"; e.target.style.boxShadow = "0 0 0 3px rgba(91,78,255,0.08)"; }}
+                onBlur={e => { e.target.style.border = "1.5px solid #e5e7eb"; e.target.style.background = "#f9fafb"; e.target.style.boxShadow = "none"; }}
+              />
+              <p style={{ margin: "6px 0 0", fontSize: 11, color: "#9ca3af" }}>Enter a short description for this field.</p>
+            </div>
+            
+            {/* Status */}
+            <div>
+              <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 13, fontWeight: 600, color: "#1f2937", marginBottom: 6 }}>
+                Status <span style={{ color: "#ef4444" }}>*</span>
+              </label>
+              <select
+                value={status} onChange={e => setStatus(e.target.value)}
+                style={{ width: "100%", padding: "10px 14px", borderRadius: 12, border: "1.5px solid #e5e7eb", background: "#f9fafb", fontSize: 13, color: "#111827", outline: "none", boxSizing: "border-box" }}
+                onFocus={e => { e.target.style.border = "1.5px solid #5B4EFF"; e.target.style.background = "#fff"; e.target.style.boxShadow = "0 0 0 3px rgba(91,78,255,0.08)"; }}
+                onBlur={e => { e.target.style.border = "1.5px solid #e5e7eb"; e.target.style.background = "#f9fafb"; e.target.style.boxShadow = "none"; }}
+              >
+                <option>Active</option>
+                <option>Inactive</option>
+              </select>
+            </div>
+
+            {/* Icon Grid */}
+            <div>
+              <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 13, fontWeight: 600, color: "#1f2937", marginBottom: 8 }}>
+                Select Icon <span style={{ color: "#ef4444" }}>*</span>
+              </label>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
+                {icons.map(icon => (
+                  <button
+                    key={icon.id}
+                    onClick={() => setSelectedIcon(icon.id)}
+                    style={{
+                      position: "relative", display: "flex", flexDirection: "column",
+                      alignItems: "center", gap: 8, padding: "12px 8px",
+                      borderRadius: 12, cursor: "pointer",
+                      border: selectedIcon === icon.id ? "2px solid #5B4EFF" : "2px solid #f0f0f5",
+                      background: selectedIcon === icon.id ? "#F0EEFF" : "#fafafa",
+                      transition: "all 0.15s",
+                    }}
+                    onMouseEnter={e => { if (selectedIcon !== icon.id) { e.currentTarget.style.borderColor = "#c4bcff"; e.currentTarget.style.background = "#f7f6ff"; } }}
+                    onMouseLeave={e => { if (selectedIcon !== icon.id) { e.currentTarget.style.borderColor = "#f0f0f5"; e.currentTarget.style.background = "#fafafa"; } }}
+                  >
+                    {selectedIcon === icon.id && (
+                      <span style={{
+                        position: "absolute", top: -8, right: -8,
+                        width: 20, height: 20, borderRadius: "50%",
+                        background: "#5B4EFF", display: "flex",
+                        alignItems: "center", justifyContent: "center",
+                        boxShadow: "0 2px 6px rgba(91,78,255,0.4)",
+                      }}>
+                        <svg viewBox="0 0 20 20" fill="white" width="11" height="11">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                    )}
+                    <span style={{
+                      width: 44, height: 44, borderRadius: "50%",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      background: icon.bg, color: icon.color,
+                    }}>
+                      {icon.render(26)}
+                    </span>
+                    <span style={{ fontSize: 11, fontWeight: 500, color: "#4b5563", textAlign: "center" }}>
+                      {icon.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <p style={{ margin: "8px 0 0", fontSize: 11, color: "#9ca3af" }}>Choose an icon to represent this field.</p>
+            </div>
+          </div>
+
+          {/* Right: Preview */}
+          <div style={{ width: 260, flexShrink: 0, padding: "24px 28px", background: "#FAFBFF" }}>
+            <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 600, color: "#1f2937" }}>Preview</p>
+            <p style={{ margin: "0 0 20px", fontSize: 11, color: "#9ca3af" }}>This is how the field will appear on the website.</p>
+
+            <div style={{
+              background: "white", borderRadius: 16, padding: "24px 16px",
+              border: "1px solid #f0f0f5", boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
+              minHeight: 200, display: "flex", flexDirection: "column",
+              alignItems: "center", justifyContent: "center", textAlign: "center", gap: 12,
+            }}>
+              {/* Preview icon with pop animation on change */}
+              <div
+                key={selectedIcon}
+                style={{
+                  width: 80, height: 80, borderRadius: "50%",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  background: selected?.bg || "#EEF0FF",
+                  color: selected?.color || "#6C63FF",
+                  animation: "popIn .22s cubic-bezier(.34,1.56,.64,1) both",
+                }}
+              >
+                {selected?.render(40)}
+              </div>
+
+              <div>
+                <p style={{ margin: "0 0 6px", fontWeight: 700, fontSize: 15, color: "#1a1a2e" }}>
+                  {fieldName || "Engineering & Technology"}
+                </p>
+                <p style={{ margin: 0, fontSize: 13, color: "#6b7280", lineHeight: 1.55, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical" }}>
+                  {description || "Build the future with innovation and technology."}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 12, padding: "18px 32px", background: "white" }}>
+          <button
+            onClick={onClose}
+            style={{ padding: "10px 24px", borderRadius: 12, border: "1.5px solid #e5e7eb", background: "white", color: "#4b5563", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+            onMouseEnter={e => { e.currentTarget.style.background = "#f9fafb"; e.currentTarget.style.borderColor = "#d1d5db"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "white"; e.currentTarget.style.borderColor = "#e5e7eb"; }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            style={{
+              padding: "10px 28px", borderRadius: 12, minWidth: 110,
+              border: "none", background: saved ? "#22c55e" : "#5B4EFF",
+              color: "white", fontSize: 13, fontWeight: 600,
+              cursor: "pointer", boxShadow: "0 2px 8px rgba(91,78,255,0.3)",
+              transition: "background 0.2s",
+            }}
+            onMouseEnter={e => { if (!saved) e.currentTarget.style.background = "#4A3EE8"; }}
+            onMouseLeave={e => { if (!saved) e.currentTarget.style.background = "#5B4EFF"; }}
+            onMouseDown={e => { e.currentTarget.style.transform = "scale(0.96)"; }}
+            onMouseUp={e => { e.currentTarget.style.transform = "scale(1)"; }}
+          >
+            {saved ? "✓ Saved!" : (mode === "add" ? "Save Field" : "Save Changes")}
           </button>
         </div>
       </div>
+
+      <style>{`
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(18px) scale(0.97); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes popIn {
+          from { opacity: 0; transform: scale(0.5); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
     </div>
   );
 }
@@ -173,16 +447,9 @@ export default function AdminField() {
     fetchFields();
   }, []);
 
-  async function handleSave({ name, description, status }) {
+  async function handleSave({ name, description, status, icon }) {
     try {
       if (modal.mode === "add") {
-        const icons = [
-          "fa-cogs", "fa-book", "fa-globe", "fa-bullseye",
-          "fa-lightbulb", "fa-wrench", "fa-seedling", "fa-trophy",
-          "fa-graduation-cap", "fa-desktop"
-        ];
-        const newIcon = icons[fields.length % icons.length];
-
         const res = await fetch(`${API_BASE}?r=dashboard/create-field`, {
           method: "POST",
           headers: {
@@ -192,7 +459,7 @@ export default function AdminField() {
             name,
             description,
             status,
-            icon: newIcon,
+            icon: icon || "fa-cogs",
           }),
         });
 
@@ -214,6 +481,7 @@ export default function AdminField() {
             name,
             description,
             status,
+            icon: icon || modal.field.icon,
           }),
         });
 

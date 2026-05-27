@@ -68,14 +68,6 @@ const courses = [
 ];
 
 const PopularCourses = () => {
-  // Optional: Add individual course click handler
-  const handleCourseClick = (courseTitle) => {
-    // Navigate to specific course page or open modal
-    console.log(`Clicked on ${courseTitle}`);
-    // You can add navigation to specific course page
-    // window.location.href = `/courses/${courseTitle.toLowerCase()}`;
-  };
-
   return (
     <section className="py-12 md:py-16 bg-gradient-to-b from-[#FAFAFD] to-white">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6">
@@ -93,47 +85,50 @@ const PopularCourses = () => {
 
         {/* Course Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 md:gap-5">
-          {courses.map((course, index) => (
-            <div
-              key={index}
-              onClick={() => handleCourseClick(course.title)}
-              className="group relative bg-white rounded-2xl p-5 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer overflow-hidden"
-              style={{
-                animationDelay: `${index * 0.05}s`,
-              }}
-            >
-              {/* Background Gradient */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${course.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
-              
-              {/* Decorative Line */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#4F46E5] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          {courses.map((course, index) => {
+            const slug = course.title.toLowerCase().replace(/\./g, "");
+            return (
+              <Link
+                key={index}
+                to={`/course-detail/${slug}`}
+                className="group relative bg-white rounded-2xl p-5 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer overflow-hidden block"
+                style={{
+                  animationDelay: `${index * 0.05}s`,
+                }}
+              >
+                {/* Background Gradient */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${course.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+                
+                {/* Decorative Line */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#4F46E5] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-              {/* Icon */}
-              <div className={`text-3xl md:text-4xl ${course.iconColor} mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:rotate-3`}>
-                {course.icon}
-              </div>
+                {/* Icon */}
+                <div className={`text-3xl md:text-4xl ${course.iconColor} mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:rotate-3`}>
+                  {course.icon}
+                </div>
 
-              {/* Title */}
-              <h3 className="text-lg md:text-xl font-bold text-[#071B52] mb-1 group-hover:text-[#4F46E5] transition-colors duration-300">
-                {course.title}
-              </h3>
+                {/* Title */}
+                <h3 className="text-lg md:text-xl font-bold text-[#071B52] mb-1 group-hover:text-[#4F46E5] transition-colors duration-300">
+                  {course.title}
+                </h3>
 
-              {/* Subtitle */}
-              <p className="text-gray-500 text-xs md:text-sm mb-3 line-clamp-1">
-                {course.subtitle}
-              </p>
+                {/* Subtitle */}
+                <p className="text-gray-500 text-xs md:text-sm mb-3 line-clamp-1">
+                  {course.subtitle}
+                </p>
 
-              {/* Duration & Career Tags */}
-              <div className="flex flex-wrap gap-2">
-                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full group-hover:bg-white/80 transition-colors duration-300">
-                  {course.duration}
-                </span>
-                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full group-hover:bg-white/80 transition-colors duration-300">
-                  {course.career}
-                </span>
-              </div>
-            </div>
-          ))}
+                {/* Duration & Career Tags */}
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full group-hover:bg-white/80 transition-colors duration-300">
+                    {course.duration}
+                  </span>
+                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full group-hover:bg-white/80 transition-colors duration-300">
+                    {course.career}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
 
         {/* View All Link - Updated with React Router Link */}

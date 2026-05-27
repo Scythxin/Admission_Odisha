@@ -221,28 +221,32 @@ const Course = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {popularCourses.map((c, i) => (
-            <div 
-              key={i} 
-              className="group bg-white p-5 rounded-2xl shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-2 border border-gray-100"
-            >
-              <div className={`${c.bg} w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
-                <div className={c.c}>{c.ic}</div>
-              </div>
-              <h4 className="text-xl font-bold text-[#071B52]">{c.t}</h4>
-              <p className="text-xs text-gray-500 mb-4">{c.sub}</p>
-              <div className="space-y-2 mb-5">
-                <p className="text-xs font-semibold text-gray-600 bg-gray-50 p-2 rounded-lg">{c.dur} Degree Program</p>
-                <p className="text-xs font-semibold text-gray-600 bg-gray-50 p-2 rounded-lg">{c.s}</p>
-              </div>
-              <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-                <span className="text-xs font-bold text-gray-400 uppercase">{c.col} Colleges</span>
-                <button className="text-[#4F46E5] font-bold text-xs flex items-center gap-1 hover:gap-2 transition-all duration-300">
-                  Details <ChevronRight size={14} />
-                </button>
-              </div>
-            </div>
-          ))}
+          {popularCourses.map((c, i) => {
+            const slug = c.t.toLowerCase().replace(/\./g, "");
+            return (
+              <Link 
+                key={i} 
+                to={`/course-detail/${slug}`}
+                className="group bg-white p-5 rounded-2xl shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-2 border border-gray-100 block"
+              >
+                <div className={`${c.bg} w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
+                  <div className={c.c}>{c.ic}</div>
+                </div>
+                <h4 className="text-xl font-bold text-[#071B52]">{c.t}</h4>
+                <p className="text-xs text-gray-500 mb-4">{c.sub}</p>
+                <div className="space-y-2 mb-5">
+                  <p className="text-xs font-semibold text-gray-600 bg-gray-50 p-2 rounded-lg">{c.dur} Degree Program</p>
+                  <p className="text-xs font-semibold text-gray-600 bg-gray-50 p-2 rounded-lg">{c.s}</p>
+                </div>
+                <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                  <span className="text-xs font-bold text-gray-400 uppercase">{c.col} Colleges</span>
+                  <span className="text-[#4F46E5] font-bold text-xs flex items-center gap-1 hover:gap-2 transition-all duration-300">
+                    Details <ChevronRight size={14} />
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 

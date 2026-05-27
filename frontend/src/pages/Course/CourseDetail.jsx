@@ -1,342 +1,281 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import API_BASE from "../../config/api";
-import {
-  FaGraduationCap, FaBookOpen, FaCheckCircle, FaUniversity,
-  FaStar, FaArrowRight, FaSpinner, FaArrowLeft
-} from "react-icons/fa";
-import cseImg from "../../assets/images/cse_hero.png";
-import ctaBooksImg from "../../assets/images/cta_books.png";
 
-/* ── COMPONENTS ── */
-const SectionTitle = ({ icon, title }) => (
-  <div className="flex items-center gap-4 mb-8">
-    <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-[#F4F1FF] text-[#5B45C4] text-xl shrink-0">
-      {icon}
-    </div>
-    <h2 className="text-[22px] font-bold text-[#0F172A]">{title}</h2>
-  </div>
-);
-
-/* ── MAIN ── */
-const CourseDetail = () => {
-  const { specializationSlug } = useParams();
-  const [courseData, setCourseData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // Derive the specialization name from URL param
-  const specializationName = specializationSlug
-    ? decodeURIComponent(specializationSlug)
-    : "Computer Science Engineering";
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-
-    const fetchCourseData = async () => {
-      try {
-        const encodedName = encodeURIComponent(specializationName);
-        const res = await fetch(
-          `${API_BASE}?r=site/api-course-detail&name=${encodedName}`
-        );
-
-        if (!res.ok) {
-          const text = await res.text();
-          setError(`Server error ${res.status}: ${text.substring(0, 300)}`);
-          return;
-        }
-
-        const data = await res.json();
-
-        if (data.status === "success") {
-          setCourseData(data.data);
-        } else {
-          setError(data.message || "Failed to fetch course details");
-        }
-      } catch (err) {
-        setError(`Fetch error: ${err.message}`);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCourseData();
-  }, [specializationName]);
-
-  if (loading) {
+const Stars = ({ rating }) => {
+    const rounded = Math.round(Number(rating) || 0);
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <FaSpinner className="animate-spin text-4xl text-[#5B45C4]" />
-      </div>
+        <span style={{ color: "#f59e0b", fontSize: 13 }}>
+            {"★".repeat(rounded)}{"☆".repeat(5 - rounded)}
+        </span>
     );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white flex-col gap-4">
-        <p className="text-xl text-red-500 font-semibold text-center px-6">{error}</p>
-        <Link to="/field" className="text-[#5B45C4] font-semibold flex items-center gap-2 hover:gap-3 transition-all">
-          <FaArrowLeft /> Back to Fields
-        </Link>
-      </div>
-    );
-  }
-
-  if (!courseData) return null;
-
-  const { specialization, field, details, courses, universities } = courseData;
-  const introText = details?.intro || specialization?.short_desc || "No introduction available.";
-  let eligibilityList = details?.eligibility || [];
-  if (typeof eligibilityList === "string") {
-    try {
-      const parsed = JSON.parse(eligibilityList);
-      eligibilityList = Array.isArray(parsed) ? parsed : eligibilityList.split("\n").filter(item => item.trim() !== "");
-    } catch (e) {
-      eligibilityList = eligibilityList.split("\n").filter(item => item.trim() !== "");
-    }
-  }
-  const courseList = (courses || []).filter((c) => {
-    const level = (c.degree_level || "").toLowerCase().trim();
-    const name = (c.name || "").toLowerCase().trim();
-
-    // 1. Check degree_level exclusions (exact matches)
-    const excludedLevels = [
-      "postgraduate",
-      "doctoral",
-      "postgraduate diploma",
-      "postgraduate certificate",
-      "executive program",
-      "postgraduate/doctoral",
-      "multiple",
-      "competitive exam",
-      "varies",
-    ];
-    if (excludedLevels.includes(level)) {
-      return false;
-    }
-
-    // 2. Check course names that start with or indicate postgraduate / post-graduation courses
-    const mastersRegex = /^(m\.(tech|e|sc|arch|phil|f\.sc|p\.ed|ed|s|d)|mba|mca|llm|mpt|msw|mlisc|mlsc|dm|mch|dnb|md|ms|mds|m\.a\.|masters?\b)/i;
-    if (mastersRegex.test(name)) {
-      return false;
-    }
-
-    if (/\b(ph\.?d|doctor|lld)\b/i.test(name)) {
-      return false;
-    }
-
-    // 3. Specific undergraduate degrees that require a prior graduation degree
-    if (/\bb\.?ed\b/i.test(name) || name.includes("bachelor of education")) {
-      if (!name.includes("integrated") && !name.includes("dual")) {
-        return false;
-      }
-    }
-
-    if (/\b(ll\.?b|b\.?g\.?l)\b/i.test(name) || name.includes("bachelor of law") || name.includes("bachelor of general laws")) {
-      if (!name.includes("integrated") && !name.includes("ba llb") && !name.includes("bsc llb") && !name.includes("bba llb")) {
-        return false;
-      }
-    }
-
-    if (/\b(blisc|blsc)\b/i.test(name) || name.includes("bachelor of library")) {
-      return false;
-    }
-
-    // 4. Specific strings / descriptions that indicate post-graduation requirements
-    if (
-      name.includes("for graduates") ||
-      name.includes("after finishing graduation") ||
-      name.includes("post graduate") ||
-      name.includes("post-graduate") ||
-      name.includes("pg research") ||
-      name.includes("pg diploma") ||
-      name.includes("pg certificate")
-    ) {
-      return false;
-    }
-
-    if (name.includes("equal to mca") || name.includes("equal to m.tech")) {
-      return false;
-    }
-
-    // 5. Exclude professional certifications requiring graduation (CFA, CPA, UPSC etc.)
-    if (level === "professional") {
-      const excludedProfessionalNames = [
-        "cfa", "cpa", "c-rim", "ctm", "cib", "cpm", "global strategic management"
-      ];
-      if (excludedProfessionalNames.some(p => name.includes(p))) {
-        return false;
-      }
-    }
-
-    return true;
-  });
-  const universityList = universities || [];
-
-  // Map field name to slug for back link
-  const fieldSlugs = {
-    "Engineering & Technology": "engineering",
-    "Medical & Health": "medical",
-    "Commerce & Management": "commerce",
-    "Arts & Humanities": "arts",
-    "Science": "science",
-    "Law": "law",
-    "Design": "design",
-    "Hospitality": "hospitality",
-    "IT & Computer": "it-computer",
-    "Education": "education"
-  };
-  const fieldSlug = fieldSlugs[field?.name] || "engineering";
-
-  return (
-    <div className="bg-white min-h-screen font-poppins text-gray-800 pb-20">
-      <div className="max-w-[1200px] mx-auto px-6 md:px-8 lg:px-12 pt-8">
-
-        {/* BACK */}
-        <div className="mb-6">
-          <Link
-            to={`/field/${fieldSlug}`}
-            className="inline-flex items-center gap-2 text-[15px] font-medium text-[#5B45C4] hover:gap-3 transition-all"
-          >
-            <FaArrowLeft /> Back to Field
-          </Link>
-        </div>
-
-        {/* HERO SECTION */}
-        <section className="relative flex flex-col md:flex-row justify-between items-center py-10 md:py-16 mb-16">
-          <div className="absolute right-0 top-0 w-[400px] h-[400px] bg-[#F5F3FF] rounded-full mix-blend-multiply filter blur-3xl opacity-70 -z-10"></div>
-
-          <div className="max-w-[550px] z-10">
-            <span className="inline-block bg-[#A78BFA] text-white text-[13px] px-4 py-1.5 rounded-full font-semibold mb-6">
-              {specialization?.short_desc?.split(",")[0] || "Engineering"}
-            </span>
-
-            <h1 className="text-4xl md:text-[44px] font-extrabold text-[#0F172A] leading-[1.2] mb-6">
-              {specialization?.name}
-            </h1>
-
-            <div className="w-12 h-1 bg-[#5B45C4] rounded mb-6"></div>
-
-            <p className="text-gray-600 text-[15px] leading-relaxed max-w-[500px]">
-              {specialization?.short_desc}
-            </p>
-          </div>
-
-          <div className="relative mt-12 md:mt-0 flex-1 flex justify-center lg:justify-end z-10">
-            <div className="relative w-[320px] h-[320px] md:w-[450px] md:h-[450px]">
-              <img src={cseImg} alt={specialization?.name} className="w-full h-full object-contain drop-shadow-xl" />
-            </div>
-          </div>
-        </section>
-
-        {/* INTRODUCTION */}
-        <section className="mb-16">
-          <SectionTitle icon={<FaBookOpen />} title="Introduction" />
-          <div className="flex flex-col md:flex-row items-center justify-between gap-10">
-            <div className="flex-1 text-gray-600 text-[15px] leading-relaxed">
-              <p>{introText}</p>
-            </div>
-            <div className="w-[140px] h-[140px] rounded-full bg-[#F5F3FF] flex items-center justify-center text-[#A78BFA] text-5xl shrink-0">
-              <FaBookOpen className="opacity-50 text-7xl" />
-            </div>
-          </div>
-        </section>
-
-        {/* COURSES AVAILABLE */}
-        {courseList.length > 0 && (
-          <section className="mb-16">
-            <SectionTitle icon={<FaGraduationCap />} title="Courses Available" />
-            <div className="grid md:grid-cols-3 gap-6">
-              {courseList.map((c, i) => (
-                <div key={i} className="border border-gray-200 rounded-2xl p-8 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white flex flex-col items-start">
-                  <div className="w-14 h-14 rounded-full bg-[#F4F1FF] text-[#5B45C4] text-2xl flex items-center justify-center mb-6">
-                    <FaGraduationCap />
-                  </div>
-                  <h3 className="text-[17px] text-[#0F172A] font-bold mb-4">{c.name}</h3>
-                  <p className="text-[13px] text-gray-500 leading-relaxed mb-2">
-                    Duration: {c.duration}
-                  </p>
-                  <p className="text-[13px] text-gray-500 leading-relaxed">
-                    Level: {c.degree_level}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ELIGIBILITY */}
-        {eligibilityList.length > 0 && (
-          <section className="mb-16 bg-[#F8F9FA] rounded-3xl p-8 md:p-10">
-            <SectionTitle icon={<FaUniversity className="text-xl" />} title="Eligibility" />
-            <ul className="space-y-4">
-              {eligibilityList.map((item, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <FaCheckCircle className="text-[#22C55E] text-lg mt-0.5 shrink-0" />
-                  <span className="text-gray-600 text-[15px] leading-relaxed">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {/* TOP UNIVERSITIES */}
-        {universityList.length > 0 && (
-          <section className="mb-16">
-            <SectionTitle icon={<FaUniversity />} title="Top Universities / Institutes" />
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
-              {universityList.map((u, i) => {
-                const initial = u.name.split(" ").map((n) => n[0]).join("").substring(0, 3).toUpperCase();
-                return (
-                  <div key={i} className="border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow bg-white flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 text-gray-500 font-bold text-xs shrink-0 shadow-sm">
-                      {initial}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-[14px] font-bold text-[#0F172A] leading-tight mb-1">{u.name}</h4>
-                      <p className="text-[12px] text-gray-500">{u.location}</p>
-                    </div>
-                    <div className="bg-[#DCFCE7] text-[#16A34A] text-[12px] font-bold px-2 py-1 rounded-md flex items-center gap-1 shrink-0">
-                      <FaStar className="text-[10px]" /> {u.rating}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="flex justify-center">
-              <button className="border-2 border-[#5B45C4] text-[#5B45C4] font-semibold text-[15px] px-8 py-2.5 rounded-lg hover:bg-[#5B45C4] hover:text-white transition-colors">
-                View More Institutes
-              </button>
-            </div>
-          </section>
-        )}
-
-        {/* CTA */}
-        <section className="bg-[#5B45C4] rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
-          <div className="absolute right-0 top-0 w-[400px] h-[400px] bg-white opacity-5 rounded-full -translate-y-1/2 translate-x-1/3"></div>
-          <div className="flex items-center gap-8 z-10 w-full flex-col md:flex-row text-center md:text-left">
-            <div className="w-32 h-32 shrink-0">
-              <img src={ctaBooksImg} alt="Books" className="w-full h-full object-contain drop-shadow-2xl" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-xl md:text-[22px] font-bold text-white mb-2">
-                Explore more courses and find the right path for your future.
-              </h3>
-              <p className="text-indigo-100 text-[15px]">
-                Compare courses, colleges, eligibility and more in one place.
-              </p>
-            </div>
-            <Link to="/field">
-              <button className="bg-white text-[#5B45C4] font-semibold text-[15px] px-6 py-3.5 rounded-xl flex items-center gap-2 hover:bg-gray-50 transition-colors whitespace-nowrap shrink-0 shadow-lg">
-                Explore More Courses <FaArrowRight />
-              </button>
-            </Link>
-          </div>
-        </section>
-
-      </div>
-    </div>
-  );
 };
 
-export default CourseDetail;
+export default function CourseDetail() {
+    const { courseSlug } = useParams();
+    const [course, setCourse] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [wishlist, setWishlist] = useState(false);
+    const [enquired, setEnquired] = useState(false);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [courseSlug]);
+
+    useEffect(() => {
+        const fetchCourse = async () => {
+            try {
+                setLoading(true);
+                const slugToFetch = courseSlug || 'btech';
+                const res = await fetch(`${API_BASE}?r=site/api-general-course-detail&slug=${slugToFetch}`);
+                const result = await res.json();
+
+                if (result.status === 'success') {
+                    setCourse(result.data);
+                } else {
+                    setError(result.message || "Course not found");
+                }
+            } catch (err) {
+                setError("Failed to fetch course details");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCourse();
+    }, [courseSlug]);
+
+    if (loading) {
+        return <div className="flex justify-center items-center min-h-screen text-[#5b4eff] font-bold text-xl">Loading course details...</div>;
+    }
+
+    if (error || !course) {
+        return <div className="flex justify-center items-center min-h-screen text-red-500 font-bold text-xl">{error || "Course not found"}</div>;
+    }
+
+    const CAREERS = course.career_opportunities || [];
+    const ELIGIBILITY = course.eligibility || [];
+    const SPECIALIZATIONS = course.top_specializations || [];
+    const COLLEGES = course.top_colleges || [];
+
+    const STATS = [
+        { icon: "🕐", label: "Duration", value: course.duration },
+        { icon: "🎓", label: "Degree", value: course.degree },
+        { icon: "📋", label: "Mode", value: course.mode },
+        { icon: "📊", label: "Level", value: course.level },
+    ];
+
+    // Generic icons for specializations if not provided in DB
+    const getSpecIcon = (index) => {
+        const icons = ["</>", "⚙️", "⚡", "🏗️", "📡", "💻", "🔬", "🧪"];
+        return icons[index % icons.length];
+    };
+
+    return (
+        <div style={{ fontFamily: "'Outfit', 'Segoe UI', sans-serif", background: "#f8f9fc", minHeight: "100vh", color: "#1a1a2e" }}>
+            <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        a { text-decoration: none; color: inherit; }
+        body { margin: 0; }
+        .hover-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(91,78,255,0.13) !important; }
+        .nav-link:hover { color: #5b4eff; }
+        .btn-primary:hover { background: #4A3EE8 !important; transform: translateY(-1px); }
+        .btn-outline:hover { background: #f3f4f6 !important; }
+        .college-card:hover { border-color: #5b4eff !important; transform: translateY(-2px); }
+        .career-card:hover { border-color: #5b4eff !important; background: #f5f3ff !important; }
+        .fade-in { animation: fadeIn 0.5s ease both; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+      `}</style>
+
+            {/* BREADCRUMB */}
+            <div style={{ maxWidth: 1200, margin: "0 auto", padding: "14px 40px", fontSize: 13, color: "#9ca3af" }}>
+                <Link to="/" style={{ color: "inherit", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#5b4eff"} onMouseLeave={e => e.target.style.color = "inherit"}>Home</Link> › 
+                <Link to="/course" style={{ color: "inherit", transition: "color 0.2s", marginLeft: 4, marginRight: 4 }} onMouseEnter={e => e.target.style.color = "#5b4eff"} onMouseLeave={e => e.target.style.color = "inherit"}>Courses</Link> › 
+                <Link to={`/field/${course.category?.toLowerCase()}`} style={{ color: "inherit", transition: "color 0.2s", marginLeft: 4, marginRight: 4 }} onMouseEnter={e => e.target.style.color = "#5b4eff"} onMouseLeave={e => e.target.style.color = "inherit"}>{course.category}</Link> › 
+                <span style={{ color: "#5b4eff", fontWeight: 500, marginLeft: 4 }}>{course.short_name}</span>
+            </div>
+
+            {/* HERO SECTION */}
+            <div style={{ maxWidth: 1200, margin: "0 auto 0", padding: "0 40px 40px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, alignItems: "center", background: "white", borderRadius: 20, padding: 36, boxShadow: "0 4px 24px rgba(0,0,0,0.06)" }} className="fade-in">
+                    {/* Left */}
+                    <div>
+                        <span style={{ display: "inline-block", background: "#eef0ff", color: "#5b4eff", fontSize: 12, fontWeight: 600, padding: "4px 12px", borderRadius: 20, marginBottom: 16 }}>{course.category}</span>
+                        <h1 style={{ fontSize: 52, fontWeight: 800, lineHeight: 1, color: "#1a1a2e", marginBottom: 6 }}>{course.short_name}</h1>
+                        <h2 style={{ fontSize: 20, fontWeight: 600, color: "#374151", marginBottom: 16 }}>{course.full_name}</h2>
+                        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+                            <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500 }}>
+                                <span style={{ color: "#f59e0b", fontSize: 16 }}>★</span> {course.rating} ({course.reviews_count} Reviews)
+                            </span>
+                            <span style={{ width: 1, height: 18, background: "#e5e7eb" }} />
+                            <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 600, color: "#ef4444" }}>
+                                {course.badge}
+                            </span>
+                        </div>
+                        <p style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.7, marginBottom: 28, maxWidth: 420 }}>
+                            {course.short_description}
+                        </p>
+                        <div style={{ display: "flex", gap: 12 }}>
+                            <button
+                                className="btn-primary"
+                                onClick={() => setEnquired(true)}
+                                style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 24px", background: enquired ? "#22c55e" : "#5b4eff", color: "white", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 0.2s" }}
+                            >
+                                💬 {enquired ? "Enquiry Sent!" : "Enquire Now"}
+                            </button>
+                            <button
+                                className="btn-outline"
+                                onClick={() => setWishlist(!wishlist)}
+                                style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 24px", background: "white", color: wishlist ? "#ef4444" : "#374151", border: "1.5px solid #e5e7eb", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 0.2s" }}
+                            >
+                                {wishlist ? "❤️" : "🤍"} {wishlist ? "Wishlisted" : "Add to Wishlist"}
+                            </button>
+                        </div>
+                    </div>
+                    {/* Right: Image placeholder */}
+                    <div style={{ position: "relative", borderRadius: 16, overflow: "hidden", aspectRatio: "4/3", background: "linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#4338ca 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <div style={{ textAlign: "center", color: "white" }}>
+                            <div style={{ fontSize: 80 }}>🎓</div>
+                            <div style={{ fontSize: 14, opacity: 0.7, marginTop: 8 }}>{course.short_name} — {course.full_name}</div>
+                        </div>
+                        <div style={{ position: "absolute", bottom: 14, left: 14, background: "rgba(255,255,255,0.95)", borderRadius: 10, padding: "8px 14px", display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
+                            🖼️ Image Gallery &nbsp;<strong>8 Photos</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* STATS BAR */}
+            <div style={{ maxWidth: 1200, margin: "0 auto 32px", padding: "0 40px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", background: "white", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+                    {STATS.map((s, i) => (
+                        <div key={s.label} style={{ padding: "20px 28px", display: "flex", alignItems: "center", gap: 14, borderRight: i < 3 ? "1px solid #f0f0f5" : "none" }}>
+                            <div style={{ width: 44, height: 44, background: "#eef0ff", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>{s.icon}</div>
+                            <div>
+                                <div style={{ fontSize: 11, color: "#9ca3af", fontWeight: 500, marginBottom: 2 }}>{s.label}</div>
+                                <div style={{ fontSize: 15, fontWeight: 700, color: "#1a1a2e" }}>{s.value}</div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* ABOUT */}
+            <div style={{ maxWidth: 1200, margin: "0 auto 32px", padding: "0 40px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 28, background: "white", borderRadius: 20, padding: 36, boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+                    <div>
+                        <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 14 }}>About {course.short_name}</h3>
+                        <p style={{ fontSize: 14, color: "#4b5563", lineHeight: 1.8, marginBottom: 16 }}>
+                            {course.about_description}
+                        </p>
+                        <a href="#" style={{ color: "#5b4eff", fontWeight: 600, fontSize: 14, display: "inline-flex", alignItems: "center", gap: 6 }}>Read More →</a>
+                    </div>
+                    <div style={{ background: "linear-gradient(135deg,#eef0ff,#e8f5ff)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 64, minHeight: 180 }}>
+                        ⚙️
+                    </div>
+                </div>
+            </div>
+
+            {/* CAREER OPPORTUNITIES */}
+            <div style={{ maxWidth: 1200, margin: "0 auto 32px", padding: "0 40px" }}>
+                <div style={{ background: "white", borderRadius: 20, padding: 36, boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+                    <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 24 }}>Career Opportunities</h3>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(6,1fr)", gap: 16 }}>
+                        {CAREERS.map(c => (
+                            <div key={c.title} className="career-card hover-card" style={{ padding: "20px 14px", border: "1.5px solid #f0f0f5", borderRadius: 14, textAlign: "center", cursor: "pointer", transition: "all 0.2s" }}>
+                                <div style={{ fontSize: 28, marginBottom: 10 }}>{c.icon || "💼"}</div>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: "#1a1a2e", marginBottom: 8, lineHeight: 1.3 }}>{c.title}</div>
+                                <div style={{ fontSize: 11, color: "#6b7280", lineHeight: 1.5 }}>{c.desc}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* ELIGIBILITY + FEES + SPECIALIZATIONS */}
+            <div style={{ maxWidth: 1200, margin: "0 auto 32px", padding: "0 40px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24 }}>
+                    {/* Eligibility */}
+                    <div style={{ background: "white", borderRadius: 20, padding: 28, boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+                        <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 18 }}>Eligibility</h4>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                            {ELIGIBILITY.map(e => (
+                                <div key={e} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                                    <span style={{ color: "#22c55e", marginTop: 2, flexShrink: 0 }}>✅</span>
+                                    <span style={{ fontSize: 13, color: "#4b5563", lineHeight: 1.5 }}>{e}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Fees */}
+                    <div style={{ background: "white", borderRadius: 20, padding: 28, boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+                        <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 18 }}>Average Fees</h4>
+                        <div style={{ background: "linear-gradient(135deg,#eef0ff,#e8f5ff)", borderRadius: 14, padding: "24px 20px", textAlign: "center" }}>
+                            <div style={{ fontSize: 11, color: "#9ca3af", marginBottom: 8 }}>💰</div>
+                            <div style={{ fontSize: 22, fontWeight: 800, color: "#5b4eff", marginBottom: 6 }}>{course.fees_range}</div>
+                            <div style={{ fontSize: 14, fontWeight: 600, color: "#374151" }}>/ Year</div>
+                            <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 8 }}>Fees may vary from college to college.</div>
+                        </div>
+                    </div>
+
+                    {/* Specializations */}
+                    <div style={{ background: "white", borderRadius: 20, padding: 28, boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+                        <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 18 }}>Top Specializations</h4>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+                            {SPECIALIZATIONS.map((s, index) => (
+                                <div key={s.label || s} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#374151", fontWeight: 500 }}>
+                                    {/* Use icon from DB if available, else use a generated icon from frontend */}
+                                    <span style={{ fontSize: 14 }}>{s.icon || getSpecIcon(index)}</span> {s.label || s}
+                                </div>
+                            ))}
+                        </div>
+                        <a href="#" style={{ color: "#5b4eff", fontWeight: 600, fontSize: 13 }}>View All Specializations →</a>
+                    </div>
+                </div>
+            </div>
+
+            {/* TOP COLLEGES */}
+            <div style={{ maxWidth: 1200, margin: "0 auto 32px", padding: "0 40px" }}>
+                <div style={{ background: "white", borderRadius: 20, padding: 36, boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                        <h3 style={{ fontSize: 20, fontWeight: 700 }}>Top Colleges Offering This Course</h3>
+                        <a href="#" style={{ color: "#5b4eff", fontSize: 13, fontWeight: 600 }}>View All Colleges →</a>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(6,1fr)", gap: 16 }}>
+                        {COLLEGES.map(c => (
+                            <div key={c.name} className="college-card hover-card" style={{ padding: "20px 12px", border: "1.5px solid #f0f0f5", borderRadius: 14, textAlign: "center", cursor: "pointer", transition: "all 0.2s" }}>
+                                <div style={{ width: 56, height: 56, background: "linear-gradient(135deg,#eef0ff,#e8f5ff)", borderRadius: "50%", margin: "0 auto 12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>{c.icon || "🏛️"}</div>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: "#1a1a2e", marginBottom: 4, lineHeight: 1.3 }}>{c.name}</div>
+                                <div style={{ fontSize: 11, color: "#9ca3af", marginBottom: 8 }}>{c.city}</div>
+                                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
+                                    <Stars rating={c.rating} />
+                                    <span style={{ fontSize: 12, fontWeight: 600, color: "#374151" }}>{c.rating}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* CTA BANNER */}
+            <div style={{ maxWidth: 1200, margin: "0 auto 48px", padding: "0 40px" }}>
+                <div style={{ background: "linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%)", borderRadius: 20, padding: "36px 48px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+                        <div style={{ fontSize: 56 }}>🎓</div>
+                        <div>
+                            <h3 style={{ fontSize: 22, fontWeight: 800, color: "white", marginBottom: 6 }}>Not sure which course is right for you?</h3>
+                            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.8)", lineHeight: 1.5 }}>Get expert guidance from our counsellors and<br />make the right choice for your future.</p>
+                        </div>
+                    </div>
+                    <button className="btn-primary" style={{ padding: "14px 28px", background: "white", color: "#5b4eff", border: "none", borderRadius: 12, fontSize: 14, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s", boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }}>
+                        Talk to Counsellor →
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    );
+}

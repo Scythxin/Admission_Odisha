@@ -160,7 +160,7 @@ class DashboardController extends Controller
             SELECT s.*, f.name as field_name 
             FROM specializations s
             LEFT JOIN fields f ON s.field_id = f.id
-            ORDER BY s.id ASC
+            ORDER BY s.id DESC
         ")->queryAll();
         
         foreach ($specializations as &$s) {

@@ -406,7 +406,7 @@ const Contact = () => {
       </div>
 
       {/* Custom CSS for animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes blink {
           0%, 50% { opacity: 1; }
           51%, 100% { opacity: 0; }

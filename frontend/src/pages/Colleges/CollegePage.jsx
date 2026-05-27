@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, MapPin, Star, Heart, School, CheckCircle, GraduationCap, Filter, ChevronDown, ArrowRight } from 'lucide-react';
 import { ASSETS_BASE } from '../../config/api';
@@ -22,6 +22,9 @@ const CollegePage = () => {
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [loopNum, setLoopNum] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const collegeSectionRef = useRef(null);
 
   const { wishlist, toggleWishlist } = useContext(AuthContext);
 
@@ -60,13 +63,26 @@ const CollegePage = () => {
         }
       }
     };
-    
+
     const timer = setTimeout(handleTyping, 100);
     return () => clearTimeout(timer);
   }, [displayText, isDeleting, loopNum]);
 
-  const displayedColleges = allColleges.slice(0, visibleColleges);
-  const hasMore = visibleColleges < allColleges.length;
+  useEffect(() => {
+    setVisibleColleges(8);
+  }, [searchQuery, selectedDistrict, selectedType, selectedCategory]);
+
+  const filteredColleges = allColleges.filter(college => {
+    const matchName = !searchQuery || (college.name && college.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchDistrict = selectedDistrict === "All Districts" || (college.location && college.location.includes(selectedDistrict));
+    const matchType = selectedType === "All Types" || (college.type && college.type.includes(selectedType));
+    const matchCategory = selectedCategory === "All Categories" || (college.category ? college.category.includes(selectedCategory) : true);
+
+    return matchName && matchDistrict && matchType && matchCategory;
+  });
+
+  const displayedColleges = filteredColleges.slice(0, visibleColleges);
+  const hasMore = visibleColleges < filteredColleges.length;
 
   const loadMore = () => {
     setIsLoading(true);
@@ -84,17 +100,17 @@ const CollegePage = () => {
   ];
 
   const districts = [
-    "All Districts", "Bhubaneswar", "Cuttack", "Sambalpur", "Rourkela", 
+    "All Districts", "Bhubaneswar", "Cuttack", "Sambalpur", "Rourkela",
     "Berhampur", "Puri", "Balasore", "Baripada", "Jharsuguda"
   ];
 
   const collegeTypes = [
-    "All Types", "Government", "Private", "Deemed University", 
+    "All Types", "Government", "Private", "Deemed University",
     "Institute of National Importance", "Autonomous", "State University"
   ];
 
   const categories = [
-    "All Categories", "Engineering", "Medical", "Management", "Law", 
+    "All Categories", "Engineering", "Medical", "Management", "Law",
     "Pharmacy", "Science", "Arts", "Commerce"
   ];
 
@@ -110,7 +126,7 @@ const CollegePage = () => {
 
   return (
     <div className="bg-[#F8F8FC] min-h-screen font-sans pb-20">
-      
+
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-3">
@@ -126,7 +142,7 @@ const CollegePage = () => {
       <section className="bg-white pt-12 pb-16">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            
+
             {/* Left Side - Animated Heading */}
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-[#071B52] leading-tight mb-4">
@@ -139,48 +155,84 @@ const CollegePage = () => {
               <p className="text-[#5E6282] text-base md:text-lg mb-8">
                 Explore top universities and colleges across Odisha. Find the right college that matches your goals and dreams.
               </p>
-              
+
               {/* Search Box - Fixed */}
               <div className="bg-white border border-gray-200 rounded-2xl shadow-md mb-5">
                 <div className="flex flex-col md:flex-row">
-                  <div className="flex items-center flex-1 px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200">
+                  <div className="relative flex items-center w-full md:w-[40%] px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200">
                     <Search className="text-gray-400" size={20} />
                     <input
                       type="text"
                       placeholder="Search for colleges..."
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setShowSuggestions(true);
+                      }}
+                      onFocus={() => setShowSuggestions(true)}
+                      onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                       className="w-full px-3 py-2 outline-none bg-transparent text-gray-700 placeholder:text-gray-400 text-sm"
                     />
+                    {showSuggestions && searchQuery && (
+                      <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
+                        {allColleges
+                          .filter(c => c.name?.toLowerCase().includes(searchQuery.toLowerCase()))
+                          .slice(0, 8)
+                          .map((college) => (
+                            <div
+                              key={college.id}
+                              onClick={() => {
+                                setSearchQuery(college.name);
+                                setShowSuggestions(false);
+                                // Scroll to filter/college section
+                                setTimeout(() => {
+                                  collegeSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+                                }, 50);
+                              }}
+                              className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-gray-700 border-b last:border-b-0 border-gray-100 flex items-center gap-2"
+                            >
+                              <Search size={14} className="text-gray-400 flex-shrink-0" />
+                              <span className="font-medium truncate">{college.name}</span>
+                            </div>
+                          ))}
+                        {allColleges.filter(c => c.name?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                          <div className="px-4 py-3 text-xs text-gray-400 text-center">
+                            No colleges found
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-                  
-                  <div className="border-b md:border-b-0 md:border-r border-gray-200">
-                    <select 
+
+                  <div className="w-full md:w-[20%] border-b md:border-b-0 md:border-r border-gray-200">
+                    <select
                       value={selectedDistrict}
                       onChange={(e) => setSelectedDistrict(e.target.value)}
-                      className="w-full px-4 py-3 outline-none text-gray-600 bg-transparent text-sm"
+                      className="w-full px-2 py-3 outline-none text-gray-600 bg-transparent text-sm"
                     >
                       {districts.map(district => (
                         <option key={district} value={district}>{district}</option>
                       ))}
                     </select>
                   </div>
-                  
-                  <div className="border-b md:border-b-0 md:border-r border-gray-200">
-                    <select 
+
+                  <div className="w-full md:w-[20%] border-b md:border-b-0 md:border-r border-gray-200">
+                    <select
                       value={selectedType}
                       onChange={(e) => setSelectedType(e.target.value)}
-                      className="w-full px-4 py-3 outline-none text-gray-600 bg-transparent text-sm"
+                      className="w-full px-2 py-3 outline-none text-gray-600 bg-transparent text-sm"
                     >
                       {collegeTypes.map(type => (
                         <option key={type} value={type}>{type}</option>
                       ))}
                     </select>
                   </div>
-                  
-                  <div>
-                    <select 
+
+                  <div className="w-full md:w-[20%]">
+                    <select
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="w-full px-4 py-3 outline-none text-gray-600 bg-transparent text-sm"
+                      className="w-full px-2 py-3 outline-none text-gray-600 bg-transparent text-sm"
                     >
                       {categories.map(category => (
                         <option key={category} value={category}>{category}</option>
@@ -188,8 +240,11 @@ const CollegePage = () => {
                     </select>
                   </div>
                 </div>
-                
-                <button className="w-full bg-[#4F46E5] text-white py-3 rounded-b-2xl font-semibold hover:bg-[#4338CA] transition-all duration-300 flex items-center justify-center gap-2">
+
+                <button
+                  onClick={() => collegeSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                  className="w-full bg-[#4F46E5] text-white py-3 rounded-b-2xl font-semibold hover:bg-[#4338CA] transition-all duration-300 flex items-center justify-center gap-2"
+                >
                   <Search size={18} />
                   <span>Search Colleges</span>
                 </button>
@@ -234,7 +289,7 @@ const CollegePage = () => {
       </section>
 
       {/* FILTER BAR */}
-      <section className="max-w-[1280px] mx-auto mt-8 px-4 sm:px-6">
+      <section ref={collegeSectionRef} className="max-w-[1280px] mx-auto mt-8 px-4 sm:px-6 scroll-mt-28">
         <div className="bg-white rounded-2xl p-4 border border-gray-100 flex flex-wrap items-center justify-between gap-3 shadow-sm">
           <div className="flex items-center gap-2 flex-wrap">
             <Filter size={18} className="text-gray-400" />
@@ -261,30 +316,29 @@ const CollegePage = () => {
       <section className="max-w-[1280px] mx-auto py-10 px-4 sm:px-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6">
           {displayedColleges.map((college, i) => (
-            <Link 
-              key={i} 
+            <Link
+              key={i}
               to={`/colleges/${college.id}`}
               className="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-[#4F46E5]/20 transition-all duration-500 hover:-translate-y-1 shadow-sm hover:shadow-xl block"
             >
               <div className="relative h-48 overflow-hidden">
-                <img 
-                  src={getImageUrl(college.image)} 
-                  alt={college.name} 
+                <img
+                  src={getImageUrl(college.image)}
+                  alt={college.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute top-3 left-3 bg-[#4F46E5] text-white text-[10px] font-bold px-3 py-1 rounded-full">
                   {college.type}
                 </div>
-                <button 
+                <button
                   onClick={(e) => {
                     e.preventDefault();
                     toggleWishlist(college.id);
                   }}
-                  className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-300 ${
-                    wishlist?.includes(parseInt(college.id, 10)) 
-                      ? 'bg-red-50 text-red-500' 
-                      : 'bg-white/90 text-gray-400 hover:text-red-500'
-                  }`}
+                  className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-300 ${wishlist?.includes(parseInt(college.id, 10))
+                    ? 'bg-red-50 text-red-500'
+                    : 'bg-white/90 text-gray-400 hover:text-red-500'
+                    }`}
                 >
                   <Heart size={16} className={wishlist?.includes(parseInt(college.id, 10)) ? 'fill-current' : ''} />
                 </button>
@@ -304,7 +358,7 @@ const CollegePage = () => {
                 <p className="text-xs text-gray-500 leading-relaxed mb-4 line-clamp-2">
                   {college.description}
                 </p>
-                <div 
+                <div
                   className="block w-full py-2.5 text-center text-sm font-medium rounded-xl border border-[#4F46E5] text-[#4F46E5] bg-white hover:bg-[#4F46E5] hover:text-white transition-all duration-300"
                 >
                   View Details
@@ -334,7 +388,7 @@ const CollegePage = () => {
               )}
             </button>
             <p className="text-xs text-gray-400 mt-3">
-              Showing {displayedColleges.length} of {allColleges.length} colleges
+              Showing {displayedColleges.length} of {filteredColleges.length} colleges
             </p>
           </div>
         )}
@@ -352,7 +406,7 @@ const CollegePage = () => {
               <p className="text-white/80 text-sm md:text-base">Get personalized guidance from our expert counselors.</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={handleGetStarted}
             className="relative z-10 mt-6 md:mt-0 bg-white text-[#4F46E5] px-8 md:px-10 py-3.5 rounded-xl font-bold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
           >
@@ -363,7 +417,7 @@ const CollegePage = () => {
         </div>
       </section>
 
-      <style jsx>{`
+      <style>{`
         @keyframes blink {
           0%, 50% { opacity: 1; }
           51%, 100% { opacity: 0; }

@@ -10,6 +10,7 @@ import About from "../pages/About/About";
 import VerifyOtp from "../pages/Auth/VerifyOtp";
 import Field from "../pages/Course/Field";
 import FieldDetail from "../pages/Course/FieldCards/FieldDetail";
+import SpecificFieldDetail from "../pages/Course/SpecificFieldDetail";
 import CourseDetail from "../pages/Course/CourseDetail";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import CollegeDetail from "../pages/Colleges/CollegeDetail";
@@ -123,14 +124,8 @@ const AppRoutes = () => {
       />
 
       {/* Course Details */}
-      <Route
-        path="/course/:specializationSlug"
-        element={
-          <MainLayout>
-            <CourseDetail />
-          </MainLayout>
-        }
-      />
+      <Route path="/course/:specializationSlug" element={<MainLayout><SpecificFieldDetail /></MainLayout>} />
+      <Route path="/course-detail/:courseSlug" element={<MainLayout><CourseDetail /></MainLayout>} />
 
       {/* Dashboard */}
       <Route path="/dashboard" element={<Dashboard />} />
