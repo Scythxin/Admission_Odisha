@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 import logo from "../assets/images/logo.png";
+import { FaHeart } from "react-icons/fa";
 
 const Navbar = () => {
   const token = localStorage.getItem("token");
@@ -39,21 +40,32 @@ const Navbar = () => {
     { name: "Contact", path: "/contact" },
   ];
 
+  const wishlistItems = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+  const wishlistCount = wishlistItems.length;
   const isActive = (path) => location.pathname === path;
+
+  // const isActive = (path) => location.pathname === path;
 
   return (
     <>
       {/* Mobile spacing fix */}
-      <div className={`h-[72px] w-full md:hidden ${scrolled ? "block" : "hidden"}`}></div>
+      <div
+        className={`h-[72px] w-full md:hidden ${scrolled ? "block" : "hidden"}`}
+      ></div>
 
-      <header className={`z-[100] transition-all duration-300 bg-white border-b border-gray-200
-        ${scrolled ? "fixed top-4 left-4 w-[calc(100%-2rem)] rounded-xl shadow-lg" : "sticky top-0 w-full"}`}>
-
+      <header
+        className={`z-[100] transition-all duration-300 bg-white border-b border-gray-200
+        ${scrolled ? "fixed top-4 left-4 w-[calc(100%-2rem)] rounded-xl shadow-lg" : "sticky top-0 w-full"}`}
+      >
         <div className="max-w-[1280px] mx-auto flex items-center justify-between px-6 py-3">
-
           {/* LOGO */}
           <Link to="/" className="flex items-center gap-3">
-            <img src={logo} alt="logo" className="h-14 md:h-16 object-contain" />
+            <img
+              src={logo}
+              alt="logo"
+              className="h-14 md:h-16 object-contain"
+            />
 
             <div className="leading-tight">
               <h1 className="text-[18px] font-bold tracking-wide text-[#1F2A44]">
@@ -105,7 +117,21 @@ const Navbar = () => {
 
           {/* RIGHT SIDE */}
           <div className="hidden md:flex items-center gap-4">
+            <Link
+              to="/wishlist"
+              className="relative flex items-center gap-2 text-[#0B1B43] font-medium hover:text-[#2563EB] transition-all duration-300"
+            >
+              <FaHeart className="text-xl" />
 
+              <span>Wishlist</span>
+
+              {/* Count */}
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 left-5 bg-[#2563EB] text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
             {/* Language */}
             <div className="relative">
               <button
@@ -198,7 +224,6 @@ const Navbar = () => {
         {mobileMenuOpen && (
           <div className="md:hidden bg-white border-t shadow-lg animate-slideDown">
             <div className="flex flex-col py-4">
-
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
@@ -259,7 +284,7 @@ const Navbar = () => {
                 {token ? (
                   <div className="flex flex-col w-full gap-3">
                     <Link to="/wishlist" className="w-full">
-                      <button 
+                      <button
                         onClick={() => setMobileMenuOpen(false)}
                         className="w-full border border-[#6C4DF6] text-[#6C4DF6] py-2 rounded-md hover:bg-[#F5F3FF]"
                       >
