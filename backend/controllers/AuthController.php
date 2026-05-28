@@ -42,7 +42,7 @@ class AuthController extends Controller
             SELECT * FROM users WHERE email = :email
         ")->bindValue(':email', $data['email'])->queryOne();
 
-        if ($existingUser) {
+        if ($existing) {
             return [
                 "status" => "error",
                 "message" => "Email already registered"
@@ -50,7 +50,7 @@ class AuthController extends Controller
         }
 
         // HASH PASSWORD
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
 
         // INSERT USER
         Yii::$app->db->createCommand()->insert('users', [
@@ -66,11 +66,11 @@ class AuthController extends Controller
             'is_status' => 1
         ])->execute();
 
-       return [
-    "status" => "success",
-    "message" => "Registration successful"
-];
-        
+        return [
+            "status" => "success",
+            "message" => "Registration successful"
+        ];
+
     }
 
     // =========================
@@ -89,8 +89,8 @@ class AuthController extends Controller
              WHERE email = :email 
              AND is_status = 1"
         )
-        ->bindValue(':email', $email)
-        ->queryOne();
+            ->bindValue(':email', $email)
+            ->queryOne();
 
         // USER NOT FOUND
         if (!$user) {
@@ -126,41 +126,41 @@ class AuthController extends Controller
         ])->execute();
         $mail = new PHPMailer(true);
 
-try {
+        try {
 
-    $mail->isSMTP();
-    $mail->Host       = 'smtp.gmail.com';
-    $mail->SMTPAuth   = true;
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
 
-    $mail->Username   = 'kajalthakur0520@gmail.com';
-    $mail->Password   = 'jnwt fmwa enrz hfsb';
+            $mail->Username = 'kajalthakur0520@gmail.com';
+            $mail->Password = 'jnwt fmwa enrz hfsb';
 
-    $mail->SMTPSecure = 'tls';
-    $mail->Port       = 587;
+            $mail->SMTPSecure = 'tls';
+            $mail->Port = 587;
 
-    $mail->setFrom('yourgmail@gmail.com', 'Admission Odisha');
+            $mail->setFrom('yourgmail@gmail.com', 'Admission Odisha');
 
-    $mail->addAddress($email);
+            $mail->addAddress($email);
 
-    $mail->isHTML(true);
+            $mail->isHTML(true);
 
-    $mail->Subject = 'Your OTP Verification Code';
+            $mail->Subject = 'Your OTP Verification Code';
 
-    $mail->Body = "
+            $mail->Body = "
         <h2>Your OTP is:</h2>
         <h1>$otp</h1>
         <p>This OTP expires in 5 minutes.</p>
     ";
 
-    $mail->send();
+            $mail->send();
 
-} catch (Exception $e) {
+        } catch (Exception $e) {
 
-    return [
-        "status" => "error",
-        "message" => "Email sending failed"
-    ];
-}
+            return [
+                "status" => "error",
+                "message" => "Email sending failed"
+            ];
+        }
 
         // TEMPORARY RETURN OTP
         // REMOVE OTP IN PRODUCTION
@@ -190,9 +190,9 @@ try {
              ORDER BY id DESC
              LIMIT 1"
         )
-        ->bindValue(':email', $email)
-        ->bindValue(':otp', $otp)
-        ->queryOne();
+            ->bindValue(':email', $email)
+            ->bindValue(':otp', $otp)
+            ->queryOne();
 
         // INVALID OTP
         if (!$otpData) {
@@ -224,84 +224,77 @@ try {
         $user = Yii::$app->db->createCommand(
             "SELECT * FROM users WHERE email = :email"
         )
-        ->bindValue(':email', $email)
-        ->queryOne();
+            ->bindValue(':email', $email)
+            ->queryOne();
 
         // GENERATE TOKEN
         $token = bin2hex(random_bytes(32));
 
         // OPTIONAL LOGIN HISTORY
-      // ================= DEVICE INFO =================
+        // ================= DEVICE INFO =================
 
-$userAgent = Yii::$app->request->userAgent;
+        $userAgent = Yii::$app->request->userAgent;
 
-// DEVICE TYPE
-$device = "Desktop";
+        // DEVICE TYPE
+        $device = "Desktop";
 
-if (preg_match('/mobile/i', $userAgent)) {
-    $device = "Mobile";
-}
+        if (preg_match('/mobile/i', $userAgent)) {
+            $device = "Mobile";
+        }
 
-// BROWSER
-$browser = "Unknown";
+        // BROWSER
+        $browser = "Unknown";
 
-if (strpos($userAgent, 'Chrome') !== false) {
-    $browser = "Chrome";
-}
-elseif (strpos($userAgent, 'Firefox') !== false) {
-    $browser = "Firefox";
-}
-elseif (strpos($userAgent, 'Safari') !== false) {
-    $browser = "Safari";
-}
-elseif (strpos($userAgent, 'Edge') !== false) {
-    $browser = "Edge";
-}
+        if (strpos($userAgent, 'Chrome') !== false) {
+            $browser = "Chrome";
+        } elseif (strpos($userAgent, 'Firefox') !== false) {
+            $browser = "Firefox";
+        } elseif (strpos($userAgent, 'Safari') !== false) {
+            $browser = "Safari";
+        } elseif (strpos($userAgent, 'Edge') !== false) {
+            $browser = "Edge";
+        }
 
-// OS
-$os = "Unknown";
+        // OS
+        $os = "Unknown";
 
-if (strpos($userAgent, 'Windows') !== false) {
-    $os = "Windows";
-}
-elseif (strpos($userAgent, 'Linux') !== false) {
-    $os = "Linux";
-}
-elseif (strpos($userAgent, 'Mac') !== false) {
-    $os = "Mac";
-}
-elseif (strpos($userAgent, 'Android') !== false) {
-    $os = "Android";
-}
-elseif (strpos($userAgent, 'iPhone') !== false) {
-    $os = "iOS";
-}
+        if (strpos($userAgent, 'Windows') !== false) {
+            $os = "Windows";
+        } elseif (strpos($userAgent, 'Linux') !== false) {
+            $os = "Linux";
+        } elseif (strpos($userAgent, 'Mac') !== false) {
+            $os = "Mac";
+        } elseif (strpos($userAgent, 'Android') !== false) {
+            $os = "Android";
+        } elseif (strpos($userAgent, 'iPhone') !== false) {
+            $os = "iOS";
+        }
 
-// ================= SAVE LOGIN =================
+        // ================= SAVE LOGIN =================
 
-Yii::$app->db->createCommand()->insert('user_login', [
+        Yii::$app->db->createCommand()->insert('user_login', [
 
-    'user_id' => $user['id'],
+            'user_id' => $user['id'],
 
-    'login_time' => date('Y-m-d H:i:s'),
+            'login_time' => date('Y-m-d H:i:s'),
 
-    'ip_address' => Yii::$app->request->userIP,
+            'ip_address' => Yii::$app->request->userIP,
 
-    'device' => $device,
-    'browser' => $browser,
-    'os' => $os,
+            'device' => $device,
+            'browser' => $browser,
+            'os' => $os,
 
-    'token' => $token,
+            'token' => $token,
 
-    'created_at' => date('Y-m-d H:i:s'),
-    'created_by' => null,
+            'created_at' => date('Y-m-d H:i:s'),
+            'created_by' => null,
 
-    'updated_at' => null,
-    'updated_by' => null,
+            'updated_at' => null,
+            'updated_by' => null,
 
-    'is_status' => 1
+            'is_status' => 1
 
-])->execute();
+        ])->execute();
         return [
             "status" => "success",
             "message" => "OTP verified successfully",
@@ -310,7 +303,7 @@ Yii::$app->db->createCommand()->insert('user_login', [
                 "id" => $user['id'],
                 "name" => $user['name'],
                 "email" => $user['email'],
-                "is_admin" => (int)$user['is_admin']
+                "is_admin" => (int) $user['is_admin']
             ]
         ];
     }
