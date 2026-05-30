@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Search, GraduationCap, Laptop, BookOpen, FlaskConical, Briefcase, Pill, Palette, Settings, Users, ShieldCheck, Headphones, TrendingUp, Zap, ChevronRight } from "lucide-react";
+import {
+  FaCog, FaHeartbeat, FaBriefcase, FaPalette,
+  FaFlask, FaBalanceScale, FaPencilAlt, FaConciergeBell,
+  FaDesktop, FaGraduationCap
+} from "react-icons/fa";
 
 // Import your image
 import heroImage from "/src/assets/images/course.png";
@@ -18,14 +23,17 @@ const popularCourses = [
 
 const iconMap = { GraduationCap, Briefcase, FlaskConical, Laptop, Pill, Settings, BookOpen, Palette };
 
-const streams = [
-  { name: "Engineering",       icon: <Laptop size={22} />,       color: "text-indigo-600",  bg: "bg-indigo-50"  },
-  { name: "Management",        icon: <Briefcase size={22} />,    color: "text-teal-600",    bg: "bg-teal-50"    },
-  { name: "Science",           icon: <FlaskConical size={22} />, color: "text-amber-600",   bg: "bg-amber-50"   },
-  { name: "Computer App.",     icon: <Laptop size={22} />,       color: "text-pink-600",    bg: "bg-pink-50"    },
-  { name: "Pharmacy",          icon: <Pill size={22} />,         color: "text-blue-600",    bg: "bg-blue-50"    },
-  { name: "Education",         icon: <BookOpen size={22} />,     color: "text-emerald-600", bg: "bg-emerald-50" },
-  { name: "Arts & Humanities", icon: <Palette size={22} />,      color: "text-purple-600",  bg: "bg-purple-50"  },
+const fields = [
+  { icon: <FaCog />, color: "bg-[#F3E8FF] text-[#6D28D9]", name: "Engineering &\nTechnology", desc: "Build the future with\ninnovation and technology.", link: "/field/engineering" },
+  { icon: <FaHeartbeat />, color: "bg-[#CCFBF1] text-[#0D9488]", name: "Medical &\nHealth", desc: "Serve society and improve\nlives through healthcare.", link: "/field/medical" },
+  { icon: <FaBriefcase />, color: "bg-[#FFEDD5] text-[#EA580C]", name: "Commerce &\nManagement", desc: "Lead businesses and\ndrive economic growth.", link: "/field/commerce" },
+  { icon: <FaPalette />, color: "bg-[#FCE7F3] text-[#DB2777]", name: "Arts &\nHumanities", desc: "Explore creativity, culture\nand human expression.", link: "/field/arts" },
+  { icon: <FaFlask />, color: "bg-[#DBEAFE] text-[#2563EB]", name: "Science", desc: "Discover, learn and\nexpand the boundaries\nof knowledge.", link: "/field/science" },
+  { icon: <FaBalanceScale />, color: "bg-[#EDE9FE] text-[#6D28D9]", name: "Law", desc: "Uphold justice and\nbuild a career in legal\nprofession.", link: "/field/law" },
+  { icon: <FaPencilAlt />, color: "bg-[#FCE7F3] text-[#DB2777]", name: "Design", desc: "Turn ideas into reality\nwith creativity and\nimagination.", link: "/field/design" },
+  { icon: <FaConciergeBell />, color: "bg-[#FEF3C7] text-[#D97706]", name: "Hospitality", desc: "Create memorable\nexperiences and build\na global career.", link: "/field/hospitality" },
+  { icon: <FaDesktop />, color: "bg-[#CCFBF1] text-[#0D9488]", name: "IT &\nComputer", desc: "Shape the digital world\nwith skills and\ntechnology.", link: "/field/it-computer" },
+  { icon: <FaGraduationCap />, color: "bg-[#EDE9FE] text-[#6D28D9]", name: "Education", desc: "Inspire minds and\nshape the future\nthrough teaching.", link: "/field/education" },
 ];
 
 const whyChooseUs = [
@@ -215,16 +223,18 @@ const Course = () => {
             </button>
           </Link>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-          {streams.map((s, i) => (
-            <div key={i} 
-                 onClick={() => { setSelectedStream(s.name === "Computer App." ? "Technology" : s.name); setTimeout(() => courseSectionRef.current?.scrollIntoView({ behavior: "smooth" }), 50); }}
-                 className="group bg-white p-4 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 text-center cursor-pointer hover:-translate-y-1 transition-all duration-300">
-              <div className={`${s.bg} ${s.color} w-11 h-11 mx-auto mb-2 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                {s.icon}
+        <div className="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-3">
+          {fields.map((f, i) => (
+            <Link key={i} to={f.link || "#"} className="block">
+              <div className="group bg-white p-4 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 text-center cursor-pointer hover:-translate-y-1 transition-all duration-300 h-full flex flex-col justify-center items-center">
+                <div className={`${f.color} w-11 h-11 mx-auto mb-2 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-xl`}>
+                  {f.icon}
+                </div>
+                <h4 className="font-bold text-[11px] text-[#071B52] leading-tight whitespace-pre-line">
+                  {f.name}
+                </h4>
               </div>
-              <h4 className="font-bold text-xs text-[#071B52] leading-tight">{s.name}</h4>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
