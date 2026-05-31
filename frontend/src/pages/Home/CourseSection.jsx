@@ -9,65 +9,69 @@ import {
   FaCapsules,
   FaArrowRight,
 } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
-const courses = [
+
+
+const PopularCourses = () => {
+  const { t } = useTranslation();
+
+  const courses = [
   {
     title: "B.Tech",
-    subtitle: "Bachelor of Technology",
+    subtitle: t("btechSubtitle"),
     icon: <FaGraduationCap />,
     iconColor: "text-[#5B3DF5]",
     bgGradient: "from-[#5B3DF5]/20 to-[#5B3DF5]/5",
-    duration: "4 Years",
-    career: "Engineer",
+    duration: t("duration4Years"),
+    career: t("engineer"),
   },
   {
     title: "MBA",
-    subtitle: "Master of Business Administration",
+    subtitle: t("mbaSubtitle"),
     icon: <FaBriefcase />,
     iconColor: "text-[#EC4899]",
     bgGradient: "from-[#EC4899]/20 to-[#EC4899]/5",
-    duration: "2 Years",
-    career: "Manager",
+    duration: t("duration2Years"),
+    career: t("manager"),
   },
   {
     title: "B.Sc",
-    subtitle: "Bachelor of Science",
+    subtitle: t("bscSubtitle"),
     icon: <FaFlask />,
     iconColor: "text-[#14B8A6]",
     bgGradient: "from-[#14B8A6]/20 to-[#14B8A6]/5",
-    duration: "3 Years",
-    career: "Scientist",
+    duration: t("duration3Years"),
+    career: t("scientist"),
   },
   {
     title: "BCA",
-    subtitle: "Bachelor Computer Applications",
+    subtitle: t("bcaSubtitle"),
     icon: <FaLaptopCode />,
     iconColor: "text-[#F59E0B]",
     bgGradient: "from-[#F59E0B]/20 to-[#F59E0B]/5",
-    duration: "3 Years",
-    career: "Developer",
+    duration: t("duration3Years"),
+    career: t("developer"),
   },
   {
     title: "Diploma",
-    subtitle: "Polytechnic Diploma",
+    subtitle: t("diplomaSubtitle"),
     icon: <FaCog />,
     iconColor: "text-[#3B82F6]",
     bgGradient: "from-[#3B82F6]/20 to-[#3B82F6]/5",
-    duration: "3 Years",
-    career: "Technician",
+    duration: t("duration3Years"),
+    career: t("technician"),
   },
   {
     title: "B.Pharm",
-    subtitle: "Bachelor of Pharmacy",
+    subtitle: t("bpharmSubtitle"),
     icon: <FaCapsules />,
     iconColor: "text-[#10B981]",
     bgGradient: "from-[#10B981]/20 to-[#10B981]/5",
-    duration: "4 Years",
-    career: "Pharmacist",
+    duration: t("duration4Years"),
+    career: t("pharmacist"),
   },
 ];
-
-const PopularCourses = () => {
   return (
     <section className="py-12 md:py-16 bg-gradient-to-b from-[#FAFAFD] to-white">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6">
@@ -75,11 +79,9 @@ const PopularCourses = () => {
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 md:mb-12">
           <div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#071B52]">
-              Popular Courses
-            </h2>
+ {t("popularCourses")}            </h2>
             <p className="text-gray-500 text-sm md:text-base mt-2">
-              Choose from 1000+ courses across top colleges
-            </p>
+ {t("popularCoursesDesc")}            </p>
           </div>
         </div>
 
@@ -135,8 +137,7 @@ const PopularCourses = () => {
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-12 md:mt-16">
           <Link to="/course">
             <button className="group inline-flex items-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white px-8 md:px-10 py-3 md:py-3.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-              <span>View All Courses</span>
-              <FaArrowRight className="text-xs group-hover:translate-x-1 transition-transform duration-300" />
+<span>{t("viewAllCourses")}</span>              <FaArrowRight className="text-xs group-hover:translate-x-1 transition-transform duration-300" />
             </button>
           </Link>
           

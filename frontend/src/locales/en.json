@@ -26,4 +26,66 @@
 
   "stats4Title": "100%",
   "stats4Subtitle": "Trusted"
+,
+  "whyChooseUs": "Why Choose Us",
+  "whyChooseUsDesc": "Your trusted partner in finding the right educational path",
+
+  "studentTitle": "For Students",
+  "studentDesc": "Discover the best colleges and courses that match your goals.",
+
+  "parentTitle": "For Parents",
+  "parentDesc": "A trusted platform to support your child's bright future.",
+
+  "verifiedTitle": "Verified Information",
+  "verifiedDesc": "All colleges and courses are verified for your safety and trust.",
+
+  "allInOneTitle": "All at One Place",
+  "allInOneDesc": "Courses, colleges, fees, eligibility and more — everything here."
+,
+  "feature1Title": "Diverse Courses",
+  "feature1Desc": "Wide range of courses to choose",
+
+  "feature2Title": "Trusted Colleges",
+  "feature2Desc": "Government, Private & Deemed Universities",
+
+  "feature3Title": "Easy Process",
+  "feature3Desc": "Simple and hassle-free admission process",
+
+  "feature4Title": "Safe & Secure",
+  "feature4Desc": "Your information remains secure and completely private",
+
+  "feature5Title": "24/7 Support",
+  "feature5Desc": "Get help anytime from our experts"
+,
+  "popularCourses": "Popular Courses",
+  "popularCoursesDesc": "Choose from top courses across leading colleges",
+  "viewAllCourses": "View All Courses",
+
+  "btechSubtitle": "Bachelor of Technology",
+  "mbaSubtitle": "Master of Business Administration",
+  "bscSubtitle": "Bachelor of Science",
+  "bcaSubtitle": "Bachelor of Computer Applications",
+  "diplomaSubtitle": "Polytechnic Diploma",
+  "bpharmSubtitle": "Bachelor of Pharmacy",
+
+  "duration2Years": "2 Years",
+  "duration3Years": "3 Years",
+  "duration4Years": "4 Years",
+
+  "engineer": "Engineer",
+  "manager": "Manager",
+  "scientist": "Scientist",
+  "developer": "Developer",
+  "technician": "Technician",
+  "pharmacist": "Pharmacist"
+,
+  "topColleges": "Top Colleges in Odisha",
+  "topCollegesDesc": "Explore the best educational institutions in Odisha",
+
+  "exploreColleges": "Explore Colleges",
+  "viewDetails": "View Details",
+
+  "findPerfectCollege": "Find Your Perfect College",
+  "collegeRecommendation": "Get personalized recommendations based on your preferences",
+  "startExploring": "Start Exploring"
 }

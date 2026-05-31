@@ -13,41 +13,42 @@ import { useEnquiry } from "../../context/EnquiryContext";
   
 
 
-const features = [
+
+
+const HeroSection = () => {
+  const { t } = useTranslation();
+  const features = [
   {
     icon: <FaGraduationCap />,
-    title: "Diverse Courses",
-    desc: "Wide range of courses to choose",
+    title: t("feature1Title"),
+    desc: t("feature1Desc"),
     color: "text-[#5B3DF5]",
   },
   {
     icon: <FaUniversity />,
-    title: "Trusted Colleges",
-    desc: "Government, Private & Deemed Universities",
+    title: t("feature2Title"),
+    desc: t("feature2Desc"),
     color: "text-[#14B8A6]",
   },
   {
     icon: <HiOutlineDocumentText />,
-    title: "Easy Process",
-    desc: "Simple and hassle-free admission process",
+    title: t("feature3Title"),
+    desc: t("feature3Desc"),
     color: "text-[#F59E0B]",
   },
   {
     icon: <FaShieldAlt />,
-    title: "Safe & Secure",
-    desc: "Your data is protected and 100% secure",
+    title: t("feature4Title"),
+    desc: t("feature4Desc"),
     color: "text-[#3B82F6]",
   },
   {
     icon: <FiHeadphones />,
-    title: "24/7 Support",
-    desc: "Get help anytime from our experts",
+    title: t("feature5Title"),
+    desc: t("feature5Desc"),
     color: "text-[#A855F7]",
   },
 ];
-
-const HeroSection = () => {
-  const { t } = useTranslation();
     const { openEnquiry } = useEnquiry();
   return (
     <section className="bg-gradient-to-b from-[#F8F8FC] to-white pt-8 pb-12 md:pt-8 md:pb-16 overflow-hidden">

@@ -25,4 +25,66 @@
 
   "stats4Title": "100%",
   "stats4Subtitle": "विश्वसनीय"
+,
+  "whyChooseUs": "हमें क्यों चुनें",
+  "whyChooseUsDesc": "सही शैक्षणिक मार्ग खोजने में आपका विश्वसनीय साथी",
+
+  "studentTitle": "छात्रों के लिए",
+  "studentDesc": "अपने लक्ष्यों के अनुरूप सर्वश्रेष्ठ कॉलेज और कोर्स खोजें।",
+
+  "parentTitle": "अभिभावकों के लिए",
+  "parentDesc": "आपके बच्चे के उज्ज्वल भविष्य के लिए एक विश्वसनीय मंच।",
+
+  "verifiedTitle": "सत्यापित जानकारी",
+  "verifiedDesc": "सभी कॉलेज और कोर्स आपकी सुरक्षा और विश्वास के लिए सत्यापित हैं।",
+
+  "allInOneTitle": "सब कुछ एक जगह",
+  "allInOneDesc": "कोर्स, कॉलेज, फीस, पात्रता और बहुत कुछ — सब कुछ यहाँ।"
+,
+  "feature1Title": "विविध कोर्स",
+  "feature1Desc": "चुनने के लिए कई प्रकार के कोर्स",
+
+  "feature2Title": "विश्वसनीय कॉलेज",
+  "feature2Desc": "सरकारी, निजी और डीम्ड विश्वविद्यालय",
+
+  "feature3Title": "आसान प्रक्रिया",
+  "feature3Desc": "सरल और परेशानी मुक्त प्रवेश प्रक्रिया",
+
+  "feature4Title": "सुरक्षित और संरक्षित",
+  "feature4Desc": "आपकी जानकारी सुरक्षित और पूरी तरह निजी है",
+
+  "feature5Title": "24/7 सहायता",
+  "feature5Desc": "हमारे विशेषज्ञों से कभी भी सहायता प्राप्त करें"
+,
+  "popularCourses": "लोकप्रिय कोर्स",
+  "popularCoursesDesc": "शीर्ष कॉलेजों के लोकप्रिय कोर्स चुनें",
+  "viewAllCourses": "सभी कोर्स देखें",
+
+  "btechSubtitle": "बैचलर ऑफ टेक्नोलॉजी",
+  "mbaSubtitle": "मास्टर ऑफ बिजनेस एडमिनिस्ट्रेशन",
+  "bscSubtitle": "बैचलर ऑफ साइंस",
+  "bcaSubtitle": "बैचलर ऑफ कंप्यूटर एप्लीकेशन्स",
+  "diplomaSubtitle": "पॉलिटेक्निक डिप्लोमा",
+  "bpharmSubtitle": "बैचलर ऑफ फार्मेसी",
+
+  "duration2Years": "2 वर्ष",
+  "duration3Years": "3 वर्ष",
+  "duration4Years": "4 वर्ष",
+
+  "engineer": "इंजीनियर",
+  "manager": "प्रबंधक",
+  "scientist": "वैज्ञानिक",
+  "developer": "डेवलपर",
+  "technician": "तकनीशियन",
+  "pharmacist": "फार्मासिस्ट"
+,
+  "topColleges": "ओडिशा के शीर्ष कॉलेज",
+  "topCollegesDesc": "ओडिशा के सर्वश्रेष्ठ शैक्षणिक संस्थानों को खोजें",
+
+  "exploreColleges": "कॉलेज देखें",
+  "viewDetails": "विवरण देखें",
+
+  "findPerfectCollege": "अपने लिए सही कॉलेज खोजें",
+  "collegeRecommendation": "अपनी पसंद के अनुसार व्यक्तिगत सुझाव प्राप्त करें",
+  "startExploring": "खोज शुरू करें"
 }

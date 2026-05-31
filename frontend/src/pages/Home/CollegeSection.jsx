@@ -4,8 +4,10 @@ import { FaStar, FaMapMarkerAlt, FaArrowRight } from "react-icons/fa";
 import { ASSETS_BASE } from "../../config/api";
 
 import kiit from "/src/assets/images/colleges/kiit.jpg";
+import { useTranslation } from "react-i18next";
 
 const TopColleges = () => {
+  const { t } = useTranslation();
   const [colleges, setColleges] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -45,19 +47,16 @@ const TopColleges = () => {
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 md:mb-12">
           <div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#071B52]">
-              Top Colleges in Odisha
-            </h2>
+ {t("topColleges")}            </h2>
             <p className="text-gray-500 text-sm md:text-base mt-2">
-              Explore the best educational institutions in Odisha
-            </p>
+ {t("topCollegesDesc")}            </p>
           </div>
 
           <button
             onClick={handleExploreColleges}
             className="group inline-flex items-center gap-2 text-[#4F46E5] font-semibold text-sm md:text-base hover:gap-3 transition-all duration-300"
           >
-            Explore Colleges
-            <FaArrowRight className="text-xs group-hover:translate-x-1 transition-transform duration-300" />
+{t("exploreColleges")}            <FaArrowRight className="text-xs group-hover:translate-x-1 transition-transform duration-300" />
           </button>
         </div>
 
@@ -108,8 +107,7 @@ const TopColleges = () => {
                   </div>
 
                   <button className="w-full py-2.5 text-sm font-medium rounded-xl border border-[#4F46E5] text-[#4F46E5] bg-white/50 group-hover:bg-[#4F46E5] group-hover:text-white transition-all duration-300">
-                    View Details
-                  </button>
+{t("viewDetails")}                  </button>
                 </div>
               </div>
             ))}
@@ -119,17 +117,14 @@ const TopColleges = () => {
         {/* CTA Section */}
         <div className="mt-12 md:mt-16 bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] rounded-2xl p-6 md:p-8 text-center">
           <h3 className="text-white text-xl md:text-2xl font-bold mb-2">
-            Find Your Perfect College
-          </h3>
+{t("findPerfectCollege")}          </h3>
           <p className="text-white/80 text-sm md:text-base mb-4">
-            Get personalized recommendations based on your preferences
-          </p>
+{t("collegeRecommendation")}          </p>
           <button
             onClick={handleExploreColleges}
             className="bg-white text-[#4F46E5] px-6 md:px-8 py-2.5 md:py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105"
           >
-            Start Exploring
-          </button>
+{t("startExploring")}          </button>
         </div>
       </div>
     </section>

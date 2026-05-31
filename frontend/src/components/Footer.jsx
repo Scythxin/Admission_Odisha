@@ -116,25 +116,25 @@ const Footer = () => {
           </div>
 
           {/* For Parents */}
-          <div>
-            <h3 className="font-bold text-base mb-3">For Parents</h3>
+         <div>
+  <h3 className="font-bold text-base mb-3">For Parents</h3>
 
-            <ul className="space-y-2 text-white/80 text-sm">
-              <li>
-                <Link to="/about">Admission Process</Link>
-              </li>
-              <li>
-                <Link to="/about">Documents Required</Link>
-              </li>
-              <li>
-                <Link to="/about">Fee Structure</Link>
-              </li>
-              <li>
-                <Link to="/about">FAQs</Link>
-              </li>
-            </ul>
-          </div>
+  <ul className="space-y-2 text-white/80 text-sm">
+    <li>
+      <Link to="/colleges">Find Colleges</Link>
+    </li>
 
+    <li>
+      <Link to="/contact">Contact Support</Link>
+    </li>
+
+    
+
+    <li>
+      <Link to="/register">Register here</Link>
+    </li>
+  </ul>
+</div>
           {/* Contact */}
           <div>
             <h3 className="font-bold text-base mb-3">Contact Us</h3>

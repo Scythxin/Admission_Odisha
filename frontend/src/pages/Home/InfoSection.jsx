@@ -5,57 +5,55 @@ import {
   FaShieldAlt,
   FaClipboardList,
 } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
-const infoData = [
+
+const InfoSection = () => {
+  const { t } = useTranslation();
+  const infoData = [
   {
     id: 1,
     icon: <FaUserGraduate />,
-    title: "For Students",
-    description:
-      "Discover the best colleges and courses that match your goals.",
+    title: t("studentTitle"),
+    description: t("studentDesc"),
     iconColor: "text-[#5B3DF5]",
     bgColor: "bg-[#5B3DF5]/10",
   },
   {
     id: 2,
     icon: <FaUsers />,
-    title: "For Parents",
-    description: "A trusted platform to support your child's bright future.",
+    title: t("parentTitle"),
+    description: t("parentDesc"),
     iconColor: "text-[#EC4899]",
     bgColor: "bg-[#EC4899]/10",
   },
   {
     id: 3,
     icon: <FaShieldAlt />,
-    title: "Verified Information",
-    description:
-      "All colleges and courses are verified for your safety and trust.",
+    title: t("verifiedTitle"),
+    description: t("verifiedDesc"),
     iconColor: "text-[#14B8A6]",
     bgColor: "bg-[#14B8A6]/10",
   },
   {
     id: 4,
     icon: <FaClipboardList />,
-    title: "All at One Place",
-    description:
-      "Courses, colleges, fees, eligibility and more — everything here.",
+    title: t("allInOneTitle"),
+    description: t("allInOneDesc"),
     iconColor: "text-[#3B82F6]",
     bgColor: "bg-[#3B82F6]/10",
   },
 ];
 
-const InfoSection = () => {
   return (
     <section className="py-8 md:py-12 bg-white">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6">
         {/* Heading */}
         <div className="text-center mb-8 md:mb-10">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#071B52]">
-            Why Choose Us
-          </h2>
+{t("whyChooseUs")}          </h2>
           <p className="text-gray-500 text-base md:text-lg mt-2 max-w-2xl mx-auto">
-            Your trusted partner in finding the right educational path
-          </p>
+{t("whyChooseUsDesc")}          </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
