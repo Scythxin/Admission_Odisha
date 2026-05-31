@@ -113,57 +113,132 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-[#f5f3ff] px-4 relative">
 
       {/* OTP Modal */}
-      {showOtpModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-          <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full animate-in fade-in zoom-in duration-300">
-            <div className="text-center mb-6">
-              <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MdSecurity className="text-primary text-3xl" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-800">Verify OTP</h3>
-              <p className="text-sm text-gray-500 mt-2">
-                We've sent a 6-digit code to <span className="font-semibold text-gray-700">{email}</span>
-              </p>
+     {showOtpModal && (
+  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+    <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all duration-300 scale-100">
+      
+      {/* Top Gradient Bar */}
+      <div className="h-1.5 bg-gradient-to-r from-primary via-purple-500 to-primary"></div>
+      
+      <div className="p-8">
+        <div className="text-center mb-6">
+          {/* Animated Icon Container */}
+          <div className="relative w-20 h-20 mx-auto mb-4">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20 rounded-2xl animate-pulse"></div>
+            <div className="relative bg-gradient-to-br from-primary to-purple-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
             </div>
+          </div>
+          
+          <h3 className="text-2xl font-bold text-gray-800 mb-2">Verify OTP</h3>
+          <p className="text-gray-500 text-sm">
+            We've sent a 6-digit code to
+          </p>
+          <p className="font-semibold text-gray-800 text-sm mt-1 bg-gray-100 inline-block px-3 py-1 rounded-full">
+            {email}
+          </p>
+        </div>
 
-            <form onSubmit={handleVerifyOtp} className="space-y-6">
-              <div className="flex justify-center">
-                <input
-                  type="text"
-                  maxLength="6"
-                  placeholder="Enter 6-digit OTP"
-                  className="w-full text-center text-2xl tracking-[0.5em] font-bold border-b-2 border-gray-200 outline-none focus:border-primary py-2 transition-colors"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                  autoFocus
+        <form onSubmit={handleVerifyOtp} className="space-y-6">
+          {/* OTP Input Fields - 6 Separate Boxes */}
+          <div className="flex justify-center gap-2 sm:gap-3">
+            {[...Array(6)].map((_, index) => (
+              <input
+                key={index}
+                type="text"
+                maxLength="1"
+                className="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-bold border-2 border-gray-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all duration-200 bg-gray-50/50"
+                value={otp[index] || ""}
+                onChange={(e) => {
+                  const newOtp = otp.split('');
+                  newOtp[index] = e.target.value.replace(/\D/g, '');
+                  setOtp(newOtp.join(''));
+                  if (e.target.value && index < 5) {
+                    const nextInput = document.querySelector(`input[name="otp-${index + 1}"]`);
+                    if (nextInput) nextInput.focus();
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Backspace' && !otp[index] && index > 0) {
+                    const prevInput = document.querySelector(`input[name="otp-${index - 1}"]`);
+                    if (prevInput) prevInput.focus();
+                  }
+                }}
+                name={`otp-${index}`}
+                autoFocus={index === 0}
+              />
+            ))}
+          </div>
+
+          {/* Timer with Circular Progress */}
+          <div className="relative flex justify-center">
+            <div className="relative w-14 h-14">
+              <svg className="w-full h-full transform -rotate-90">
+                <circle
+                  cx="28"
+                  cy="28"
+                  r="24"
+                  stroke="#E5E7EB"
+                  strokeWidth="3"
+                  fill="none"
                 />
-              </div>
-
-              <div className="text-center">
-                <span className={`text-sm font-medium ${timer < 10 ? "text-red-500" : "text-gray-500"}`}>
-                  Expires in: {Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, "0")}
+                <circle
+                  cx="28"
+                  cy="28"
+                  r="24"
+                  stroke={timer < 10 ? "#EF4444" : "#6366F1"}
+                  strokeWidth="3"
+                  fill="none"
+                  strokeDasharray={`${(timer / 60) * 150.8} 150.8`}
+                  strokeLinecap="round"
+                  className="transition-all duration-1000"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className={`text-xs font-bold ${timer < 10 ? "text-red-500" : "text-primary"}`}>
+                  {Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, "0")}
                 </span>
               </div>
-
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowOtpModal(false)}
-                  className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-gray-600 font-medium hover:bg-gray-50 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg font-medium hover:opacity-90 transition shadow-lg shadow-primary/20"
-                >
-                  Verify
-                </button>
-              </div>
-            </form>
+            </div>
           </div>
-        </div>
-      )}
+
+          {/* Resend Option */}
+          {timer === 0 && (
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                className="text-primary font-medium text-sm hover:underline transition"
+              >
+                Resend OTP
+              </button>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setShowOtpModal(false)}
+              className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-600 font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={otp.length !== 6}
+              className="flex-1 px-4 py-3 bg-gradient-to-r from-primary to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-primary/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-95"
+            >
+              Verify & Continue
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+)}
 
       {/* Main Card */}
       <div className="max-w-6xl w-full grid md:grid-cols-2 bg-white shadow-xl rounded-2xl overflow-hidden">
