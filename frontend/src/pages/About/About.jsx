@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import parent from "../../assets/images/parent.png";
 import student from "../../assets/images/student.png";
+import { useTranslation } from "react-i18next";
 
 import { Link } from 'react-router-dom';
 import { 
@@ -10,8 +11,9 @@ import {
 } from 'lucide-react';
 
 const About = () => {
+  const { t } = useTranslation();
   const [animatedText, setAnimatedText] = useState("");
-  const fullText = "Empowering Students, Building Futures";
+  const fullText = t("aboutHeroText");
   
   useEffect(() => {
     let i = 0;
@@ -24,36 +26,36 @@ const About = () => {
       }
     }, 50);
     return () => clearInterval(interval);
-  }, []);
+  }, [fullText]);
 
   const stats = [
     { 
-      label: "Trusted", 
-      sub: "Colleges", 
+      label: t("aboutStatsTrusted"), 
+      sub: t("aboutStatsColleges"), 
       icon: <School size={24} />, 
       color: "text-[#5B3DF5]",
       bg: "bg-[#5B3DF5]/10",
       link: "/college"
     },
     { 
-      label: "Diverse", 
-      sub: "Courses", 
+      label: t("aboutStatsDiverse"), 
+      sub: t("aboutStatsCourses"), 
       icon: <GraduationCap size={24} />, 
       color: "text-[#14B8A6]",
       bg: "bg-[#14B8A6]/10",
       link: "/course"
     },
     { 
-      label: "Empowering Careers", 
-      sub: "Of Students", 
+      label: t("aboutStatsEmpowering"), 
+      sub: t("aboutStatsStudents"), 
       icon: <Users size={24} />, 
       color: "text-[#F59E0B]",
       bg: "bg-[#F59E0B]/10",
       link: "/students"
     },
     { 
-      label: "Across Various ", 
-      sub: "Regions", 
+      label: t("aboutStatsAcross"), 
+      sub: t("aboutStatsRegions"), 
       icon: <MapPin size={24} />, 
       color: "text-[#3B82F6]",
       bg: "bg-[#3B82F6]/10",
@@ -62,24 +64,24 @@ const About = () => {
   ];
 
   const values = [
-    { title: "Transparency", color: "text-[#5B3DF5]", icon: <ShieldCheck size={16} />, desc: "Clear and verified information", bg: "bg-[#5B3DF5]/10" },
-    { title: "Student First", color: "text-[#14B8A6]", icon: <Users size={16} />, desc: "Best quality in everything we do", bg: "bg-[#14B8A6]/10" },
-    { title: "Excellence", color: "text-[#F59E0B]", icon: <Award size={16} />, desc: "Honest, ethical and responsible", bg: "bg-[#F59E0B]/10" },
+    { title: t("aboutValueTransparency"), color: "text-[#5B3DF5]", icon: <ShieldCheck size={16} />, desc: t("aboutValueTransparencyDesc"), bg: "bg-[#5B3DF5]/10" },
+    { title: t("aboutValueStudentFirst"), color: "text-[#14B8A6]", icon: <Users size={16} />, desc: t("aboutValueStudentFirstDesc"), bg: "bg-[#14B8A6]/10" },
+    { title: t("aboutValueExcellence"), color: "text-[#F59E0B]", icon: <Award size={16} />, desc: t("aboutValueExcellenceDesc"), bg: "bg-[#F59E0B]/10" },
   ];
 
   const features = [
-    { t: "Verified Information", ic: <ShieldCheck size={20} />, c: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10", d: "All colleges and courses are verified and updated regularly", link: "/verified-info" },
-    { t: "Easy Process", ic: <Zap size={20} />, c: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10", d: "Simple steps to search, apply and get admission", link: "/how-it-works" },
-    { t: "Expert Support", ic: <Headphones size={20} />, c: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10", d: "Our counselors are always ready to help you", link: "/contact" },
-    { t: "Secure Platform", ic: <ShieldCheck size={20} />, c: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10", d: "Your information remains secure and completely private.", link: "/privacy" },
-    { t: "Timely Updates", ic: <Bell size={20} />, c: "text-[#EC4899]", bg: "bg-[#EC4899]/10", d: "Stay informed with important deadlines", link: "/alerts" },
+    { t: t("aboutFeatureVerifiedTitle"), ic: <ShieldCheck size={20} />, c: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10", d: t("aboutFeatureVerifiedDesc"), link: "/verified-info" },
+    { t: t("aboutFeatureEasyProcessTitle"), ic: <Zap size={20} />, c: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10", d: t("aboutFeatureEasyProcessDesc"), link: "/how-it-works" },
+    { t: t("aboutFeatureExpertSupportTitle"), ic: <Headphones size={20} />, c: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10", d: t("aboutFeatureExpertSupportDesc"), link: "/contact" },
+    { t: t("aboutFeatureSecurePlatformTitle"), ic: <ShieldCheck size={20} />, c: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10", d: t("aboutFeatureSecurePlatformDesc"), link: "/privacy" },
+    { t: t("aboutFeatureTimelyUpdatesTitle"), ic: <Bell size={20} />, c: "text-[#EC4899]", bg: "bg-[#EC4899]/10", d: t("aboutFeatureTimelyUpdatesDesc"), link: "/alerts" },
   ];
 
   const parentFeatures = [
-    { t: "Right Guidance", d: "Get expert advice to choose the right course", ic: <Zap size={16} />, c: "text-[#5B3DF5]", link: "/guidance" },
-    { t: "Complete Support", d: "We are with you from selection to admission", ic: <CheckCircle2 size={16} />, c: "text-[#14B8A6]", link: "/support" },
-    { t: "Safe & Secure", d: "Your child's information is 100% safe", ic: <ShieldCheck size={16} />, c: "text-[#F59E0B]", link: "/security" },
-    { t: "Peace of Mind", d: "Stress-free decisions for your family", ic: <Headphones size={16} />, c: "text-[#3B82F6]", link: "/peace-of-mind" },
+    { t: t("aboutParentRightGuidance"), d: t("aboutParentRightGuidanceDesc"), ic: <Zap size={16} />, c: "text-[#5B3DF5]", link: "/guidance" },
+    { t: t("aboutParentCompleteSupport"), d: t("aboutParentCompleteSupportDesc"), ic: <CheckCircle2 size={16} />, c: "text-[#14B8A6]", link: "/support" },
+    { t: t("aboutParentSafeSecure"), d: t("aboutParentSafeSecureDesc"), ic: <ShieldCheck size={16} />, c: "text-[#F59E0B]", link: "/security" },
+    { t: t("aboutParentPeaceOfMind"), d: t("aboutParentPeaceOfMindDesc"), ic: <Headphones size={16} />, c: "text-[#3B82F6]", link: "/peace-of-mind" },
   ];
 
   return (
@@ -96,21 +98,20 @@ const About = () => {
               </h1>
 
               <p className="text-[#5E6282] text-base sm:text-lg mt-4 max-w-[560px]">
-                Admission Odisha is your one-stop platform to explore colleges, courses and admission opportunities across Odisha. 
-                We make the admission process simple, transparent and accessible for everyone.
+                {t("aboutHeroDesc")}
               </p>
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 mt-6">
                 <Link to="/colleges">
                   <button className="bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-                    Explore Colleges
+                    {t("exploreColleges")}
                     <TrendingUp size={18} />
                   </button>
                 </Link>
                 <Link to="/contact">
                   <button className="border-2 border-[#4F46E5] text-[#4F46E5] px-6 py-3 rounded-xl font-semibold flex items-center gap-2 hover:bg-[#4F46E5] hover:text-white transition-all duration-300">
-                    Contact Us
+                    {t("contactUs")}
                     <Headphones size={18} />
                   </button>
                 </Link>
@@ -150,41 +151,39 @@ const About = () => {
       {/* 3. MISSION, VISION & VALUES - Auto height based on text */}
       <section className="max-w-[1280px] mx-auto py-16 px-4 sm:px-6">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#071B52] text-center mb-10">
-          Mission, Vision & Values
+          {t("aboutMissionVisionValues")}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Mission */}
           <div className="group bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 h-full flex flex-col">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-xl text-[#071B52]">Our Mission</h3>
+              <h3 className="font-bold text-xl text-[#071B52]">{t("aboutOurMission")}</h3>
               <div className="bg-[#4F46E5]/10 p-3 rounded-xl text-[#4F46E5] group-hover:rotate-12 transition-transform duration-300">
                 <Target size={24} />
               </div>
             </div>
             <p className="text-gray-500 text-sm leading-relaxed flex-grow">
-              To bridge the gap between students and the right educational opportunities. We provide accurate information, 
-              expert guidance and a smooth admission experience so that every student can achieve their dreams.
+              {t("aboutOurMissionDesc")}
             </p>
           </div>
 
           {/* Vision */}
           <div className="group bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 h-full flex flex-col">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-xl text-[#071B52]">Our Vision</h3>
+              <h3 className="font-bold text-xl text-[#071B52]">{t("aboutOurVision")}</h3>
               <div className="bg-[#14B8A6]/10 p-3 rounded-xl text-[#14B8A6] group-hover:rotate-12 transition-transform duration-300">
                 <Eye size={24} />
               </div>
             </div>
             <p className="text-gray-500 text-sm leading-relaxed flex-grow">
-              To become Odisha's most trusted education platform, empowering every student and parent to make 
-              informed decisions for a better and brighter future.
+              {t("aboutOurVisionDesc")}
             </p>
           </div>
 
           {/* Values */}
           <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 h-full flex flex-col">
-            <h3 className="font-bold text-xl text-[#071B52] mb-4">Our Values</h3>
+            <h3 className="font-bold text-xl text-[#071B52] mb-4">{t("aboutOurValues")}</h3>
             <div className="space-y-3 flex-grow">
               {values.map((v, i) => (
                 <div key={i} className={`flex items-center gap-3 p-3 ${v.bg} rounded-xl transition-all duration-300`}>
@@ -197,7 +196,7 @@ const About = () => {
               ))}
             </div>
             <p className="text-xs text-gray-400 italic pt-3 mt-2 border-t border-gray-100">
-              "Honest, ethical and responsible in our work"
+              {t("aboutValuesQuote")}
             </p>
           </div>
         </div>
@@ -217,10 +216,9 @@ const About = () => {
             </div>
             
             <div className="md:w-3/5 w-full">
-              <h3 className="text-2xl md:text-3xl font-bold text-[#071B52] mb-3">For Parents, With Care</h3>
+              <h3 className="text-2xl md:text-3xl font-bold text-[#071B52] mb-3">{t("aboutForParentsCare")}</h3>
               <p className="text-gray-500 text-sm leading-relaxed mb-6">
-                We understand how important your child's future is. That's why we provide you the right information 
-                and support at every step of the admission journey.
+                {t("aboutForParentsDesc")}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {parentFeatures.map((item, i) => (
@@ -245,7 +243,7 @@ const About = () => {
       {/* 5. FEATURES GRID - Premium Look */}
       <section className="max-w-[1280px] mx-auto px-4 sm:px-6 mb-16">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#071B52] text-center mb-10">
-          What Makes Us Different
+          {t("aboutDifferentTitle")}
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
@@ -268,15 +266,15 @@ const About = () => {
         <div className="bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between text-white relative overflow-hidden">
           <div className="relative z-10 text-center md:text-left mb-6 md:mb-0">
             <h2 className="text-2xl md:text-3xl font-bold mb-3">
-              We are committed to making education <br className="hidden md:block"/> accessible to every student in Odisha.
+              {t("aboutFinalCtaTitle")}
             </h2>
             <p className="text-white/80 text-sm italic">
-              "Your dream is our responsibility. Your success is our mission."
+              {t("aboutFinalCtaDesc")}
             </p>
           </div>
           <Link to="/colleges">
             <button className="relative z-10 bg-white text-[#4F46E5] px-8 py-3.5 rounded-xl font-bold hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
-              Explore Colleges
+              {t("exploreColleges")}
               <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </Link>

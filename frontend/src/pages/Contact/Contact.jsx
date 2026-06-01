@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import contact from "../../assets/images/contact.png"; import {
+import contact from "../../assets/images/contact.png";
+import {
   FaPhone,
   FaEnvelope,
   FaMapMarkerAlt,
@@ -17,8 +18,10 @@ import contact from "../../assets/images/contact.png"; import {
   FaExclamationTriangle,
   FaClipboardList,
 } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 const Contact = () => {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -33,11 +36,16 @@ const Contact = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [loopNum, setLoopNum] = useState(0);
 
-  const words = ["Help You", "Guide You", "Support You", "Assist You"];
+  const words = [
+    t("contactWordHelp"),
+    t("contactWordGuide"),
+    t("contactWordSupport"),
+    t("contactWordAssist")
+  ];
 
   useEffect(() => {
     const handleTyping = () => {
-      const currentWord = words[loopNum % words.length];
+      const currentWord = words[loopNum % words.length] || "";
       if (!isDeleting) {
         setDisplayText(currentWord.substring(0, displayText.length + 1));
         if (displayText === currentWord) {
@@ -54,7 +62,7 @@ const Contact = () => {
 
     const timer = setTimeout(handleTyping, 100);
     return () => clearTimeout(timer);
-  }, [displayText, isDeleting, loopNum]);
+  }, [displayText, isDeleting, loopNum, words]);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -88,11 +96,11 @@ const Contact = () => {
         setForm({ name: "", email: "", subject: "", message: "" });
         setTimeout(() => setSubmitSuccess(false), 3000);
       } else {
-        alert(data.message || "Something went wrong. Please try again.");
+        alert(data.message || t("contactErrSomethingWrong"));
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("Failed to connect to the server. Please check your connection.");
+      alert(t("contactErrFailedConnect"));
     } finally {
       setIsSubmitting(false);
     }
@@ -100,25 +108,32 @@ const Contact = () => {
 
   const faqs = [
     {
-      q: "What is the significance of internships during undergraduate studies?",
-      a: "Internships provide real-world experience, help build professional networks, enhance your resume, and give you a competitive edge in the job market. They also help you understand industry expectations and apply theoretical knowledge to practical situations.",
+      q: t("faq1Q"),
+      a: t("faq1A"),
       icon: <FaGraduationCap className="text-indigo-600" />
     },
     {
-      q: "What are the key challenges students face during the admission process?",
-      a: "Common challenges include understanding eligibility criteria, managing multiple application deadlines, gathering required documents, choosing the right college/course, financial planning, and dealing with competition. Our platform helps simplify these challenges.",
+      q: t("faq2Q"),
+      a: t("faq2A"),
       icon: <FaExclamationTriangle className="text-orange-600" />
     },
     {
-      q: "What trends are shaping higher education choices today?",
-      a: "Key trends include digital learning integration, skill-based courses, online degrees, hybrid learning models, increased focus on employability, specialized certifications, and emphasis on holistic development beyond academics.",
+      q: t("faq3Q"),
+      a: t("faq3A"),
       icon: <FaChartLine className="text-green-600" />
     },
     {
-      q: "Is an entrance examination mandatory for all programs?",
-      a: "No, entrance exams are not mandatory for all programs. While professional courses like engineering, medical, and management often require entrance exams, many undergraduate and postgraduate programs offer direct admission based on merit or personal interviews.",
+      q: t("faq4Q"),
+      a: t("faq4A"),
       icon: <FaClipboardList className="text-purple-600" />
     },
+  ];
+
+  const infoCards = [
+    { icon: <FaPhone className="text-2xl" style={{ transform: "scaleX(-1)" }} />, title: t("contactCardCall"), text: "+91 1234567890", sub: t("contactCardCallSub"), bg: "bg-blue-500" },
+    { icon: <FaEnvelope className="text-2xl" />, title: t("contactCardEmail"), text: "support@admissionodisha.in", sub: t("contactCardEmailSub"), bg: "bg-purple-500" },
+    { icon: <FaMapMarkerAlt className="text-2xl" />, title: t("contactCardVisit"), text: t("contactCardVisitText"), sub: t("contactCardVisitSub"), bg: "bg-pink-500" },
+    { icon: <FaClock className="text-2xl" />, title: t("contactCardSupport"), text: t("contactCardSupportText"), sub: t("contactCardSupportSub"), bg: "bg-green-500" },
   ];
 
   return (
@@ -132,15 +147,14 @@ const Contact = () => {
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="text-left">
               <h1 className="text-3xl md:text-5xl font-bold text-gray-800 mb-4">
-                We're Here to <br />
+                {t("contactHeroTitle")} <br />
                 <span className="text-indigo-600 min-w-[200px] inline-block">
                   {displayText}
                   <span className="animate-blink">|</span>
                 </span>
               </h1>
               <p className="text-gray-600 text-base md:text-lg">
-                Have questions about colleges, courses or admission process?<br />
-                Our team is always ready to assist you.
+                {t("contactHeroDesc")}
               </p>
             </div>
             <div className="hidden md:flex justify-center">
@@ -157,12 +171,7 @@ const Contact = () => {
       {/* Info Cards Section */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 -mt-8 relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { icon: <FaPhone className="text-2xl" style={{ transform: "scaleX(-1)" }} />, title: "Call Us", text: "+91 1234567890", sub: "Mon - Sat (10 AM - 6 PM)", bg: "bg-blue-500" },
-            { icon: <FaEnvelope className="text-2xl" />, title: "Email Us", text: "support@admissionodisha.in", sub: "We reply within 24 hours", bg: "bg-purple-500" },
-            { icon: <FaMapMarkerAlt className="text-2xl" />, title: "Visit Us", text: "Bhubaneswar, Odisha, India", sub: "Find us on map", bg: "bg-pink-500" },
-            { icon: <FaClock className="text-2xl" />, title: "Support Hours", text: "Mon - Sun", sub: "24/7 Support", bg: "bg-green-500" },
-          ].map((item, i) => (
+          {infoCards.map((item, i) => (
             <div key={i} className="bg-white rounded-2xl shadow-lg p-5 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 group cursor-pointer">
               <div className={`${item.bg} w-12 h-12 rounded-xl flex items-center justify-center text-white mb-3 group-hover:scale-110 transition-transform`}>
                 {item.icon}
@@ -182,16 +191,16 @@ const Contact = () => {
           {/* Contact Form */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-3xl shadow-xl p-6 md:p-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Send Us a Message</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">{t("contactFormTitle")}</h2>
 
               <form onSubmit={handleSubmit}>
                 <div className="space-y-5">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Your Name</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t("contactFormNameLabel")}</label>
                     <input
                       name="name"
                       value={form.name}
-                      placeholder="Enter your full name"
+                      placeholder={t("contactFormNamePlaceholder")}
                       className="w-full border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                       onChange={handleChange}
                       required
@@ -199,12 +208,12 @@ const Contact = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t("contactFormEmailLabel")}</label>
                     <input
                       type="email"
                       name="email"
                       value={form.email}
-                      placeholder="Enter your email address"
+                      placeholder={t("contactFormEmailPlaceholder")}
                       className="w-full border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                       onChange={handleChange}
                       required
@@ -212,11 +221,11 @@ const Contact = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Subject</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t("contactFormSubjectLabel")}</label>
                     <input
                       name="subject"
                       value={form.subject}
-                      placeholder="Enter subject"
+                      placeholder={t("contactFormSubjectPlaceholder")}
                       className="w-full border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                       onChange={handleChange}
                       required
@@ -224,11 +233,11 @@ const Contact = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Message</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t("contactFormMessageLabel")}</label>
                     <textarea
                       name="message"
                       value={form.message}
-                      placeholder="Type your message here..."
+                      placeholder={t("contactFormMessagePlaceholder")}
                       className="w-full border border-gray-300 p-3 rounded-xl h-32 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                       onChange={handleChange}
                       required
@@ -240,12 +249,12 @@ const Contact = () => {
                     disabled={isSubmitting}
                     className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 hover:bg-indigo-700 transition-all hover:shadow-lg disabled:opacity-50"
                   >
-                    {isSubmitting ? "Sending..." : <><FaPaperPlane /> Send Message</>}
+                    {isSubmitting ? t("contactFormSendingButton") : <><FaPaperPlane /> {t("contactFormSendButton")}</>}
                   </button>
 
                   {submitSuccess && (
                     <div className="bg-green-50 text-green-600 p-3 rounded-xl flex items-center gap-2 animate-bounce">
-                      <FaCheckCircle /> Message sent successfully! We'll contact you soon.
+                      <FaCheckCircle /> {t("contactFormSuccessMessage")}
                     </div>
                   )}
                 </div>
@@ -256,24 +265,24 @@ const Contact = () => {
           {/* Get In Touch Sidebar */}
           <div className="space-y-6">
             <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl shadow-xl p-6 text-white">
-              <h3 className="text-xl font-bold mb-6">Get In Touch</h3>
+              <h3 className="text-xl font-bold mb-6">{t("contactSidebarGetInTouch")}</h3>
 
               <div className="space-y-5">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <FaMapMarkerAlt className="text-white/80" />
-                    <p className="font-semibold">Head Office</p>
+                    <p className="font-semibold">{t("contactSidebarHeadOffice")}</p>
                   </div>
                   <p className="text-sm text-white/80 pl-8">
                     Admission Odisha<br />
-                    Bhubaneswar, Odisha, India - 751001
+                    {t("contactCardVisitText")} - 751001
                   </p>
                 </div>
 
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <FaPhone className="text-white/80" style={{ transform: "scaleX(-1)" }} />
-                    <p className="font-semibold">Phone</p>
+                    <p className="font-semibold">{t("contactSidebarPhone")}</p>
                   </div>
                   <p className="text-sm text-white/80 pl-8">+91 1234567890</p>
                 </div>
@@ -281,7 +290,7 @@ const Contact = () => {
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <FaEnvelope className="text-white/80" />
-                    <p className="font-semibold">Email</p>
+                    <p className="font-semibold">{t("contactSidebarEmail")}</p>
                   </div>
                   <p className="text-sm text-white/80 pl-8">support@admissionodisha.in</p>
                 </div>
@@ -289,7 +298,7 @@ const Contact = () => {
                 <div>
                   <div className="flex items-center gap-3 mb-3">
                     <FaFacebook className="text-white/80" />
-                    <p className="font-semibold">Follow Us</p>
+                    <p className="font-semibold">{t("contactSidebarFollowUs")}</p>
                   </div>
                   <div className="flex gap-3 pl-8">
                     <a href="/" className="bg-white/20 p-2 rounded-full hover:bg-white/30 transition hover:scale-110">
@@ -311,13 +320,13 @@ const Contact = () => {
               <div className="mb-3">
                 <FaGraduationCap className="text-4xl mx-auto" />
               </div>
-              <h4 className="text-xl font-bold mb-2">Get Started Today!</h4>
+              <h4 className="text-xl font-bold mb-2">{t("contactSidebarCtaTitle")}</h4>
               <p className="text-sm text-white/90 mb-4">
-                Create your account and start your admission journey with us
+                {t("contactSidebarCtaDesc")}
               </p>
               <Link to="/register">
                 <button className="bg-white text-teal-600 px-6 py-2 rounded-xl font-semibold hover:shadow-lg transition-all hover:scale-105 w-full">
-                  Register Now →
+                  {t("contactSidebarCtaButton")}
                 </button>
               </Link>
             </div>
@@ -333,9 +342,9 @@ const Contact = () => {
             <div className="p-6 md:p-8">
               <div className="mb-6">
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-                  Frequently Asked <span className="text-indigo-600">Questions</span>
+                  {t("contactFaqTitle1")} <span className="text-indigo-600">{t("contactFaqTitle2")}</span>
                 </h2>
-                <p className="text-gray-500">Quick answers to common questions.</p>
+                <p className="text-gray-500">{t("contactFaqSub")}</p>
               </div>
 
               <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
@@ -371,7 +380,7 @@ const Contact = () => {
               <div className="mt-6">
                 <Link to="/help-center">
                   <button className="text-indigo-600 font-semibold flex items-center gap-2 hover:gap-3 transition-all">
-                    View All FAQs <FaArrowRight size={14} />
+                    {t("contactFaqViewAll")} <FaArrowRight size={14} />
                   </button>
                 </Link>
               </div>
