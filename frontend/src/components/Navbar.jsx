@@ -14,6 +14,7 @@ const Navbar = () => {
   localStorage.getItem("language") || "en"
 );
 
+  const users = JSON.parse(localStorage.getItem("user"));
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
@@ -171,13 +172,38 @@ const Navbar = () => {
             {/* Auth Buttons */}
             {token ? (
               <div className="relative">
-                <button
-                  onClick={() => setProfileOpen(!profileOpen)}
-                  className="bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white px-5 py-2 rounded-md text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2"
-                >
-                  <FaUser className="text-sm" />
-                  Profile
-                  <span className="text-xs">▾</span>
+                <button onClick={() => setProfileOpen(!profileOpen)}>
+                  {!user ? (
+                    <div className="flex gap-3">
+                      <button>Login</button>
+
+                      <button>Register</button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      {/* PROFILE IMAGE */}
+
+                      {user?.profile_photo ? (
+                        <img
+                          src={`http://localhost/backend/${user.profile_photo}`}
+                          alt="profile"
+                          className="w-10 h-10 rounded-full object-cover border-2 border-white"
+                        />
+                      ) : (
+                        /* FIRST LETTER AVATAR */
+
+                        <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold uppercase">
+                          {user?.name
+                            ? user.name
+                                .split(" ")
+                                .map((word) => word.charAt(0))
+                                .join("")
+                                .slice(0, 2)
+                            : user?.email?.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </button>
                 {profileOpen && (
                   <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-md shadow-lg z-50 overflow-hidden">

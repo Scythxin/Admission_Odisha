@@ -120,8 +120,22 @@ const AppRoutes = () => {
       />
 
       {/* Course Details */}
-      <Route path="/course/:specializationSlug" element={<MainLayout><SpecificFieldDetail /></MainLayout>} />
-      <Route path="/course-detail/:courseSlug" element={<MainLayout><CourseDetail /></MainLayout>} />
+      <Route
+        path="/course/:specializationSlug"
+        element={
+          <MainLayout>
+            <SpecificFieldDetail />
+          </MainLayout>
+        }
+      />
+      <Route
+        path="/course-detail/:courseSlug"
+        element={
+          <MainLayout>
+            <CourseDetail />
+          </MainLayout>
+        }
+      />
 
       {/* Dashboard */}
       <Route path="/dashboard" element={<Dashboard />} />
