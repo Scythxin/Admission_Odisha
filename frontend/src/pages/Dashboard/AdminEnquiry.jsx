@@ -3,7 +3,9 @@ import API_BASE from "../../config/api";
 import {
   FaEnvelope, FaUserPlus, FaPhoneAlt, FaCheck,
   FaSearch, FaCalendarAlt, FaFilter, FaRedo,
-  FaFileExport, FaEye, FaChevronDown, FaTrash
+  FaFileExport, FaEye, FaChevronDown, FaTrash,
+  FaUser, FaUniversity, FaGraduationCap, FaQuestionCircle,
+  FaFileAlt, FaTimes, FaWhatsapp
 } from "react-icons/fa";
 
 /* ── STAT CARD ── */
@@ -32,7 +34,7 @@ export default function AdminEnquiry() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
   const [total, setTotal] = useState(0);
-  
+
   const [stats, setStats] = useState({
     total: 0,
     new: 0,
@@ -43,12 +45,13 @@ export default function AdminEnquiry() {
   // For Details Modal
   const [viewEnquiry, setViewEnquiry] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
 
   async function fetchEnquiries() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const queryParams = new URLSearchParams({
         r: "dashboard/get-enquiries",
         search: activeFilterSearch,
@@ -60,7 +63,7 @@ export default function AdminEnquiry() {
       const res = await fetch(`${API_BASE}?${queryParams.toString()}`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const result = await res.json();
-      
+
       if (result.status === "success") {
         setEnquiries(result.data);
         setTotal(result.total);
@@ -111,6 +114,7 @@ export default function AdminEnquiry() {
       if (result.status === "success") {
         // Optimistic state update
         setEnquiries(prev => prev.map(e => e.id == id ? { ...e, status: newStatus } : e));
+        setViewEnquiry(prev => prev && prev.id == id ? { ...prev, status: newStatus } : prev);
         // Refetch stats to update totals
         fetchEnquiries();
       } else {
@@ -161,13 +165,13 @@ export default function AdminEnquiry() {
       e.created_at
     ]);
 
-    const csvContent = "data:text/csv;charset=utf-8," 
+    const csvContent = "data:text/csv;charset=utf-8,"
       + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
-    
+
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Enquiries_Export_${new Date().toISOString().slice(0,10)}.csv`);
+    link.setAttribute("download", `Enquiries_Export_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -181,13 +185,13 @@ export default function AdminEnquiry() {
     const day = dateObj.getDate();
     const month = months[dateObj.getMonth()];
     const year = dateObj.getFullYear();
-    
+
     let hours = dateObj.getHours();
     const minutes = dateObj.getMinutes().toString().padStart(2, '0');
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
     hours = hours ? hours : 12; // the hour '0' should be '12'
-    
+
     return {
       date: `${day} ${month} ${year}`,
       time: `${hours}:${minutes} ${ampm}`
@@ -331,7 +335,7 @@ export default function AdminEnquiry() {
                 enquiries.map((e, idx) => {
                   const formatted = formatDateTime(e.created_at);
                   const isYes = e.guidance?.toLowerCase() === "yes";
-                  
+
                   return (
                     <tr key={e.id} className="hover:bg-gray-50/60 transition-colors">
                       <td className="px-5 py-4 text-gray-400 font-medium">
@@ -353,11 +357,10 @@ export default function AdminEnquiry() {
                         {e.location || "N/A"}
                       </td>
                       <td className="px-4 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                          isYes 
-                            ? "bg-emerald-50 text-emerald-600" 
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${isYes
+                            ? "bg-emerald-50 text-emerald-600"
                             : "bg-gray-100 text-gray-500"
-                        }`}>
+                          }`}>
                           {isYes && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>}
                           {isYes ? "Yes" : "No"}
                         </span>
@@ -367,25 +370,23 @@ export default function AdminEnquiry() {
                           <select
                             value={e.status || "New"}
                             onChange={(event) => handleStatusChange(e.id, event.target.value)}
-                            className={`appearance-none w-full px-3 py-1.5 pr-8 rounded-lg text-xs font-bold border-0 cursor-pointer outline-none focus:ring-2 focus:ring-offset-2 transition-all ${
-                              e.status === "New"
+                            className={`appearance-none w-full px-3 py-1.5 pr-8 rounded-lg text-xs font-bold border-0 cursor-pointer outline-none focus:ring-2 focus:ring-offset-2 transition-all ${e.status === "New"
                                 ? "bg-blue-50 text-blue-600 focus:ring-blue-300"
                                 : e.status === "Contacted"
-                                ? "bg-orange-50 text-orange-600 focus:ring-orange-300"
-                                : "bg-emerald-50 text-emerald-600 focus:ring-emerald-300"
-                            }`}
+                                  ? "bg-orange-50 text-orange-600 focus:ring-orange-300"
+                                  : "bg-emerald-50 text-emerald-600 focus:ring-emerald-300"
+                              }`}
                           >
                             <option value="New" className="bg-white text-gray-700 font-medium">New</option>
                             <option value="Contacted" className="bg-white text-gray-700 font-medium">Contacted</option>
                             <option value="Closed" className="bg-white text-gray-700 font-medium">Closed</option>
                           </select>
-                          <FaChevronDown className={`absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[9px] ${
-                            e.status === "New"
+                          <FaChevronDown className={`absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[9px] ${e.status === "New"
                               ? "text-blue-500"
                               : e.status === "Contacted"
-                              ? "text-orange-500"
-                              : "text-emerald-500"
-                          }`} />
+                                ? "text-orange-500"
+                                : "text-emerald-500"
+                            }`} />
                         </div>
                       </td>
                       <td className="px-4 py-4">
@@ -452,7 +453,7 @@ export default function AdminEnquiry() {
               >
                 &lt;
               </button>
-              
+
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => {
                 // simple pagination logic to limit number of buttons
                 if (totalPages > 5 && Math.abs(page - n) > 1 && n !== 1 && n !== totalPages) {
@@ -465,11 +466,10 @@ export default function AdminEnquiry() {
                   <button
                     key={n}
                     onClick={() => setPage(n)}
-                    className={`w-8 h-8 flex items-center justify-center rounded-lg text-xs font-extrabold transition ${
-                      page === n
+                    className={`w-8 h-8 flex items-center justify-center rounded-lg text-xs font-extrabold transition ${page === n
                         ? "bg-blue-600 text-white shadow-md shadow-blue-100"
                         : "border border-gray-200 text-gray-500 hover:bg-gray-100"
-                    }`}
+                      }`}
                   >
                     {n}
                   </button>
@@ -490,85 +490,189 @@ export default function AdminEnquiry() {
 
       {/* ── DETAILS MODAL ── */}
       {viewEnquiry && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all duration-300 scale-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-visible transform transition-all duration-300 scale-100 flex flex-col">
             {/* Modal Header */}
-            <div className="bg-blue-600 text-white px-6 py-5 flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-bold">Enquiry Detail</h3>
-                <p className="text-[11px] text-blue-100 mt-1">Lead ID: #{viewEnquiry.id}</p>
+            <div className="px-6 pt-6 pb-4 flex items-start justify-between border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shrink-0">
+                  <FaFileAlt className="text-lg" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-gray-800">Enquiry Details</h3>
+                  <p className="text-xs text-gray-400 mt-0.5">Here are the details of this enquiry.</p>
+                </div>
               </div>
               <button
-                onClick={() => setViewEnquiry(null)}
-                className="text-white hover:text-blue-100 text-xl font-bold bg-white/10 hover:bg-white/20 w-8 h-8 rounded-full flex items-center justify-center transition"
+                onClick={() => {
+                  setViewEnquiry(null);
+                  setStatusDropdownOpen(false);
+                }}
+                className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-50 transition"
               >
-                &times;
+                <FaTimes className="text-sm" />
               </button>
             </div>
-            
+
             {/* Modal Body */}
-            <div className="p-6 space-y-4 text-sm text-gray-700">
-              <div className="grid grid-cols-3 gap-2 border-b border-gray-100 pb-3">
-                <span className="font-semibold text-gray-500">Name:</span>
-                <span className="col-span-2 font-bold text-gray-900">{viewEnquiry.full_name}</span>
+            <div className="p-6 space-y-6 overflow-visible">
+              <div>
+                <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider mb-4">Enquiry Information</h4>
+                
+                <div className="space-y-4">
+                  {/* Full Name */}
+                  <div className="grid grid-cols-[160px_20px_1fr] items-center">
+                    <span className="text-xs font-bold text-gray-800 flex items-center gap-2">
+                      <FaUser className="text-blue-600 text-xs shrink-0" /> Full Name
+                    </span>
+                    <span className="text-gray-400 text-xs text-center">:</span>
+                    <span className="text-xs font-bold text-gray-900">{viewEnquiry.full_name}</span>
+                  </div>
+
+                  {/* Phone Number */}
+                  <div className="grid grid-cols-[160px_20px_1fr] items-center">
+                    <span className="text-xs font-bold text-gray-800 flex items-center gap-2">
+                      <FaPhoneAlt className="text-blue-600 text-xs shrink-0" /> Phone Number
+                    </span>
+                    <span className="text-gray-400 text-xs text-center">:</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-bold text-gray-900">{viewEnquiry.phone}</span>
+                      <a
+                        href={`tel:${viewEnquiry.phone}`}
+                        className="inline-flex items-center gap-1 border border-blue-600 text-blue-600 hover:bg-blue-50 px-2.5 py-1 rounded-lg text-[10px] font-bold transition shadow-sm"
+                      >
+                        <FaPhoneAlt className="text-[9px]" /> Call Now
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Preferred College */}
+                  <div className="grid grid-cols-[160px_20px_1fr] items-center">
+                    <span className="text-xs font-bold text-gray-800 flex items-center gap-2">
+                      <FaUniversity className="text-blue-600 text-xs shrink-0" /> Preferred College
+                    </span>
+                    <span className="text-gray-400 text-xs text-center">:</span>
+                    <span className="text-xs font-bold text-gray-900">{viewEnquiry.colleges || "N/A"}</span>
+                  </div>
+
+                  {/* Preferred Course */}
+                  <div className="grid grid-cols-[160px_20px_1fr] items-center">
+                    <span className="text-xs font-bold text-gray-800 flex items-center gap-2">
+                      <FaGraduationCap className="text-blue-600 text-xs shrink-0" /> Preferred Course
+                    </span>
+                    <span className="text-gray-400 text-xs text-center">:</span>
+                    <span className="text-xs font-bold text-gray-900">{viewEnquiry.courses || "N/A"}</span>
+                  </div>
+
+                  {/* Need Guidance */}
+                  <div className="grid grid-cols-[160px_20px_1fr] items-center">
+                    <span className="text-xs font-bold text-gray-800 flex items-center gap-2">
+                      <FaQuestionCircle className="text-blue-600 text-xs shrink-0" /> Need Guidance
+                    </span>
+                    <span className="text-gray-400 text-xs text-center">:</span>
+                    <div>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${
+                        viewEnquiry.guidance?.toLowerCase() === "yes"
+                          ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                          : "bg-gray-50 text-gray-500 border border-gray-150"
+                      }`}>
+                        {viewEnquiry.guidance?.toLowerCase() === "yes" ? "Yes" : "No"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Submitted On */}
+                  <div className="grid grid-cols-[160px_20px_1fr] items-center">
+                    <span className="text-xs font-bold text-gray-800 flex items-center gap-2">
+                      <FaCalendarAlt className="text-blue-600 text-xs shrink-0" /> Submitted On
+                    </span>
+                    <span className="text-gray-400 text-xs text-center">:</span>
+                    <span className="text-xs font-bold text-gray-900">
+                      {formatDateTime(viewEnquiry.created_at).date}, {formatDateTime(viewEnquiry.created_at).time}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="grid grid-cols-3 gap-2 border-b border-gray-100 pb-3">
-                <span className="font-semibold text-gray-500">Phone:</span>
-                <span className="col-span-2 font-bold text-blue-600">{viewEnquiry.phone}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 border-b border-gray-100 pb-3">
-                <span className="font-semibold text-gray-500">Course Interest:</span>
-                <span className="col-span-2 font-semibold text-gray-800">{viewEnquiry.courses || "N/A"}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 border-b border-gray-100 pb-3">
-                <span className="font-semibold text-gray-500">College Interest:</span>
-                <span className="col-span-2 font-semibold text-gray-800">{viewEnquiry.colleges || "N/A"}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 border-b border-gray-100 pb-3">
-                <span className="font-semibold text-gray-500">User Location:</span>
-                <span className="col-span-2 font-medium text-gray-800">{viewEnquiry.location || "N/A"}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 border-b border-gray-100 pb-3">
-                <span className="font-semibold text-gray-500">Guidance Req:</span>
-                <span className="col-span-2">
-                  <span className={`px-2 py-0.5 rounded text-xs font-bold ${
-                    viewEnquiry.guidance?.toLowerCase() === "yes" 
-                      ? "bg-emerald-100 text-emerald-800" 
-                      : "bg-gray-100 text-gray-700"
-                  }`}>
-                    {viewEnquiry.guidance?.toUpperCase()}
-                  </span>
-                </span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 border-b border-gray-100 pb-3">
-                <span className="font-semibold text-gray-500">Submission Date:</span>
-                <span className="col-span-2 text-gray-600 font-medium">
-                  {formatDateTime(viewEnquiry.created_at).date} @ {formatDateTime(viewEnquiry.created_at).time}
-                </span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 pb-1">
-                <span className="font-semibold text-gray-500">Lead Status:</span>
-                <span className="col-span-2">
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                    viewEnquiry.status === "New"
-                      ? "bg-blue-100 text-blue-700"
-                      : viewEnquiry.status === "Contacted"
-                      ? "bg-orange-100 text-orange-700"
-                      : "bg-emerald-100 text-emerald-700"
-                  }`}>
-                    {viewEnquiry.status}
-                  </span>
-                </span>
+
+              {/* Status Section */}
+              <div className="border-t border-gray-100 pt-5 relative">
+                <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider mb-3">Status</h4>
+                <div className="relative max-w-xs">
+                  <button
+                    type="button"
+                    onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
+                    className="w-full flex items-center justify-between border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-bold text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className={`w-2.5 h-2.5 rounded-full ${
+                        viewEnquiry.status === "New" ? "bg-blue-600" :
+                        viewEnquiry.status === "Contacted" ? "bg-orange-500" :
+                        viewEnquiry.status === "In Progress" ? "bg-purple-600" :
+                        viewEnquiry.status === "Converted" ? "bg-emerald-600" :
+                        "bg-gray-500" // Closed
+                      }`}></span>
+                      {viewEnquiry.status || "New"}
+                    </div>
+                    <FaChevronDown className={`text-[9px] text-gray-400 transition-transform ${statusDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {statusDropdownOpen && (
+                    <div className="absolute left-0 right-0 mt-1.5 bg-white border border-gray-150 rounded-xl shadow-xl z-50 py-1 overflow-hidden animate-fade-in">
+                      {[
+                        { value: "New", color: "bg-blue-600", label: "New", desc: "Enquiry is new" },
+                        { value: "Contacted", color: "bg-orange-500", label: "Contacted", desc: "Student has been contacted" },
+                        { value: "In Progress", color: "bg-purple-600", label: "In Progress", desc: "Discussion is in progress" },
+                        { value: "Converted", color: "bg-emerald-600", label: "Converted", desc: "Student converted to application" },
+                        { value: "Closed", color: "bg-gray-500", label: "Closed", desc: "Enquiry closed / not interested" },
+                      ].map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => {
+                            handleStatusChange(viewEnquiry.id, opt.value);
+                            setStatusDropdownOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-left transition ${
+                            viewEnquiry.status === opt.value ? 'bg-gray-50/50' : ''
+                          }`}
+                        >
+                          <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${opt.color}`}></span>
+                          <span className="text-xs font-bold text-gray-700 w-20 shrink-0">{opt.label}</span>
+                          <span className="text-[10px] text-gray-400">- {opt.desc}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="bg-gray-50 px-6 py-4 flex justify-end gap-3">
+            <div className="border-t border-gray-100 px-6 py-4 flex items-center justify-between gap-3 bg-gray-50/30 rounded-b-3xl">
+              <div className="flex gap-2">
+                <a
+                  href={`tel:${viewEnquiry.phone}`}
+                  className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-sm"
+                >
+                  <FaPhoneAlt className="text-[10px]" /> Call Now
+                </a>
+                <a
+                  href={`https://wa.me/${viewEnquiry.phone.replace(/[^0-9]/g, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-sm"
+                >
+                  <FaWhatsapp className="text-sm" /> WhatsApp
+                </a>
+              </div>
               <button
-                onClick={() => setViewEnquiry(null)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition"
+                onClick={() => {
+                  setViewEnquiry(null);
+                  setStatusDropdownOpen(false);
+                }}
+                className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold text-xs px-5 py-2.5 rounded-xl transition shadow-sm"
               >
-                Close Details
+                Close
               </button>
             </div>
           </div>

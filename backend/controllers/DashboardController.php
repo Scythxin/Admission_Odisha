@@ -365,5 +365,23 @@ class DashboardController extends Controller
             return ['status' => 'error', 'message' => 'Failed to delete enquiry.'];
         }
     }
+
+    public function actionGetCourses()
+    {
+        $courses = Yii::$app->db->createCommand("
+            SELECT c.*, s.name as specialization_name, f.name as field_name, f.icon as field_icon
+            FROM courses c
+            LEFT JOIN specializations s ON c.specialization_id = s.id
+            LEFT JOIN fields f ON s.field_id = f.id
+            ORDER BY c.id DESC
+        ")->queryAll();
+
+        foreach ($courses as &$c) {
+            $c['id'] = (int)$c['id'];
+            $c['specialization_id'] = $c['specialization_id'] ? (int)$c['specialization_id'] : null;
+            $c['status'] = ((int)$c['is_status'] === 1) ? 'Active' : 'Inactive';
+        }
+        return ['status' => 'success', 'data' => $courses];
+    }
 }
 

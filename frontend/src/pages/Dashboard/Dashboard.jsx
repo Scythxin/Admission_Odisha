@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import API_BASE from "../../config/api";
 import AdminField from "./AdminField";
 import AdminSpecializations from "./AdminSpecializations";
+import AdminEnquiry from "./AdminEnquiry";
+import CoursesManagement from "./CoursesManagement";
 import AdminColleges from "./AdminColleges";
 import {
   FaBook,
@@ -661,7 +663,11 @@ const Dashboard = () => {
 
           {activeNav === "Fields" && <AdminField />}
           {activeNav === "Specializations" && <AdminSpecializations />}
+
+          {activeNav === "Courses" && <CoursesManagement />}
+          {activeNav === "Enquiries / Leads" && <AdminEnquiry />}
           {activeNav === "Colleges" && <AdminColleges />}
+
 
           {/* FOOTER */}
           <div className="flex items-center justify-between text-xs text-gray-400 py-2">
