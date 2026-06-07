@@ -303,9 +303,117 @@ class AuthController extends Controller
                 "id" => $user['id'],
                 "name" => $user['name'],
                 "email" => $user['email'],
+                "phone" => $user['phone'],
+                "city" => $user['city'],
+                "gender" => $user['gender'],
+                "dob" => $user['dob'],
                 "is_admin" => (int) $user['is_admin']
             ]
         ];
+    }
+
+    // =========================
+    // UPDATE PROFILE
+    // =========================
+    public function actionUpdateProfile()
+    {
+        $token = Yii::$app->request->headers->get('Authorization');
+
+        if (!$token) {
+            return [
+                "status" => "error",
+                "message" => "Token missing"
+            ];
+        }
+
+        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
+            ->bindValue(':token', $token)->queryOne();
+
+        if (!$userLogin) {
+            return [
+                "status" => "error",
+                "message" => "Invalid or expired session"
+            ];
+        }
+
+        $user = \app\models\User::findOne($userLogin['user_id']);
+        if (!$user) {
+            return [
+                "status" => "error",
+                "message" => "User not found"
+            ];
+        }
+
+        $data = json_decode(Yii::$app->request->getRawBody(), true);
+        if (!$data) {
+            return [
+                "status" => "error",
+                "message" => "Invalid request body"
+            ];
+        }
+
+        // Validate unique email (excluding current user)
+        if (isset($data['email']) && $data['email'] !== $user->email) {
+            $existingEmail = \app\models\User::find()->where(['email' => $data['email']])->andWhere(['!=', 'id', $user->id])->one();
+            if ($existingEmail) {
+                return [
+                    "status" => "error",
+                    "message" => "Email already registered by another user"
+                ];
+            }
+            $user->email = $data['email'];
+        }
+
+        // Validate unique phone (excluding current user)
+        if (isset($data['phone']) && $data['phone'] !== $user->phone) {
+            $existingPhone = \app\models\User::find()->where(['phone' => $data['phone']])->andWhere(['!=', 'id', $user->id])->one();
+            if ($existingPhone) {
+                return [
+                    "status" => "error",
+                    "message" => "Mobile number already registered by another user"
+                ];
+            }
+            $user->phone = $data['phone'];
+        }
+
+        if (isset($data['name'])) {
+            $user->name = $data['name'];
+        }
+        if (isset($data['city'])) {
+            $user->city = $data['city'];
+        }
+        if (isset($data['gender'])) {
+            $user->gender = $data['gender'];
+        }
+        if (isset($data['dob'])) {
+            $user->dob = empty($data['dob']) ? null : $data['dob'];
+        }
+
+        $user->updated_at = date('Y-m-d H:i:s');
+
+        if ($user->save()) {
+            return [
+                "status" => "success",
+                "message" => "Profile updated successfully",
+                "user" => [
+                    "id" => $user->id,
+                    "name" => $user->name,
+                    "email" => $user->email,
+                    "phone" => $user->phone,
+                    "city" => $user->city,
+                    "gender" => $user->gender,
+                    "dob" => $user->dob,
+                    "is_admin" => (int) $user->is_admin
+                ]
+            ];
+        } else {
+            $errors = $user->getFirstErrors();
+            $errorMessage = reset($errors) ?: "Failed to update profile";
+            return [
+                "status" => "error",
+                "message" => $errorMessage
+            ];
+        }
     }
 
     // =========================

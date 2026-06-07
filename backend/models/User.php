@@ -15,6 +15,8 @@ use yii\web\IdentityInterface;
  * @property string|null $phone
  * @property string|null $password
  * @property string|null $city
+ * @property string|null $gender
+ * @property string|null $dob
  * @property int|null $is_verified
  * @property string|null $verified_at
  * @property int|null $is_admin
@@ -43,9 +45,10 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             [['is_verified', 'is_admin', 'login_count', 'created_by', 'updated_by', 'is_status'], 'integer'],
-            [['verified_at', 'last_login', 'created_at', 'updated_at'], 'safe'],
+            [['verified_at', 'last_login', 'created_at', 'updated_at', 'dob'], 'safe'],
             [['name', 'email', 'city'], 'string', 'max' => 100],
             [['phone'], 'string', 'max' => 15],
+            [['gender'], 'string', 'max' => 20],
             [['password'], 'string', 'max' => 255],
             [['email'], 'unique'],
             [['phone'], 'unique'],

@@ -8168,6 +8168,8 @@ CREATE TABLE `users` (
     `phone` varchar(15) DEFAULT NULL,
     `password` varchar(255) DEFAULT NULL,
     `city` varchar(100) DEFAULT NULL,
+    `gender` varchar(20) DEFAULT NULL,
+    `dob` date DEFAULT NULL,
     `is_verified` tinyint(4) DEFAULT 0,
     `verified_at` datetime DEFAULT NULL,
     `is_admin` tinyint(4) DEFAULT 0,
