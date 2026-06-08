@@ -309,6 +309,73 @@ class AuthController extends Controller
     }
 
     // =========================
+    // CHANGE PASSWORD
+    // =========================
+    public function actionChangePassword()
+    {
+        $token = Yii::$app->request->headers->get('Authorization');
+
+        if (!$token) {
+            return [
+                "status" => "error",
+                "message" => "Token missing"
+            ];
+        }
+
+        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
+            ->bindValue(':token', $token)->queryOne();
+
+        if (!$userLogin) {
+            return [
+                "status" => "error",
+                "message" => "Invalid or expired session"
+            ];
+        }
+
+        $data = json_decode(file_get_contents("php://input"), true);
+        $currentPassword = $data['current_password'] ?? '';
+        $newPassword = $data['new_password'] ?? '';
+
+        if (empty($currentPassword) || empty($newPassword)) {
+            return [
+                "status" => "error",
+                "message" => "Current password and new password are required"
+            ];
+        }
+
+        $user = Yii::$app->db->createCommand("SELECT * FROM users WHERE id = :id")
+            ->bindValue(':id', $userLogin['user_id'])->queryOne();
+
+        if (!$user) {
+            return [
+                "status" => "error",
+                "message" => "User not found"
+            ];
+        }
+
+        if (!password_verify($currentPassword, $user['password'])) {
+            return [
+                "status" => "error",
+                "message" => "Incorrect current password"
+            ];
+        }
+
+        Yii::$app->db->createCommand()->update(
+            'users',
+            [
+                'password' => password_hash($newPassword, PASSWORD_DEFAULT),
+                'updated_at' => date('Y-m-d H:i:s')
+            ],
+            ['id' => $user['id']]
+        )->execute();
+
+        return [
+            "status" => "success",
+            "message" => "Password updated successfully"
+        ];
+    }
+
+    // =========================
     // LOGOUT
     // =========================
     public function actionLogout()
