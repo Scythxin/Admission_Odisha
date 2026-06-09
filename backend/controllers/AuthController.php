@@ -227,6 +227,14 @@ class AuthController extends Controller
             ->bindValue(':email', $email)
             ->queryOne();
 
+        if (!$user) {
+            Yii::$app->response->statusCode = 404;
+            return [
+                "status" => "error",
+                "message" => "User not found"
+            ];
+        }
+
         // GENERATE TOKEN
         $token = bin2hex(random_bytes(32));
 
@@ -308,7 +316,7 @@ class AuthController extends Controller
                 "gender" => $user['gender'],
                 "dob" => $user['dob'],
                 "is_admin" => (int) $user['is_admin'],
-                "profile_photo" => $user['profile_photo']
+                "profile_photo" => $user['profile_photo'] ?? null
             ]
         ];
     }
