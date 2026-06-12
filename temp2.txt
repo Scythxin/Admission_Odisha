@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import API_BASE from "../../config/api";
 
@@ -6,7 +6,7 @@ const Stars = ({ rating }) => {
     const rounded = Math.round(Number(rating) || 0);
     return (
         <span style={{ color: "#f59e0b", fontSize: 13 }}>
-            {"★".repeat(rounded)}{"☆".repeat(5 - rounded)}
+            {"Γÿà".repeat(rounded)}{"Γÿå".repeat(5 - rounded)}
         </span>
     );
 };
@@ -60,15 +60,15 @@ export default function CourseDetail() {
     const COLLEGES = course.top_colleges || [];
 
     const STATS = [
-        { icon: "🕐", label: "Duration", value: course.duration },
-        { icon: "🎓", label: "Degree", value: course.degree },
-        { icon: "📋", label: "Mode", value: course.mode },
-        { icon: "📊", label: "Level", value: course.level },
+        { icon: "≡ƒòÉ", label: "Duration", value: course.duration },
+        { icon: "≡ƒÄô", label: "Degree", value: course.degree },
+        { icon: "≡ƒôï", label: "Mode", value: course.mode },
+        { icon: "≡ƒôè", label: "Level", value: course.level },
     ];
 
     // Generic icons for specializations if not provided in DB
     const getSpecIcon = (index) => {
-        const icons = ["</>", "⚙️", "⚡", "🏗️", "📡", "💻", "🔬", "🧪"];
+        const icons = ["</>", "ΓÜÖ∩╕Å", "ΓÜí", "≡ƒÅù∩╕Å", "≡ƒôí", "≡ƒÆ╗", "≡ƒö¼", "≡ƒº¬"];
         return icons[index % icons.length];
     };
 
@@ -91,9 +91,9 @@ export default function CourseDetail() {
 
             {/* BREADCRUMB */}
             <div style={{ maxWidth: 1200, margin: "0 auto", padding: "14px 40px", fontSize: 13, color: "#9ca3af" }}>
-                <Link to="/" style={{ color: "inherit", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#5b4eff"} onMouseLeave={e => e.target.style.color = "inherit"}>Home</Link> › 
-                <Link to="/course" style={{ color: "inherit", transition: "color 0.2s", marginLeft: 4, marginRight: 4 }} onMouseEnter={e => e.target.style.color = "#5b4eff"} onMouseLeave={e => e.target.style.color = "inherit"}>Courses</Link> › 
-                <Link to={`/field/${course.category?.toLowerCase()}`} style={{ color: "inherit", transition: "color 0.2s", marginLeft: 4, marginRight: 4 }} onMouseEnter={e => e.target.style.color = "#5b4eff"} onMouseLeave={e => e.target.style.color = "inherit"}>{course.category}</Link> › 
+                <Link to="/" style={{ color: "inherit", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#5b4eff"} onMouseLeave={e => e.target.style.color = "inherit"}>Home</Link> ΓÇ║ 
+                <Link to="/course" style={{ color: "inherit", transition: "color 0.2s", marginLeft: 4, marginRight: 4 }} onMouseEnter={e => e.target.style.color = "#5b4eff"} onMouseLeave={e => e.target.style.color = "inherit"}>Courses</Link> ΓÇ║ 
+                <Link to={`/field/${course.category?.toLowerCase()}`} style={{ color: "inherit", transition: "color 0.2s", marginLeft: 4, marginRight: 4 }} onMouseEnter={e => e.target.style.color = "#5b4eff"} onMouseLeave={e => e.target.style.color = "inherit"}>{course.category}</Link> ΓÇ║ 
                 <span style={{ color: "#5b4eff", fontWeight: 500, marginLeft: 4 }}>{course.short_name}</span>
             </div>
 
@@ -107,7 +107,7 @@ export default function CourseDetail() {
                         <h2 style={{ fontSize: 20, fontWeight: 600, color: "#374151", marginBottom: 16 }}>{course.full_name}</h2>
                         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
                             <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500 }}>
-                                <span style={{ color: "#f59e0b", fontSize: 16 }}>★</span> {course.rating} ({course.reviews_count} Reviews)
+                                <span style={{ color: "#f59e0b", fontSize: 16 }}>Γÿà</span> {course.rating} ({course.reviews_count} Reviews)
                             </span>
                             <span style={{ width: 1, height: 18, background: "#e5e7eb" }} />
                             <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 600, color: "#ef4444" }}>
@@ -123,25 +123,25 @@ export default function CourseDetail() {
                                 onClick={() => setEnquired(true)}
                                 style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 24px", background: enquired ? "#22c55e" : "#5b4eff", color: "white", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 0.2s" }}
                             >
-                                💬 {enquired ? "Enquiry Sent!" : "Enquire Now"}
+                                ≡ƒÆ¼ {enquired ? "Enquiry Sent!" : "Enquire Now"}
                             </button>
                             <button
                                 className="btn-outline"
                                 onClick={() => setWishlist(!wishlist)}
                                 style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 24px", background: "white", color: wishlist ? "#ef4444" : "#374151", border: "1.5px solid #e5e7eb", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 0.2s" }}
                             >
-                                {wishlist ? "❤️" : "🤍"} {wishlist ? "Wishlisted" : "Add to Wishlist"}
+                                {wishlist ? "Γ¥ñ∩╕Å" : "≡ƒñì"} {wishlist ? "Wishlisted" : "Add to Wishlist"}
                             </button>
                         </div>
                     </div>
                     {/* Right: Image placeholder */}
                     <div style={{ position: "relative", borderRadius: 16, overflow: "hidden", aspectRatio: "4/3", background: "linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#4338ca 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <div style={{ textAlign: "center", color: "white" }}>
-                            <div style={{ fontSize: 80 }}>🎓</div>
-                            <div style={{ fontSize: 14, opacity: 0.7, marginTop: 8 }}>{course.short_name} — {course.full_name}</div>
+                            <div style={{ fontSize: 80 }}>≡ƒÄô</div>
+                            <div style={{ fontSize: 14, opacity: 0.7, marginTop: 8 }}>{course.short_name} ΓÇö {course.full_name}</div>
                         </div>
                         <div style={{ position: "absolute", bottom: 14, left: 14, background: "rgba(255,255,255,0.95)", borderRadius: 10, padding: "8px 14px", display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
-                            🖼️ Image Gallery &nbsp;<strong>8 Photos</strong>
+                            ≡ƒû╝∩╕Å Image Gallery &nbsp;<strong>8 Photos</strong>
                         </div>
                     </div>
                 </div>
@@ -170,10 +170,10 @@ export default function CourseDetail() {
                         <p style={{ fontSize: 14, color: "#4b5563", lineHeight: 1.8, marginBottom: 16 }}>
                             {course.about_description}
                         </p>
-                        <a href="#" style={{ color: "#5b4eff", fontWeight: 600, fontSize: 14, display: "inline-flex", alignItems: "center", gap: 6 }}>Read More →</a>
+                        <a href="#" style={{ color: "#5b4eff", fontWeight: 600, fontSize: 14, display: "inline-flex", alignItems: "center", gap: 6 }}>Read More ΓåÆ</a>
                     </div>
                     <div style={{ background: "linear-gradient(135deg,#eef0ff,#e8f5ff)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 64, minHeight: 180 }}>
-                        ⚙️
+                        ΓÜÖ∩╕Å
                     </div>
                 </div>
             </div>
@@ -185,7 +185,7 @@ export default function CourseDetail() {
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(6,1fr)", gap: 16 }}>
                         {CAREERS.map(c => (
                             <div key={c.title} className="career-card hover-card" style={{ padding: "20px 14px", border: "1.5px solid #f0f0f5", borderRadius: 14, textAlign: "center", cursor: "pointer", transition: "all 0.2s" }}>
-                                <div style={{ fontSize: 28, marginBottom: 10 }}>{c.icon || "💼"}</div>
+                                <div style={{ fontSize: 28, marginBottom: 10 }}>{c.icon || "≡ƒÆ╝"}</div>
                                 <div style={{ fontSize: 13, fontWeight: 700, color: "#1a1a2e", marginBottom: 8, lineHeight: 1.3 }}>{c.title}</div>
                                 <div style={{ fontSize: 11, color: "#6b7280", lineHeight: 1.5 }}>{c.desc}</div>
                             </div>
@@ -203,7 +203,7 @@ export default function CourseDetail() {
                         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                             {ELIGIBILITY.map(e => (
                                 <div key={e} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                                    <span style={{ color: "#22c55e", marginTop: 2, flexShrink: 0 }}>✅</span>
+                                    <span style={{ color: "#22c55e", marginTop: 2, flexShrink: 0 }}>Γ£à</span>
                                     <span style={{ fontSize: 13, color: "#4b5563", lineHeight: 1.5 }}>{e}</span>
                                 </div>
                             ))}
@@ -214,7 +214,7 @@ export default function CourseDetail() {
                     <div style={{ background: "white", borderRadius: 20, padding: 28, boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
                         <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 18 }}>Average Fees</h4>
                         <div style={{ background: "linear-gradient(135deg,#eef0ff,#e8f5ff)", borderRadius: 14, padding: "24px 20px", textAlign: "center" }}>
-                            <div style={{ fontSize: 11, color: "#9ca3af", marginBottom: 8 }}>💰</div>
+                            <div style={{ fontSize: 11, color: "#9ca3af", marginBottom: 8 }}>≡ƒÆ░</div>
                             <div style={{ fontSize: 22, fontWeight: 800, color: "#5b4eff", marginBottom: 6 }}>{course.fees_range}</div>
                             <div style={{ fontSize: 14, fontWeight: 600, color: "#374151" }}>/ Year</div>
                             <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 8 }}>Fees may vary from college to college.</div>
@@ -232,7 +232,7 @@ export default function CourseDetail() {
                                 </div>
                             ))}
                         </div>
-                        <a href="#" style={{ color: "#5b4eff", fontWeight: 600, fontSize: 13 }}>View All Specializations →</a>
+                        <a href="#" style={{ color: "#5b4eff", fontWeight: 600, fontSize: 13 }}>View All Specializations ΓåÆ</a>
                     </div>
                 </div>
             </div>
@@ -242,12 +242,12 @@ export default function CourseDetail() {
                 <div style={{ background: "white", borderRadius: 20, padding: 36, boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
                         <h3 style={{ fontSize: 20, fontWeight: 700 }}>Top Colleges Offering This Course</h3>
-                        <a href="#" style={{ color: "#5b4eff", fontSize: 13, fontWeight: 600 }}>View All Colleges →</a>
+                        <a href="#" style={{ color: "#5b4eff", fontSize: 13, fontWeight: 600 }}>View All Colleges ΓåÆ</a>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(6,1fr)", gap: 16 }}>
                         {COLLEGES.map(c => (
                             <div key={c.name} className="college-card hover-card" style={{ padding: "20px 12px", border: "1.5px solid #f0f0f5", borderRadius: 14, textAlign: "center", cursor: "pointer", transition: "all 0.2s" }}>
-                                <div style={{ width: 56, height: 56, background: "linear-gradient(135deg,#eef0ff,#e8f5ff)", borderRadius: "50%", margin: "0 auto 12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>{c.icon || "🏛️"}</div>
+                                <div style={{ width: 56, height: 56, background: "linear-gradient(135deg,#eef0ff,#e8f5ff)", borderRadius: "50%", margin: "0 auto 12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>{c.icon || "≡ƒÅ¢∩╕Å"}</div>
                                 <div style={{ fontSize: 13, fontWeight: 700, color: "#1a1a2e", marginBottom: 4, lineHeight: 1.3 }}>{c.name}</div>
                                 <div style={{ fontSize: 11, color: "#9ca3af", marginBottom: 8 }}>{c.city}</div>
                                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
@@ -264,14 +264,14 @@ export default function CourseDetail() {
             <div style={{ maxWidth: 1200, margin: "0 auto 48px", padding: "0 40px" }}>
                 <div style={{ background: "linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%)", borderRadius: 20, padding: "36px 48px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-                        <div style={{ fontSize: 56 }}>🎓</div>
+                        <div style={{ fontSize: 56 }}>≡ƒÄô</div>
                         <div>
                             <h3 style={{ fontSize: 22, fontWeight: 800, color: "white", marginBottom: 6 }}>Not sure which course is right for you?</h3>
                             <p style={{ fontSize: 14, color: "rgba(255,255,255,0.8)", lineHeight: 1.5 }}>Get expert guidance from our counsellors and<br />make the right choice for your future.</p>
                         </div>
                     </div>
                     <button className="btn-primary" style={{ padding: "14px 28px", background: "white", color: "#5b4eff", border: "none", borderRadius: 12, fontSize: 14, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s", boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }}>
-                        Talk to Counsellor →
+                        Talk to Counsellor ΓåÆ
                     </button>
                 </div>
             </div>
