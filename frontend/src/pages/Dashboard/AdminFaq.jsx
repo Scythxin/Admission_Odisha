@@ -13,9 +13,10 @@ import {
   FaTrashAlt,
   FaChevronLeft,
   FaChevronRight,
+  FaTimes,
 } from "react-icons/fa";
 
-const faqsData = [
+const initialFaqsData = [
   {
     id: 1,
     question: "How can I apply for admission?",
@@ -84,9 +85,46 @@ const categoryColors = {
 };
 
 const AdminFaq = ({ setActiveNav }) => {
+  const [faqs, setFaqs] = useState(initialFaqsData);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All Categories");
   const [statusFilter, setStatusFilter] = useState("All Status");
+  const [modalConfig, setModalConfig] = useState(null);
+  const [deleteModal, setDeleteModal] = useState(null);
+
+  const handleSaveFaq = (faqData) => {
+    if (modalConfig.mode === "add") {
+      const newFaq = {
+        ...faqData,
+        id: faqs.length ? Math.max(...faqs.map((f) => f.id)) + 1 : 1,
+        lastUpdated: new Date().toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' })
+      };
+      setFaqs([...faqs, newFaq]);
+    } else {
+      setFaqs(
+        faqs.map((f) =>
+          f.id === faqData.id ? { ...f, ...faqData, lastUpdated: new Date().toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' }) } : f
+        )
+      );
+    }
+    setModalConfig(null);
+  };
+
+  const handleDeleteFaq = () => {
+    setFaqs(faqs.filter((f) => f.id !== deleteModal.id));
+    setDeleteModal(null);
+  };
+
+  const filteredFaqs = faqs.filter((faq) => {
+    const matchesSearch =
+      faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (faq.answer && faq.answer.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesCategory =
+      categoryFilter === "All Categories" || faq.category === categoryFilter;
+    const matchesStatus =
+      statusFilter === "All Status" || faq.status === statusFilter;
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
 
   return (
     <div className="space-y-6">
@@ -105,7 +143,10 @@ const AdminFaq = ({ setActiveNav }) => {
             <span className="text-indigo-600 font-medium">FAQ Management</span>
           </div>
         </div>
-        <button className="flex items-center gap-2 bg-[#6366f1] hover:bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium transition shadow-lg shadow-indigo-200">
+        <button 
+          onClick={() => setModalConfig({ mode: "add" })}
+          className="flex items-center gap-2 bg-[#6366f1] hover:bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium transition shadow-lg shadow-indigo-200"
+        >
           <FaPlus />
           <span>Add New FAQ</span>
         </button>
@@ -120,7 +161,7 @@ const AdminFaq = ({ setActiveNav }) => {
           </div>
           <div>
             <p className="text-sm text-gray-500 font-medium mb-0.5">Total FAQs</p>
-            <h3 className="text-2xl font-bold text-gray-800 leading-none mb-1">56</h3>
+            <h3 className="text-2xl font-bold text-gray-800 leading-none mb-1">{faqs.length}</h3>
             <p className="text-xs text-gray-400">All time FAQs</p>
           </div>
         </div>
@@ -131,7 +172,7 @@ const AdminFaq = ({ setActiveNav }) => {
           </div>
           <div>
             <p className="text-sm text-gray-500 font-medium mb-0.5">Active FAQs</p>
-            <h3 className="text-2xl font-bold text-gray-800 leading-none mb-1">48</h3>
+            <h3 className="text-2xl font-bold text-gray-800 leading-none mb-1">{faqs.filter(f => f.status === 'Active').length}</h3>
             <p className="text-xs text-gray-400">Visible on website</p>
           </div>
         </div>
@@ -142,7 +183,7 @@ const AdminFaq = ({ setActiveNav }) => {
           </div>
           <div>
             <p className="text-sm text-gray-500 font-medium mb-0.5">Inactive FAQs</p>
-            <h3 className="text-2xl font-bold text-gray-800 leading-none mb-1">8</h3>
+            <h3 className="text-2xl font-bold text-gray-800 leading-none mb-1">{faqs.filter(f => f.status === 'Inactive').length}</h3>
             <p className="text-xs text-gray-400">Not visible on website</p>
           </div>
         </div>
@@ -153,7 +194,9 @@ const AdminFaq = ({ setActiveNav }) => {
           </div>
           <div>
             <p className="text-sm text-gray-500 font-medium mb-0.5">Categories</p>
-            <h3 className="text-2xl font-bold text-gray-800 leading-none mb-1">7</h3>
+            <h3 className="text-2xl font-bold text-gray-800 leading-none mb-1">
+              {new Set(faqs.map(f => f.category)).size}
+            </h3>
             <p className="text-xs text-gray-400">Total FAQ Categories</p>
           </div>
         </div>
@@ -228,7 +271,7 @@ const AdminFaq = ({ setActiveNav }) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {faqsData.map((faq) => (
+              {filteredFaqs.map((faq) => (
                 <tr key={faq.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-900">{faq.id}</td>
                   <td className="px-6 py-4 text-gray-700 font-medium">{faq.question}</td>
@@ -258,10 +301,10 @@ const AdminFaq = ({ setActiveNav }) => {
                       <button className="w-8 h-8 flex items-center justify-center text-indigo-500 bg-indigo-50 border border-indigo-100 rounded-md hover:bg-indigo-500 hover:text-white transition-colors" title="View">
                         <FaEye className="text-[13px]" />
                       </button>
-                      <button className="w-8 h-8 flex items-center justify-center text-blue-500 bg-blue-50 border border-blue-100 rounded-md hover:bg-blue-500 hover:text-white transition-colors" title="Edit">
+                      <button onClick={() => setModalConfig({ mode: "edit", faq })} className="w-8 h-8 flex items-center justify-center text-blue-500 bg-blue-50 border border-blue-100 rounded-md hover:bg-blue-500 hover:text-white transition-colors" title="Edit">
                         <FaEdit className="text-[13px]" />
                       </button>
-                      <button className="w-8 h-8 flex items-center justify-center text-rose-500 bg-rose-50 border border-rose-100 rounded-md hover:bg-rose-500 hover:text-white transition-colors" title="Delete">
+                      <button onClick={() => setDeleteModal(faq)} className="w-8 h-8 flex items-center justify-center text-rose-500 bg-rose-50 border border-rose-100 rounded-md hover:bg-rose-500 hover:text-white transition-colors" title="Delete">
                         <FaTrashAlt className="text-[13px]" />
                       </button>
                     </div>
@@ -275,7 +318,7 @@ const AdminFaq = ({ setActiveNav }) => {
         {/* Pagination */}
         <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
           <p className="text-sm text-gray-500">
-            Showing 1 to 8 of 56 entries
+            Showing 1 to {filteredFaqs.length} of {faqs.length} entries
           </p>
           <div className="flex items-center gap-1">
             <button className="w-8 h-8 flex items-center justify-center text-gray-400 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
@@ -300,8 +343,158 @@ const AdminFaq = ({ setActiveNav }) => {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      {modalConfig && (
+        <FaqModal
+          mode={modalConfig.mode}
+          faq={modalConfig.faq}
+          onClose={() => setModalConfig(null)}
+          onSave={handleSaveFaq}
+        />
+      )}
+      {deleteModal && (
+        <DeleteModal
+          faq={deleteModal}
+          onClose={() => setDeleteModal(null)}
+          onConfirm={handleDeleteFaq}
+        />
+      )}
     </div>
   );
 };
+
+const FaqModal = ({ mode, faq, onClose, onSave }) => {
+  const [formData, setFormData] = useState(
+    faq || { question: "", answer: "", category: "Admission", status: "Active" }
+  );
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+          <h3 className="text-lg font-bold text-gray-800">
+            {mode === "add" ? "Add New FAQ" : "Edit FAQ"}
+          </h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+            <FaTimes />
+          </button>
+        </div>
+        <div className="p-6 overflow-y-auto">
+          <form id="faq-form" onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Question</label>
+              <input
+                type="text"
+                name="question"
+                value={formData.question}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition"
+                placeholder="Enter FAQ question"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Answer</label>
+              <textarea
+                name="answer"
+                value={formData.answer}
+                onChange={handleChange}
+                required
+                rows="4"
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition resize-none"
+                placeholder="Enter FAQ answer"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition"
+                >
+                  <option value="Admission">Admission</option>
+                  <option value="Documents">Documents</option>
+                  <option value="Fee">Fee</option>
+                  <option value="Application">Application</option>
+                  <option value="Counselling">Counselling</option>
+                  <option value="Account">Account</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-3 bg-gray-50/50">
+          <button
+            onClick={onClose}
+            type="button"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            form="faq-form"
+            className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 transition-colors shadow-sm"
+          >
+            {mode === "add" ? "Add FAQ" : "Save Changes"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DeleteModal = ({ faq, onClose, onConfirm }) => (
+  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
+    <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden text-center p-6">
+      <div className="w-16 h-16 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+        <FaTrashAlt />
+      </div>
+      <h3 className="text-xl font-bold text-gray-800 mb-2">Delete FAQ?</h3>
+      <p className="text-gray-500 mb-6 text-sm">
+        Are you sure you want to delete this FAQ? This action cannot be undone.
+      </p>
+      <div className="flex items-center justify-center gap-3">
+        <button
+          onClick={onClose}
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors flex-1"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={onConfirm}
+          className="px-4 py-2 text-sm font-medium text-white bg-rose-500 rounded-xl hover:bg-rose-600 transition-colors shadow-sm flex-1"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
 export default AdminFaq;
