@@ -8,6 +8,7 @@ import CoursesManagement from "./CoursesManagement";
 import AdminColleges from "./AdminColleges";
 import AdminUsers from "./AdminUsers";
 import UserActivity from "./UserActivity";
+import AdminFaq from "./AdminFaq";
 import {
   FaBook,
   FaLayerGroup,
@@ -692,6 +693,7 @@ const Dashboard = () => {
           {activeNav === "Colleges" && <AdminColleges setActiveNav={setActiveNav} />}
           {activeNav === "Users" && <AdminUsers setActiveNav={setActiveNav} />}
           {activeNav === "User Activity" && <UserActivity setActiveNav={setActiveNav} />}
+          {activeNav === "FAQ's" && <AdminFaq setActiveNav={setActiveNav} />}
 
           {/* FOOTER */}
           <div className="flex items-center justify-between text-xs text-gray-400 py-2">
