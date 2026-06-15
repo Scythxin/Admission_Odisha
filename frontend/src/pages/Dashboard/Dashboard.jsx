@@ -6,6 +6,9 @@ import AdminSpecializations from "./AdminSpecializations";
 import AdminEnquiry from "./AdminEnquiry";
 import CoursesManagement from "./CoursesManagement";
 import AdminColleges from "./AdminColleges";
+import AdminUsers from "./AdminUsers";
+import UserActivity from "./UserActivity";
+import AdminFaq from "./AdminFaq";
 import AdminScholarships from "./AdminScholarships";
 import {
   FaBook,

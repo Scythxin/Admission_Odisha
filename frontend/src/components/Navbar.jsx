@@ -7,9 +7,24 @@ import {
   FaHeart,
   FaSignOutAlt,
   FaGlobe,
+  FaUser,
+  FaCog,
+  FaLock,
+  FaHeadset,
+  FaPhoneAlt,
+  FaEnvelope,
+  FaHome,
+  FaInfoCircle,
+  FaGraduationCap,
+  FaBook,
 } from "react-icons/fa";
+import MyProfileButton from "./profile/MyProfileButton";
+import SettingsButton from "./profile/SettingsButton";
+import LogoutButton from "./profile/LogoutButton";
+
 import logo from "../assets/images/logo.png";
 import { useTranslation } from "react-i18next";
+import { API_BASE, ASSETS_BASE } from "../config/api";
 
 const Navbar = () => {
   const token = localStorage.getItem("token");
@@ -20,14 +35,6 @@ const Navbar = () => {
   const [lang, setLang] = useState(localStorage.getItem("language") || "en");
   const { wishlist } = useContext(AuthContext);
 
-  const users = JSON.parse(localStorage.getItem("user"));
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
-  }, []);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   const location = useLocation();
@@ -39,6 +46,21 @@ const Navbar = () => {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleUserUpdate = () => {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        setUser(JSON.parse(userData));
+      }
+    };
+
+    // Initial load
+    handleUserUpdate();
+
+    window.addEventListener("userUpdated", handleUserUpdate);
+    return () => window.removeEventListener("userUpdated", handleUserUpdate);
   }, []);
 
   const navLinks = [
@@ -72,7 +94,7 @@ const Navbar = () => {
         className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-gray-100
         ${scrolled ? "shadow-lg" : ""}`}
       >
-        <div className="max-w-[1280px] mx-auto flex items-center justify-between px-6 py-3">
+        <div className="max-w-[1280px] mx-auto flex items-center justify-between px-4 md:px-6 py-3 w-full">
           {/* LOGO - Reduced gap */}
           <Link to="/" className="flex items-center gap-1 group">
             <img
@@ -130,19 +152,19 @@ const Navbar = () => {
           </nav>
 
           {/* RIGHT SIDE */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
             {/* Wishlist Count */}
             {token && wishlist?.length > 0 && (
               <Link
                 to="/wishlist"
-                className="relative inline-flex items-center justify-center rounded-full bg-red-50 border border-red-100 px-3 py-2 text-red-600 text-sm font-semibold hover:bg-red-100 transition-all duration-200"
+                className="hidden md:inline-flex relative items-center justify-center rounded-full bg-red-50 border border-red-100 px-3 py-2 text-red-600 text-sm font-semibold hover:bg-red-100 transition-all duration-200"
               >
                 <FaHeart className="mr-1 text-base" />
                 {wishlist.length}
               </Link>
             )}
             {/* Language */}
-            <div className="relative">
+            <div className="hidden md:block relative">
               <button
                 onClick={() => setOpen(!open)}
                 className="flex items-center gap-2 border border-gray-300 px-3 py-1.5 rounded-md text-sm font-medium bg-white/50 hover:bg-white transition-all duration-300"
@@ -162,11 +184,8 @@ const Navbar = () => {
                           item === "EN" ? "en" : item === "Hindi" ? "hi" : "od";
 
                         setLang(selected);
-
                         i18n.changeLanguage(selected);
-
                         localStorage.setItem("language", selected);
-
                         setOpen(false);
                       }}
                       className="px-3 py-2 text-sm hover:bg-gradient-to-r hover:from-[#F5F3FF] hover:to-[#F3E8FF] cursor-pointer transition-all duration-200"
@@ -189,7 +208,7 @@ const Navbar = () => {
                     >
                       {user?.profile_photo ? (
                         <img
-                          src={`http://localhost/backend/${user.profile_photo}`}
+                          src={`${ASSETS_BASE}/${user.profile_photo}`}
                           alt="profile"
                           className="w-10 h-10 rounded-full object-cover border-2 border-white"
                         />
@@ -205,41 +224,33 @@ const Navbar = () => {
                         </div>
                       )}
                     </button>
-                    {profileOpen && (
-                      <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-100 rounded-md shadow-lg z-50 overflow-hidden">
-                        <Link
-                          to="/wishlist"
-                          onClick={() => setProfileOpen(false)}
-                          className="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-all duration-200"
-                        >
-                          <FaHeart className="inline-block mr-2 text-xs text-red-500" />
-                          Wishlist
-                        </Link>
-                        <button
-                          onClick={() => {
-                            localStorage.removeItem("token");
-                            localStorage.removeItem("user");
-                            window.location.reload();
-                          }}
-                          className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-all duration-200"
-                        >
-                          <FaSignOutAlt className="text-xs" />
-                          Logout
-                        </button>
-                      </div>
-                    )}
+                    <div
+                      className={`absolute right-0 mt-2 w-44 bg-white border border-gray-100 rounded-md shadow-lg z-50 overflow-hidden py-1 transition-all duration-200 ${profileOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"}`}
+                    >
+                      <MyProfileButton onClick={() => setProfileOpen(false)} />
+                      <SettingsButton onClick={() => setProfileOpen(false)} />
+                      <Link
+                        to="/wishlist"
+                        onClick={() => setProfileOpen(false)}
+                        className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100 transition-all duration-200"
+                      >
+                        <FaHeart className="inline-block mr-2 text-xs text-red-500" />
+                        Wishlist
+                      </Link>
+                      <LogoutButton onClick={() => setProfileOpen(false)} />
+                    </div>
                   </>
                 ) : (
-                  <div className="flex gap-3">
+                  <div className="flex gap-2 md:gap-3">
                     <Link
                       to="/login"
-                      className="border border-[#6C4DF6] text-[#6C4DF6] px-4 py-2 rounded-md text-sm font-semibold hover:bg-[#F5F3FF] transition-all duration-300"
+                      className="border border-[#6C4DF6] text-[#6C4DF6] px-3 py-1.5 md:px-4 md:py-2 rounded-md text-xs md:text-sm font-semibold hover:bg-[#F5F3FF] transition-all duration-300"
                     >
                       Login
                     </Link>
                     <Link
                       to="/register"
-                      className="bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white px-4 py-2 rounded-md text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                      className="bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white px-3 py-1.5 md:px-4 md:py-2 rounded-md text-xs md:text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300"
                     >
                       Register
                     </Link>
@@ -247,172 +258,77 @@ const Navbar = () => {
                 )}
               </div>
             ) : (
-              <>
+              <div className="flex gap-2 md:gap-3">
                 <Link
                   to="/login"
-                  className="border border-[#6C4DF6] text-[#6C4DF6] px-5 py-2 rounded-md text-sm font-semibold hover:bg-[#F5F3FF] transition-all duration-300"
+                  className="border border-[#6C4DF6] text-[#6C4DF6] px-3 py-1.5 md:px-5 md:py-2 rounded-md text-xs md:text-sm font-semibold hover:bg-[#F5F3FF] transition-all duration-300"
                 >
                   Login
                 </Link>
 
                 <button
                   onClick={() => navigate("/register")}
-                  className="bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white px-5 py-2 rounded-md text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                  className="bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white px-3 py-1.5 md:px-5 md:py-2 rounded-md text-xs md:text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300"
                 >
                   Register
                 </button>
-              </>
+              </div>
             )}
           </div>
-
-          {/* MOBILE BUTTON */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-gray-600 text-2xl hover:text-[#6C4DF6] transition-colors duration-300"
-          >
-            {mobileMenuOpen ? <FaTimes /> : <FaBars />}
-          </button>
         </div>
-
-        {/* MOBILE MENU */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white/95 backdrop-blur-md border-t shadow-lg animate-slideDown">
-            <div className="flex flex-col py-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`px-6 py-3 text-sm transition-all duration-300 ${
-                    isActive(link.path)
-                      ? "text-[#6C4DF6] bg-gradient-to-r from-[#F5F3FF] to-[#F3E8FF] border-l-4 border-[#6C4DF6]"
-                      : "text-gray-600 hover:bg-gray-50"
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-
-              {user?.is_admin === 1 && (
-                <Link
-                  to="/dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`px-6 py-3 text-sm transition-all duration-300 ${
-                    isActive("/dashboard")
-                      ? "text-[#6C4DF6] bg-gradient-to-r from-[#F5F3FF] to-[#F3E8FF] border-l-4 border-[#6C4DF6]"
-                      : "text-gray-600 hover:bg-gray-50"
-                  }`}
-                >
-                  Dashboard
-                </Link>
-              )}
-              {token && (
-                <Link
-                  to="/wishlist"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`px-6 py-3 text-sm transition-all duration-300 ${
-                    isActive("/wishlist")
-                      ? "text-[#6C4DF6] bg-gradient-to-r from-[#F5F3FF] to-[#F3E8FF] border-l-4 border-[#6C4DF6]"
-                      : "text-gray-600 hover:bg-gray-50"
-                  }`}
-                >
-                  Wishlist {wishlist?.length > 0 && `(${wishlist.length})`}
-                </Link>
-              )}
-
-              {/* Divider */}
-              <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-2 mx-4"></div>
-
-              {/* Language */}
-              <div className="px-6 py-3">
-                <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
-                  <FaGlobe className="text-xs" /> Language
-                </p>
-                <div className="flex gap-2">
-                  {["EN", "Hindi", "Odia"].map((item) => (
-                    <button
-                      key={item}
-                      onClick={() => {
-                        const selected =
-                          item === "EN" ? "en" : item === "Hindi" ? "hi" : "od";
-
-                        setLang(selected);
-
-                        i18n.changeLanguage(selected);
-
-                        localStorage.setItem("language", selected);
-
-                        setMobileMenuOpen(false);
-                      }}
-                      className={`px-3 py-1 rounded-md text-sm transition-all duration-300 ${
-                        (item === "EN" && lang === "en") ||
-                        (item === "Hindi" && lang === "hi") ||
-                        (item === "Odia" && lang === "od")
-                          ? "bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white shadow-md"
-                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      }`}
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Auth Buttons */}
-              <div className="flex gap-3 px-6 py-3">
-                {token ? (
-                  <div className="flex flex-col w-full gap-3">
-                    <button
-                      className="w-full border border-red-500 text-red-500 py-2 rounded-md hover:bg-red-50 transition-all duration-300 flex items-center justify-center gap-2"
-                      onClick={() => {
-                        localStorage.removeItem("token");
-                        localStorage.removeItem("user");
-                        window.location.reload();
-                      }}
-                    >
-                      <FaSignOutAlt className="text-sm" />
-                      Logout
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <Link to="/login" className="flex-1">
-                      <button className="w-full border border-[#6C4DF6] text-[#6C4DF6] py-2 rounded-md hover:bg-[#F5F3FF] transition-all duration-300">
-                        Login
-                      </button>
-                    </Link>
-                    <Link to="/register" className="flex-1">
-                      <button className="w-full bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white py-2 rounded-md shadow-md hover:shadow-lg transition-all duration-300">
-                        Register
-                      </button>
-                    </Link>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Animation */}
-        <style>{`
-          @keyframes slideDown {
-            from {
-              opacity: 0;
-              transform: translateY(-10px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-          .animate-slideDown {
-            animation: slideDown 0.3s ease-out;
-          }
-        `}</style>
       </header>
 
-      {/* Spacer to prevent content from hiding under fixed navbar */}
-      <div className="h-[72px] md:h-[80px]"></div>
+      {/* Spacer to prevent content from hiding under fixed top navbar */}
+      <div className="h-[70px] md:h-[80px]"></div>
+
+      {/* MOBILE BOTTOM NAVIGATION */}
+      <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-[100] flex justify-around items-center h-16 pb-safe shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+        <Link
+          to="/"
+          className={`flex flex-col items-center justify-center w-full h-full ${isActive("/") ? "text-[#6C4DF6]" : "text-gray-500 hover:text-[#6C4DF6]"}`}
+        >
+          <FaHome className="text-xl mb-1" />
+          <span className="text-[10px] font-medium">Home</span>
+        </Link>
+        <Link
+          to="/about"
+          className={`flex flex-col items-center justify-center w-full h-full ${isActive("/about") ? "text-[#6C4DF6]" : "text-gray-500 hover:text-[#6C4DF6]"}`}
+        >
+          <FaInfoCircle className="text-xl mb-1" />
+          <span className="text-[10px] font-medium">About</span>
+        </Link>
+        <Link
+          to="/colleges"
+          className={`flex flex-col items-center justify-center w-full h-full ${isActive("/colleges") ? "text-[#6C4DF6]" : "text-gray-500 hover:text-[#6C4DF6]"}`}
+        >
+          <FaGraduationCap className="text-xl mb-1" />
+          <span className="text-[10px] font-medium">College</span>
+        </Link>
+        <Link
+          to="/course"
+          className={`flex flex-col items-center justify-center w-full h-full ${isActive("/course") ? "text-[#6C4DF6]" : "text-gray-500 hover:text-[#6C4DF6]"}`}
+        >
+          <FaBook className="text-xl mb-1" />
+          <span className="text-[10px] font-medium">Course</span>
+        </Link>
+        <Link
+          to="/wishlist"
+          className={`flex flex-col items-center justify-center w-full h-full relative ${isActive("/wishlist") ? "text-[#6C4DF6]" : "text-gray-500 hover:text-[#6C4DF6]"}`}
+        >
+          <div className="relative">
+            <FaHeart className="text-xl mb-1" />
+            {token && wishlist?.length > 0 && (
+              <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">
+                {wishlist.length}
+              </span>
+            )}
+          </div>
+          <span className="text-[10px] font-medium">Wishlist</span>
+        </Link>
+      </nav>
+
+      {/* Spacer to prevent content from hiding under fixed bottom navbar on mobile */}
+      <div className="md:hidden h-[64px]"></div>
     </>
   );
 };

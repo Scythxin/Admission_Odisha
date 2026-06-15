@@ -6,8 +6,10 @@ const MainLayout = ({ children }) => {
   return (
     <>
       <Navbar />
-      {children}
-      <Footer />
+      <div className="pb-[72px] md:pb-0">
+        {children}
+        <Footer />
+      </div>
       <EnquiryFloating />
     </>
   );

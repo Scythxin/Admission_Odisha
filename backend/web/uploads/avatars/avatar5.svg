@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="50" fill="#8b5cf6"/>
+  <circle cx="50" cy="45" r="18" fill="#fbcfe8"/>
+  <path d="M20 85 C20 68, 80 68, 80 85 Z" fill="#31108a"/>
+  <!-- Beanie -->
+  <path d="M30 38 C30 22, 70 22, 70 38 Z" fill="#db2777"/>
+  <circle cx="50" cy="22" r="6" fill="#fdf2f8"/>
+  <circle cx="43" cy="45" r="3" fill="#1e293b"/>
+  <circle cx="57" cy="45" r="3" fill="#1e293b"/>
+</svg>

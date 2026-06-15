@@ -4,7 +4,8 @@ import { Search, GraduationCap, Laptop, BookOpen, FlaskConical, Briefcase, Pill,
 import {
   FaCog, FaHeartbeat, FaBriefcase, FaPalette,
   FaFlask, FaBalanceScale, FaPencilAlt, FaConciergeBell,
-  FaDesktop, FaGraduationCap
+  FaDesktop, FaGraduationCap, FaCode, FaStethoscope,
+  FaChartBar, FaUserNurse, FaPills, FaTools
 } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { useEnquiry } from "../../context/EnquiryContext";
@@ -14,6 +15,106 @@ import heroImage from "/src/assets/images/course.png";
 
 const iconMap = { GraduationCap, Briefcase, FlaskConical, Laptop, Pill, Settings, BookOpen, Palette };
 
+// ─── Most Demanding Courses data ───────────────────────────────────────────────
+const mostDemandedCourses = [
+  {
+    name: "B.Tech",
+    fullName: "Bachelor of Technology",
+
+    colleges: "120+ Colleges",
+    icon: <FaCode />,
+    iconBg: "bg-purple-100",
+    iconColor: "text-purple-600",
+    exploreBorder: "border-purple-500",
+    exploreText: "text-purple-600",
+    exploreHover: "hover:bg-purple-600",
+    slug: "btech",
+  },
+  {
+    name: "MBA",
+    fullName: "Master of Business Administration",
+    colleges: "80+ Colleges",
+    icon: <FaBriefcase />,
+    iconBg: "bg-green-100",
+    iconColor: "text-green-600",
+    exploreBorder: "border-green-500",
+    exploreText: "text-green-600",
+    exploreHover: "hover:bg-green-600",
+    slug: "mba",
+  },
+  {
+    name: "MBBS",
+    fullName: "Bachelor of Medicine & Surgery",
+    colleges: "40+ Colleges",
+    icon: <FaStethoscope />,
+    iconBg: "bg-pink-100",
+    iconColor: "text-pink-600",
+    exploreBorder: "border-pink-500",
+    exploreText: "text-pink-600",
+    exploreHover: "hover:bg-pink-600",
+    slug: "mbbs",
+  },
+  {
+    name: "BCA",
+    fullName: "Bachelor of Computer Applications",
+    colleges: "100+ Colleges",
+    icon: <FaDesktop />,
+    iconBg: "bg-blue-100",
+    iconColor: "text-blue-600",
+    exploreBorder: "border-blue-500",
+    exploreText: "text-blue-600",
+    exploreHover: "hover:bg-blue-600",
+    slug: "bca",
+  },
+  {
+    name: "MCA",
+    fullName: "Master of Computer Applications",
+    colleges: "60+ Colleges",
+    icon: <FaChartBar />,
+    iconBg: "bg-amber-100",
+    iconColor: "text-amber-600",
+    exploreBorder: "border-amber-500",
+    exploreText: "text-amber-600",
+    exploreHover: "hover:bg-amber-600",
+    slug: "mca",
+  },
+  {
+    name: "B.Sc Nursing",
+    fullName: "Bachelor of Science in Nursing",
+    colleges: "50+ Colleges",
+    icon: <FaUserNurse />,
+    iconBg: "bg-teal-100",
+    iconColor: "text-teal-600",
+    exploreBorder: "border-teal-500",
+    exploreText: "text-teal-600",
+    exploreHover: "hover:bg-teal-600",
+    slug: "bscnursing",
+  },
+  {
+    name: "B.Pharm",
+    fullName: "Bachelor of Pharmacy",
+    colleges: "70+ Colleges",
+    icon: <FaPills />,
+    iconBg: "bg-purple-100",
+    iconColor: "text-purple-600",
+    exploreBorder: "border-purple-500",
+    exploreText: "text-purple-600",
+    exploreHover: "hover:bg-purple-600",
+    slug: "bpharm",
+  },
+  {
+    name: "Diploma",
+    fullName: "Diploma Engineering",
+    colleges: "150+ Colleges",
+    icon: <FaTools />,
+    iconBg: "bg-amber-100",
+    iconColor: "text-amber-500",
+    exploreBorder: "border-amber-500",
+    exploreText: "text-amber-500",
+    exploreHover: "hover:bg-amber-500",
+    slug: "diploma",
+  },
+];
 const Course = () => {
   const { t } = useTranslation();
   const { openGuidance } = useEnquiry();
@@ -286,6 +387,54 @@ const Course = () => {
                 <h4 className="font-bold text-[11px] text-[#071B52] leading-tight whitespace-pre-line">
                   {f.name}
                 </h4>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* MOST DEMANDED COURSES */}
+      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 pb-8">
+        <div className="flex items-center justify-between mb-7">
+          <div>
+            <h2 className="text-2xl font-bold text-[#071B52]">Most Demanded Courses</h2>
+            <p className="text-gray-400 text-xs mt-1">
+              High-interest programs students are exploring right now
+            </p>
+          </div>
+          <Link to="/courses">
+            <button className="text-indigo-600 font-semibold text-sm flex items-center gap-1 hover:gap-2 transition-all duration-200">
+              {t("courseViewAll")} <ChevronRight size={15} />
+            </button>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {mostDemandedCourses.map((course) => (
+            <Link
+              key={course.slug}
+              to={`/course-detail/${course.slug}`}
+              className="group bg-white p-5 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 hover:-translate-y-1 transition-all duration-300 block"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className={`${course.iconBg} ${course.iconColor} w-12 h-12 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
+                  {course.icon}
+                </div>
+                <span className="text-[11px] font-bold text-gray-500 bg-gray-50 px-2.5 py-1 rounded-full whitespace-nowrap">
+                  {course.colleges}
+                </span>
+              </div>
+
+              <div className="mt-4">
+                <h4 className="text-lg font-bold text-[#071B52]">{course.name}</h4>
+                <p className="text-xs text-gray-400 mt-1 min-h-8">{course.fullName}</p>
+              </div>
+
+              <div className="pt-4 mt-4 border-t border-gray-100 flex items-center justify-between">
+                <span className={`text-xs font-bold ${course.exploreText}`}>Explore</span>
+                <span className={`${course.exploreText} group-hover:translate-x-1 transition-transform duration-200`}>
+                  <ChevronRight size={15} />
+                </span>
               </div>
             </Link>
           ))}

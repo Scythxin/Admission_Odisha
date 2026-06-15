@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="50" fill="#f43f5e"/>
+  <circle cx="50" cy="45" r="18" fill="#fed7aa"/>
+  <!-- Beard -->
+  <path d="M32 45 C32 62, 68 62, 68 45 Z" fill="#1c1917"/>
+  <circle cx="50" cy="45" r="15" fill="#fed7aa"/>
+  <!-- Cap -->
+  <path d="M30 35 C30 25, 70 25, 70 35 Z" fill="#0284c7"/>
+  <rect x="25" y="32" width="50" height="4" rx="2" fill="#0284c7"/>
+  <circle cx="43" cy="43" r="3" fill="#1e293b"/>
+  <circle cx="57" cy="43" r="3" fill="#1e293b"/>
+</svg>

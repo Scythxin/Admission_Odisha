@@ -5,7 +5,8 @@ import {
   School, CheckCircle, GraduationCap, 
   Globe, Info, Award, Users, BookOpen, 
   TrendingUp, HelpCircle, Phone, Mail,
-  Calendar, Building, Maximize, ExternalLink
+  Calendar, Building, Maximize, ExternalLink,
+  Images, X, Hotel, FlaskConical, Utensils, ArrowRight
 } from 'lucide-react';
 import { ASSETS_BASE } from '../../config/api';
 import { useEnquiry } from '../../context/EnquiryContext';
@@ -152,12 +153,73 @@ const EnquirySuccessModal = ({ open, onClose }) => {
 };
 // ─────────────────────────────────────────────────────────────────────────────
 
+const CampusGalleryModal = ({ open, onClose, college, galleryItems }) => {
+    if (!open) return null;
+
+    return (
+        <div
+            onClick={(e) => e.target === e.currentTarget && onClose()}
+            className="fixed inset-0 z-[99999] flex items-center justify-center bg-[#071B52]/35 px-4 py-6 backdrop-blur-sm"
+            style={{ zIndex: 999999 }}
+        >
+            <div className="w-full max-w-[560px] max-h-[calc(100vh-32px)] overflow-y-auto rounded-2xl bg-white p-5 sm:p-6 shadow-2xl border border-gray-100">
+                <div className="flex items-start justify-between gap-4">
+                    <div>
+                        <h3 className="flex items-center gap-3 text-lg font-bold text-[#071B52]">
+                            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+                                <Images size={19} />
+                            </span>
+                            Campus Gallery
+                        </h3>
+                        <p className="mt-2 text-sm font-medium text-gray-500">
+                            Explore the beautiful campus and world-class facilities
+                        </p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        aria-label="Close campus gallery"
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#071B52] hover:bg-gray-100 transition-colors"
+                    >
+                        <X size={20} />
+                    </button>
+                </div>
+
+                <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {galleryItems.map((item) => (
+                        <div key={item.label} className="relative h-[136px] overflow-hidden rounded-lg bg-gray-100 shadow-sm">
+                            <img
+                                src={item.image}
+                                alt={`${college.name} ${item.label}`}
+                                className="h-full w-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+                            <div className="absolute bottom-4 left-4 flex items-center gap-2 text-sm font-bold text-white drop-shadow">
+                                {item.icon}
+                                <span>{item.label}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="mt-5 flex justify-end">
+                    <button className="inline-flex items-center gap-2 rounded-lg border border-indigo-400 px-5 py-3 text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition-colors">
+                        View All Photos
+                        <ArrowRight size={16} />
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
 const CollegeDetail = () => {
   const { id } = useParams();
   const [college, setCollege] = useState(null);
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [successOpen, setSuccessOpen] = useState(false);
+  const [galleryOpen, setGalleryOpen] = useState(false);
   const { openEnquiry, isOpen, closeEnquiry, openGuidance } = useEnquiry();
   const { wishlist, toggleWishlist } = useContext(AuthContext);
 
@@ -197,6 +259,54 @@ const CollegeDetail = () => {
     return `${ASSETS_BASE}/${imagePath}`;
   };
 
+  const getCampusGalleryItems = () => {
+      const labels = [
+          { label: 'Library', search: 'library reading room', icon: <BookOpen size={17} /> },
+          { label: 'Hostel', search: 'hostel building campus', icon: <Hotel size={17} /> },
+          { label: 'Sports Ground', search: 'sports ground campus', icon: <Maximize size={17} /> },
+          { label: 'Laboratory', search: 'medical laboratory students', icon: <FlaskConical size={17} /> },
+          { label: 'Auditorium', search: 'college auditorium', icon: <Users size={17} /> },
+          { label: 'Cafeteria', search: 'college cafeteria', icon: <Utensils size={17} /> },
+      ];
+
+      const rawGallery = college.gallery_images || college.gallery || college.campus_gallery || college.photos;
+      let uploadedImages = [];
+
+      if (Array.isArray(rawGallery)) {
+          uploadedImages = rawGallery;
+      } else if (typeof rawGallery === 'string' && rawGallery.trim()) {
+          try {
+              const parsed = JSON.parse(rawGallery);
+              uploadedImages = Array.isArray(parsed) ? parsed : rawGallery.split(',');
+          } catch {
+              uploadedImages = rawGallery.split(',');
+          }
+      }
+
+      const normalizedImages = uploadedImages
+          .map((item) => {
+              if (typeof item === 'string') return item.trim();
+              return item?.image || item?.url || item?.path || '';
+          })
+          .filter(Boolean);
+
+      const defaultImages = {
+          'Library': 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=640&h=420&fit=crop',
+          'Hostel': 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=640&h=420&fit=crop',
+          'Sports Ground': 'https://images.unsplash.com/photo-1587329310686-91414b8e3cb7?w=640&h=420&fit=crop',
+          'Laboratory': 'https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?w=640&h=420&fit=crop',
+          'Auditorium': 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=640&h=420&fit=crop',
+          'Cafeteria': 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=640&h=420&fit=crop'
+      };
+
+      return labels.map((item, index) => ({
+          ...item,
+          image: normalizedImages[index]
+              ? getImageUrl(normalizedImages[index], true)
+              : defaultImages[item.label] || 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=640&h=420&fit=crop',
+      }));
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -227,6 +337,12 @@ const CollegeDetail = () => {
 
       {/* Thank You Modal */}
       <EnquirySuccessModal open={successOpen} onClose={() => setSuccessOpen(false)} />
+      <CampusGalleryModal
+          open={galleryOpen}
+          onClose={() => setGalleryOpen(false)}
+          college={college}
+          galleryItems={getCampusGalleryItems()}
+      />
 
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-100">
@@ -331,6 +447,13 @@ const CollegeDetail = () => {
               </div>
               <button className="mt-6 text-indigo-600 font-bold flex items-center gap-1 hover:gap-2 transition-all group">
                 Read More <TrendingUp size={18} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+              <button
+                  onClick={() => setGalleryOpen(true)}
+                  className="mt-4 inline-flex items-center gap-2 rounded-lg border border-indigo-500 px-4 py-2 text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition-colors"
+              >
+                  <Images size={16} />
+                  <span>Campus Gallery</span>
               </button>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-10 pt-10 border-t border-gray-50">
                 {[

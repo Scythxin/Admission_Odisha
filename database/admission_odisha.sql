@@ -8168,6 +8168,8 @@ CREATE TABLE `users` (
     `phone` varchar(15) DEFAULT NULL,
     `password` varchar(255) DEFAULT NULL,
     `city` varchar(100) DEFAULT NULL,
+    `gender` varchar(20) DEFAULT NULL,
+    `dob` date DEFAULT NULL,
     `is_verified` tinyint(4) DEFAULT 0,
     `verified_at` datetime DEFAULT NULL,
     `is_admin` tinyint(4) DEFAULT 0,
@@ -8193,6 +8195,7 @@ CREATE TABLE `user_activity` (
     `specialization_id` int(11) DEFAULT NULL,
     `course_id` int(11) DEFAULT NULL,
     `activity_type` varchar(50) DEFAULT NULL,
+    `ip_address` varchar(45) DEFAULT NULL,
     `created_at` datetime DEFAULT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
@@ -8366,6 +8369,8 @@ INSERT INTO
         `phone`,
         `password`,
         `city`,
+        `gender`,
+        `last_login`,
         `is_verified`,
         `verified_at`,
         `is_admin`,
@@ -8378,6 +8383,8 @@ VALUES (
         '9999999999',
         '$2y$12$WYcQKX5yLTWDkVWvmPL5TeWyaZincUyMhzvS9zJdIg3ltyjbU6qpm',
         'Bhubaneswar',
+        'Male',
+        NOW(),
         1,
         NOW(),
         1,
@@ -8385,64 +8392,116 @@ VALUES (
         1
     ),
     (
-        'Rohan Das',
-        'rohan@example.com',
+        'Kajal Thakur',
+        'kajal.thakur@example.com',
         '9876543210',
         '$2y$10$7R/0W7W2W5W5W5W5W5W5W.5W5W5W5W5W5W5W5W5W5W5W5W5W5W5W',
-        'Cuttack',
+        'Bhadrak',
+        'Female',
+        '2026-06-12 10:35:00',
         1,
         NOW(),
         0,
-        NOW(),
+        '2026-05-15 10:00:00',
         1
     ),
     (
-        'Priya Mohanty',
-        'priya@example.com',
-        '9876543211',
+        'Rahul Sahu',
+        'rahul.sahu@example.com',
+        '8765432109',
+        '$2y$10$7R/0W7W2W5W5W5W5W5W5W.5W5W5W5W5W5W5W5W5W5W5W5W5W5W5W',
+        'Cuttack',
+        'Male',
+        '2026-06-12 09:12:00',
+        1,
+        NOW(),
+        0,
+        '2026-05-14 10:00:00',
+        1
+    ),
+    (
+        'Priya Panda',
+        'priya.panda@example.com',
+        '7654321098',
         '$2y$10$7R/0W7W2W5W5W5W5W5W5W.5W5W5W5W5W5W5W5W5W5W5W5W5W5W5W',
         'Bhubaneswar',
+        'Female',
+        '2026-06-11 08:45:00',
         1,
         NOW(),
         0,
-        NOW(),
+        '2026-05-13 10:00:00',
         1
     ),
     (
-        'Sourav Nayak',
-        'sourav@example.com',
-        '9876543212',
+        'Subham Das',
+        'subham.das@example.com',
+        '6543210987',
         '$2y$10$7R/0W7W2W5W5W5W5W5W5W.5W5W5W5W5W5W5W5W5W5W5W5W5W5W5W',
         'Puri',
+        'Male',
+        '2026-06-07 18:20:00',
         1,
         NOW(),
         0,
+        '2026-05-12 10:00:00',
+        0
+    ),
+    (
+        'Anjali Mishra',
+        'anjali.mishra@example.com',
+        '5432109876',
+        '$2y$10$7R/0W7W2W5W5W5W5W5W5W.5W5W5W5W5W5W5W5W5W5W5W5W5W5W5W',
+        'Berhampur',
+        'Female',
+        '2026-06-12 11:05:00',
+        1,
         NOW(),
+        0,
+        '2026-05-11 10:00:00',
         1
     ),
     (
-        'Ananya Behera',
-        'ananya@example.com',
-        '9876543213',
+        'Manoj Behera',
+        'manoj.behera@example.com',
+        '4321098765',
         '$2y$10$7R/0W7W2W5W5W5W5W5W5W.5W5W5W5W5W5W5W5W5W5W5W5W5W5W5W',
         'Sambalpur',
+        'Male',
+        '2026-06-12 10:55:00',
         1,
         NOW(),
         0,
-        NOW(),
+        '2026-05-10 10:00:00',
         1
     ),
     (
-        'Bikash Patra',
-        'bikash@example.com',
-        '9876543214',
+        'Sweta Lenka',
+        'sweta.lenka@example.com',
+        '3210987654',
         '$2y$10$7R/0W7W2W5W5W5W5W5W5W.5W5W5W5W5W5W5W5W5W5W5W5W5W5W5W',
-        'Balasore',
+        'Rourkela',
+        'Female',
+        '2026-06-05 16:15:00',
         1,
         NOW(),
         0,
+        '2026-05-09 10:00:00',
+        2
+    ),
+    (
+        'Rakesh Jena',
+        'rakesh.jena@example.com',
+        '2109876543',
+        '$2y$10$7R/0W7W2W5W5W5W5W5W5W.5W5W5W5W5W5W5W5W5W5W5W5W5W5W5W',
+        'Balasore',
+        'Male',
+        '2026-06-03 14:30:00',
+        1,
         NOW(),
-        1
+        0,
+        '2026-05-08 10:00:00',
+        0
     );
 
 --
@@ -8495,40 +8554,23 @@ VALUES (
 -- Dumping data for table `user_activity`
 --
 
-INSERT INTO
-    `user_activity` (
-        `user_id`,
-        `field_id`,
-        `specialization_id`,
-        `course_id`,
-        `activity_type`,
-        `created_at`
-    )
-VALUES (
-        2,
-        1,
-        1,
-        1,
-        'Viewed Course',
-        NOW()
-    ),
-    (
-        3,
-        2,
-        17,
-        NULL,
-        'Searched Specialization',
-        NOW()
-    ),
-    (
-        4,
-        3,
-        21,
-        NULL,
-        'Viewed Field',
-        NOW()
-    ),
-    (5, 1, 1, 1, 'Inquired', NOW());
+INSERT INTO `user_activity` (`user_id`, `field_id`, `specialization_id`, `course_id`, `activity_type`, `ip_address`, `created_at`) VALUES 
+(2, 1, 1, 1, 'Viewed Course', '192.168.1.10', NOW()),
+(3, 2, 17, NULL, 'Searched Specialization', '192.168.1.11', NOW()),
+(4, 3, 21, NULL, 'Viewed Field', '192.168.1.12', NOW()),
+(5, 1, 1, 1, 'Inquired', '192.168.1.13', NOW()),
+(4, NULL, NULL, NULL, 'Login', '192.168.1.1', '2026-06-11 20:21:00'),
+(4, NULL, NULL, NULL, 'Login', '192.168.1.8', '2026-06-11 22:21:00'),
+(4, 1, NULL, 4, 'Added to Wishlist', '192.168.1.5', '2026-06-09 22:21:00'),
+(2, 3, NULL, 4, 'Viewed College', '192.168.1.3', '2026-06-10 18:21:00'),
+(5, NULL, NULL, NULL, 'Submitted Enquiry', '192.168.1.6', '2026-06-11 14:21:00'),
+(3, NULL, NULL, NULL, 'Profile Updated', '192.168.1.2', '2026-06-09 18:21:00'),
+(4, 1, NULL, 4, 'Viewed Course', '192.168.1.7', '2026-06-11 22:21:00'),
+(5, NULL, NULL, NULL, 'Removed from Wishlist', '192.168.1.9', '2026-06-09 10:21:00'),
+(4, NULL, NULL, NULL, 'Login', '10.0.0.1', '2026-06-09 18:21:00'),
+(4, NULL, NULL, NULL, 'Submitted Enquiry', '10.0.0.2', '2026-06-10 22:21:00'),
+(3, 3, NULL, 1, 'Viewed Course', '172.16.0.5', '2026-06-12 01:21:00'),
+(3, 1, NULL, 3, 'Viewed College', '172.16.0.8', '2026-06-08 15:21:00');
 
 --
 -- Table structure for table `general_courses`
