@@ -10,6 +10,7 @@ import AdminUsers from "./AdminUsers";
 import UserActivity from "./UserActivity";
 import AdminFaq from "./AdminFaq";
 import AdminScholarships from "./AdminScholarships";
+import AdminFeedback from "./AdminFeedback";
 import {
   FaBook,
   FaLayerGroup,
@@ -31,6 +32,7 @@ import {
   FaExternalLinkAlt,
   FaPlus,
   FaEye,
+  FaComments,
   FaGraduationCap as FaScholarshipIcon,
 } from "react-icons/fa";
 import {
@@ -106,6 +108,7 @@ const navItems = [
   { label: "OTHER", section: true },
   { label: "Banners", icon: <FaImage /> },
   { label: "FAQ's", icon: <FaQuestionCircle /> },
+  { label: "Website Feedback", icon: <FaComments /> },
   { label: "Scholarships", icon: <FaGraduationCap /> },
   { label: "Settings", icon: <FaCog /> },
   { label: "Activity Logs", icon: <FaClipboardList /> },
@@ -703,6 +706,9 @@ const Dashboard = () => {
             <AdminColleges setActiveNav={setActiveNav} />
           )}
           {activeNav === "Users" && <AdminUsers setActiveNav={setActiveNav} />}
+          {activeNav === "Website Feedback" && (
+            <AdminFeedback setActiveNav={setActiveNav} />
+          )}
           {activeNav === "Scholarships" && (
             <AdminScholarships setActiveNav={setActiveNav} />
           )}
