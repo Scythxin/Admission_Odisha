@@ -19,18 +19,40 @@ const Login = () => {
   const [timer, setTimer] = useState(120);
   const [loading, setLoading] = useState(false);
 
+  // Forgot Password States
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const [forgotPasswordStep, setForgotPasswordStep] = useState(1); // 1: Email, 2: OTP & New Password
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotOtp, setForgotOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [forgotTimer, setForgotTimer] = useState(0);
+
   useEffect(() => {
     let interval;
     if (showOtpModal && timer > 0) {
       interval = setInterval(() => {
         setTimer((prev) => prev - 1);
       }, 1000);
-    } else if (timer === 0) {
+    } else if (timer === 0 && showOtpModal) {
       setShowOtpModal(false);
       alert("OTP expired. Please try logging in again.");
     }
     return () => clearInterval(interval);
   }, [showOtpModal, timer]);
+
+  useEffect(() => {
+    let interval;
+    if (forgotPasswordStep === 2 && forgotTimer > 0) {
+      interval = setInterval(() => {
+        setForgotTimer((prev) => prev - 1);
+      }, 1000);
+    } else if (forgotPasswordStep === 2 && forgotTimer === 0) {
+      alert("OTP expired. Please try again.");
+      setForgotPasswordStep(1);
+    }
+    return () => clearInterval(interval);
+  }, [forgotPasswordStep, forgotTimer]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -109,8 +131,199 @@ const Login = () => {
     }
   };
 
+  const handleForgotPasswordRequest = async (e) => {
+    e.preventDefault();
+    if (!forgotEmail) return alert("Please enter your email");
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${API_BASE}?r=auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail })
+      });
+      const data = await res.json();
+      
+      if (data.status === "success") {
+        setForgotPasswordStep(2);
+        setForgotTimer(300); // 5 minutes
+        alert("OTP sent to your email!");
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      alert("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (forgotOtp.length !== 6) return alert("Please enter 6-digit OTP");
+    if (newPassword !== confirmPassword) return alert("Passwords do not match");
+    if (newPassword.length < 6) return alert("Password must be at least 6 characters long");
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${API_BASE}?r=auth/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail, otp: forgotOtp, new_password: newPassword })
+      });
+      const data = await res.json();
+      
+      if (data.status === "success") {
+        alert("Password reset successful. You can now login.");
+        setShowForgotPasswordModal(false);
+        setForgotPasswordStep(1);
+        setForgotEmail("");
+        setForgotOtp("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      alert("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f5f3ff] px-4 relative">
+
+      {/* Forgot Password Modal */}
+      {showForgotPasswordModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all duration-300">
+            <div className="h-1.5 bg-gradient-to-r from-primary via-purple-500 to-primary"></div>
+            
+            <div className="p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-800">Forgot Password</h3>
+                <button 
+                  onClick={() => {
+                    setShowForgotPasswordModal(false);
+                    setForgotPasswordStep(1);
+                  }} 
+                  className="text-gray-400 hover:text-gray-600 text-2xl"
+                >
+                  &times;
+                </button>
+              </div>
+
+              {forgotPasswordStep === 1 ? (
+                <form onSubmit={handleForgotPasswordRequest} className="space-y-5">
+                  <p className="text-sm text-gray-500 mb-4">
+                    Enter your registered email address and we'll send you an OTP to reset your password.
+                  </p>
+                  <div>
+                    <label className="text-sm text-gray-600 block mb-1.5">Email Address</label>
+                    <div className="flex items-center border border-gray-200 rounded-md px-3 py-2.5 focus-within:ring-2 focus-within:ring-primary">
+                      <MdEmail className="text-gray-400 mr-2 text-lg" />
+                      <input
+                        type="email"
+                        placeholder="Enter your email"
+                        className="w-full outline-none text-sm bg-transparent"
+                        value={forgotEmail}
+                        onChange={(e) => setForgotEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <button
+                    disabled={loading}
+                    className="w-full bg-primary text-white py-2.5 rounded-md font-semibold hover:opacity-90 transition disabled:opacity-50 mt-4"
+                  >
+                    {loading ? "Sending..." : "Send OTP"}
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleResetPassword} className="space-y-5">
+                  <p className="text-sm text-gray-500 mb-2 text-center">
+                    OTP sent to <span className="font-semibold text-gray-800">{forgotEmail}</span>
+                  </p>
+                  
+                  {/* OTP Input Fields */}
+                  <div>
+                    <label className="text-sm text-gray-600 block mb-1.5 text-center">Enter 6-digit OTP</label>
+                    <div className="flex justify-center gap-2">
+                      {[...Array(6)].map((_, index) => (
+                        <input
+                          key={index}
+                          type="text"
+                          maxLength="1"
+                          className="w-10 h-12 text-center text-xl font-bold border-2 border-gray-200 rounded-xl focus:border-primary outline-none"
+                          value={forgotOtp[index] || ""}
+                          onChange={(e) => {
+                            const newOtp = forgotOtp.split('');
+                            newOtp[index] = e.target.value.replace(/\D/g, '');
+                            setForgotOtp(newOtp.join(''));
+                            if (e.target.value && index < 5) {
+                              const nextInput = document.querySelector(`input[name="f-otp-${index + 1}"]`);
+                              if (nextInput) nextInput.focus();
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Backspace' && !forgotOtp[index] && index > 0) {
+                              const prevInput = document.querySelector(`input[name="f-otp-${index - 1}"]`);
+                              if (prevInput) prevInput.focus();
+                            }
+                          }}
+                          name={`f-otp-${index}`}
+                          autoFocus={index === 0}
+                        />
+                      ))}
+                    </div>
+                    <div className="text-center mt-2 text-xs font-semibold text-red-500">
+                      Expires in {Math.floor(forgotTimer / 60)}:{(forgotTimer % 60).toString().padStart(2, "0")}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm text-gray-600 block mb-1.5">New Password</label>
+                    <div className="flex items-center border border-gray-200 rounded-md px-3 py-2.5 focus-within:ring-2 focus-within:ring-primary">
+                      <RiLockPasswordLine className="text-gray-400 mr-2 text-lg" />
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter new password"
+                        className="w-full outline-none text-sm bg-transparent"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm text-gray-600 block mb-1.5">Confirm New Password</label>
+                    <div className="flex items-center border border-gray-200 rounded-md px-3 py-2.5 focus-within:ring-2 focus-within:ring-primary">
+                      <RiLockPasswordLine className="text-gray-400 mr-2 text-lg" />
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Confirm new password"
+                        className="w-full outline-none text-sm bg-transparent"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    disabled={loading || forgotOtp.length !== 6}
+                    className="w-full bg-gradient-to-r from-primary to-purple-600 text-white py-3 rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-50 mt-4 shadow-md"
+                  >
+                    {loading ? "Resetting..." : "Reset Password"}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* OTP Modal */}
      {showOtpModal && (
@@ -320,7 +533,10 @@ const Login = () => {
               </div>
 
               <div className="text-right mt-2">
-                <span className="text-xs text-primary cursor-pointer hover:underline">
+                <span 
+                  onClick={() => setShowForgotPasswordModal(true)}
+                  className="text-xs text-primary cursor-pointer hover:underline"
+                >
                   Forgot Password?
                 </span>
               </div>
