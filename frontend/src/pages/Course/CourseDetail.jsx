@@ -91,9 +91,9 @@ export default function CourseDetail() {
 
             {/* BREADCRUMB */}
             <div style={{ maxWidth: 1200, margin: "0 auto", padding: "14px 40px", fontSize: 13, color: "#9ca3af" }}>
-                <Link to="/" style={{ color: "inherit", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#5b4eff"} onMouseLeave={e => e.target.style.color = "inherit"}>Home</Link> › 
-                <Link to="/course" style={{ color: "inherit", transition: "color 0.2s", marginLeft: 4, marginRight: 4 }} onMouseEnter={e => e.target.style.color = "#5b4eff"} onMouseLeave={e => e.target.style.color = "inherit"}>Courses</Link> › 
-                <Link to={`/field/${course.category?.toLowerCase()}`} style={{ color: "inherit", transition: "color 0.2s", marginLeft: 4, marginRight: 4 }} onMouseEnter={e => e.target.style.color = "#5b4eff"} onMouseLeave={e => e.target.style.color = "inherit"}>{course.category}</Link> › 
+                <Link to="/" style={{ color: "inherit", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#5b4eff"} onMouseLeave={e => e.target.style.color = "inherit"}>Home</Link> ›
+                <Link to="/course" style={{ color: "inherit", transition: "color 0.2s", marginLeft: 4, marginRight: 4 }} onMouseEnter={e => e.target.style.color = "#5b4eff"} onMouseLeave={e => e.target.style.color = "inherit"}>Courses</Link> ›
+                <Link to={`/field/${course.category?.toLowerCase()}`} style={{ color: "inherit", transition: "color 0.2s", marginLeft: 4, marginRight: 4 }} onMouseEnter={e => e.target.style.color = "#5b4eff"} onMouseLeave={e => e.target.style.color = "inherit"}>{course.category}</Link> ›
                 <span style={{ color: "#5b4eff", fontWeight: 500, marginLeft: 4 }}>{course.short_name}</span>
             </div>
 

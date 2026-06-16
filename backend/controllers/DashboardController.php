@@ -582,4 +582,85 @@ class DashboardController extends Controller
             ]
         ];
     }
+
+    // --- FAQS CRUD ---
+
+    public function actionGetFaqs()
+    {
+        $faqs = Yii::$app->db->createCommand("SELECT * FROM faqs ORDER BY id DESC")->queryAll();
+        return ['status' => 'success', 'data' => $faqs];
+    }
+
+    public function actionCreateFaq()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $question = $data['question'] ?? '';
+        $answer = $data['answer'] ?? '';
+        $category = $data['category'] ?? 'Admission';
+        $status = $data['status'] ?? 'Active';
+
+        if (empty($question) || empty($answer)) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Question and answer are required.'];
+        }
+
+        $lastUpdated = date('d M Y');
+
+        Yii::$app->db->createCommand()->insert('faqs', [
+            'question' => $question,
+            'answer' => $answer,
+            'category' => $category,
+            'status' => $status,
+            'lastUpdated' => $lastUpdated,
+            'created_at' => date('Y-m-d H:i:s'),
+        ])->execute();
+
+        return ['status' => 'success', 'message' => 'FAQ created successfully.'];
+    }
+
+    public function actionUpdateFaq()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $id = $data['id'] ?? null;
+        $question = $data['question'] ?? '';
+        $answer = $data['answer'] ?? '';
+        $category = $data['category'] ?? 'Admission';
+        $status = $data['status'] ?? 'Active';
+
+        if (!$id || empty($question) || empty($answer)) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'ID, question, and answer are required.'];
+        }
+
+        $lastUpdated = date('d M Y');
+
+        Yii::$app->db->createCommand()->update('faqs', [
+            'question' => $question,
+            'answer' => $answer,
+            'category' => $category,
+            'status' => $status,
+            'lastUpdated' => $lastUpdated,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ], 'id = :id', [':id' => $id])->execute();
+
+        return ['status' => 'success', 'message' => 'FAQ updated successfully.'];
+    }
+
+    public function actionDeleteFaq()
+    {
+        $id = Yii::$app->request->get('id');
+        if (!$id) {
+            $data = Yii::$app->request->getBodyParams();
+            $id = $data['id'] ?? null;
+        }
+
+        if (!$id) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'FAQ ID is required.'];
+        }
+
+        Yii::$app->db->createCommand()->delete('faqs', 'id = :id', [':id' => $id])->execute();
+
+        return ['status' => 'success', 'message' => 'FAQ deleted successfully.'];
+    }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaPlus,
   FaQuestion,
@@ -16,65 +16,6 @@ import {
   FaTimes,
 } from "react-icons/fa";
 
-const initialFaqsData = [
-  {
-    id: 1,
-    question: "How can I apply for admission?",
-    category: "Admission",
-    status: "Active",
-    lastUpdated: "20 May 2024",
-  },
-  {
-    id: 2,
-    question: "What documents are required for application?",
-    category: "Documents",
-    status: "Active",
-    lastUpdated: "18 May 2024",
-  },
-  {
-    id: 3,
-    question: "Is there any application fee?",
-    category: "Fee",
-    status: "Active",
-    lastUpdated: "15 May 2024",
-  },
-  {
-    id: 4,
-    question: "How can I check my application status?",
-    category: "Application",
-    status: "Active",
-    lastUpdated: "12 May 2024",
-  },
-  {
-    id: 5,
-    question: "What is the last date to apply?",
-    category: "Admission",
-    status: "Inactive",
-    lastUpdated: "10 May 2024",
-  },
-  {
-    id: 6,
-    question: "Can I edit my application after submission?",
-    category: "Application",
-    status: "Active",
-    lastUpdated: "08 May 2024",
-  },
-  {
-    id: 7,
-    question: "How will I get updates about counselling?",
-    category: "Counselling",
-    status: "Active",
-    lastUpdated: "05 May 2024",
-  },
-  {
-    id: 8,
-    question: "What if I forget my login password?",
-    category: "Account",
-    status: "Inactive",
-    lastUpdated: "01 May 2024",
-  },
-];
-
 const categoryColors = {
   Admission: "bg-purple-100 text-purple-600",
   Documents: "bg-blue-100 text-blue-600",
@@ -85,33 +26,73 @@ const categoryColors = {
 };
 
 const AdminFaq = ({ setActiveNav }) => {
-  const [faqs, setFaqs] = useState(initialFaqsData);
+  const [faqs, setFaqs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All Categories");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [modalConfig, setModalConfig] = useState(null);
   const [deleteModal, setDeleteModal] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleSaveFaq = (faqData) => {
-    if (modalConfig.mode === "add") {
-      const newFaq = {
-        ...faqData,
-        id: faqs.length ? Math.max(...faqs.map((f) => f.id)) + 1 : 1,
-        lastUpdated: new Date().toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' })
-      };
-      setFaqs([...faqs, newFaq]);
-    } else {
-      setFaqs(
-        faqs.map((f) =>
-          f.id === faqData.id ? { ...f, ...faqData, lastUpdated: new Date().toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' }) } : f
-        )
-      );
+  useEffect(() => {
+    fetchFaqs();
+  }, []);
+
+  const fetchFaqs = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=dashboard/get-faqs`);
+      const result = await response.json();
+      if (result.status === "success") {
+        setFaqs(result.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch FAQs", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSaveFaq = async (faqData) => {
+    const url = modalConfig.mode === "add" 
+      ? `${import.meta.env.VITE_API_BASE_URL}?r=dashboard/create-faq`
+      : `${import.meta.env.VITE_API_BASE_URL}?r=dashboard/update-faq`;
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(faqData),
+      });
+      const result = await response.json();
+      if (result.status === "success") {
+        fetchFaqs(); // Refresh the list
+      } else {
+        alert(result.message || "Failed to save FAQ");
+      }
+    } catch (error) {
+      console.error("Error saving FAQ:", error);
+      alert("An error occurred while saving.");
     }
     setModalConfig(null);
   };
 
-  const handleDeleteFaq = () => {
-    setFaqs(faqs.filter((f) => f.id !== deleteModal.id));
+  const handleDeleteFaq = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=dashboard/delete-faq`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: deleteModal.id }),
+      });
+      const result = await response.json();
+      if (result.status === "success") {
+        fetchFaqs();
+      } else {
+        alert(result.message || "Failed to delete FAQ");
+      }
+    } catch (error) {
+      console.error("Error deleting FAQ:", error);
+      alert("An error occurred while deleting.");
+    }
     setDeleteModal(null);
   };
 

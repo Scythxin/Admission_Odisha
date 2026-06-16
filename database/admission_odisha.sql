@@ -10654,4 +10654,38 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */
 ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */
-;
+;--
+-- Table structure for table `faqs`
+--
+
+CREATE TABLE `faqs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `question` varchar(255) NOT NULL,
+  `answer` text NOT NULL,
+  `category` varchar(50) NOT NULL DEFAULT 'Admission',
+  `status` enum('Active','Inactive') NOT NULL DEFAULT 'Active',
+  `lastUpdated` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `faqs`
+--
+
+INSERT INTO `faqs` (`id`, `question`, `answer`, `category`, `status`, `lastUpdated`) VALUES
+(1, 'How can I apply for admission?', 'You can apply for admission by visiting our official website and filling out the application form available in the admissions section.', 'Admission', 'Active', '20 May 2024'),
+(2, 'What documents are required for application?', 'You will need your 10th and 12th marksheets, passport-sized photographs, and any category certificates if applicable.', 'Documents', 'Active', '18 May 2024'),
+(3, 'Is there any application fee?', 'Yes, an application fee is required. The amount varies based on your category.', 'Fee', 'Active', '15 May 2024'),
+(4, 'How can I check my application status?', 'Log in to your account and go to the "Application Status" section to see real-time updates.', 'Application', 'Active', '12 May 2024'),
+(5, 'What is the last date to apply?', 'The last date to apply is usually updated on the announcements page.', 'Admission', 'Inactive', '10 May 2024'),
+(6, 'Can I edit my application after submission?', 'You can edit your application within the designated correction window before final processing.', 'Application', 'Active', '08 May 2024'),
+(7, 'How will I get updates about counselling?', 'Updates about counselling will be sent via email and SMS to your registered contact details.', 'Counselling', 'Active', '05 May 2024'),
+(8, 'What if I forget my login password?', 'Use the "Forgot Password" link on the login page to reset it using your registered email.', 'Account', 'Inactive', '01 May 2024');
+
+INSERT INTO `faqs` (`id`, `question`, `answer`, `category`, `status`, `lastUpdated`) VALUES
+(9, 'What is the significance of internships during undergraduate studies?', 'Internships provide real-world experience, help build professional networks, enhance your resume, and give you a competitive edge in the job market. They also help you understand industry expectations and apply theoretical knowledge to practical situations.', 'Admission', 'Active', '20 May 2024'),
+(10, 'What are the key challenges students face during the admission process?', 'Common challenges include understanding eligibility criteria, managing multiple application deadlines, gathering required documents, choosing the right college/course, financial planning, and dealing with competition. Our platform helps simplify these challenges.', 'Application', 'Active', '20 May 2024'),
+(11, 'What trends are shaping higher education choices today?', 'Key trends include digital learning integration, skill-based courses, online degrees, hybrid learning models, increased focus on employability, specialized certifications, and emphasis on holistic development beyond academics.', 'Counselling', 'Active', '20 May 2024'),
+(12, 'Is an entrance examination mandatory for all programs?', 'No, entrance exams are not mandatory for all programs. While professional courses like engineering, medical, and management often require entrance exams, many undergraduate and postgraduate programs offer direct admission based on merit or personal interviews.', 'Admission', 'Active', '20 May 2024');

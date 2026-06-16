@@ -18,7 +18,7 @@ class SiteController extends Controller
      */
     public function beforeAction($action)
     {
-        if (in_array($action->id, ['api-settings', 'api-contact', 'api-courses', 'api-course-detail', 'api-general-course-detail', 'api-field-detail', 'api-colleges', 'api-college-detail', 'api-college-course-specializations', 'api-submit-enquiry', 'api-get-wishlist', 'api-add-wishlist', 'api-remove-wishlist', 'api-toggle-wishlist', 'api-get-wishlist-colleges', 'api-clear-wishlist'])) {
+        if (in_array($action->id, ['api-settings', 'api-contact', 'api-courses', 'api-course-detail', 'api-general-course-detail', 'api-field-detail', 'api-colleges', 'api-college-detail', 'api-college-course-specializations', 'api-submit-enquiry', 'api-get-wishlist', 'api-add-wishlist', 'api-remove-wishlist', 'api-toggle-wishlist', 'api-get-wishlist-colleges', 'api-clear-wishlist', 'api-faqs'])) {
             $this->enableCsrfValidation = false;
         }
         return parent::beforeAction($action);
@@ -827,5 +827,15 @@ class SiteController extends Controller
             $data[$setting['setting_key']] = trim($setting['setting_value']);
         }
         return ['status' => 'success', 'data' => $data];
+    }
+
+    /**
+     * Returns all active FAQs for the public site.
+     */
+    public function actionApiFaqs()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $faqs = Yii::$app->db->createCommand("SELECT * FROM faqs WHERE status = 'Active' ORDER BY id ASC")->queryAll();
+        return ['status' => 'success', 'data' => $faqs];
     }
 }

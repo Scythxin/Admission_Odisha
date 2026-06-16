@@ -17,6 +17,11 @@ import {
   FaChartLine,
   FaExclamationTriangle,
   FaClipboardList,
+  FaFileAlt,
+  FaUserAlt,
+  FaRupeeSign,
+  FaQuestion,
+  FaTimes,
 } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
@@ -30,6 +35,8 @@ const Contact = () => {
   });
 
   const [openFaq, setOpenFaq] = useState(null);
+  const [modalOpenFaq, setModalOpenFaq] = useState(null);
+  const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [displayText, setDisplayText] = useState("");
@@ -71,6 +78,10 @@ const Contact = () => {
     setOpenFaq(openFaq === i ? null : i);
   };
 
+  const toggleModalFaq = (i) => {
+    setModalOpenFaq(modalOpenFaq === i ? null : i);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -106,28 +117,40 @@ const Contact = () => {
     }
   };
 
-  const faqs = [
-    {
-      q: t("faq1Q"),
-      a: t("faq1A"),
-      icon: <FaGraduationCap className="text-indigo-600" />
-    },
-    {
-      q: t("faq2Q"),
-      a: t("faq2A"),
-      icon: <FaExclamationTriangle className="text-orange-600" />
-    },
-    {
-      q: t("faq3Q"),
-      a: t("faq3A"),
-      icon: <FaChartLine className="text-green-600" />
-    },
-    {
-      q: t("faq4Q"),
-      a: t("faq4A"),
-      icon: <FaClipboardList className="text-purple-600" />
-    },
-  ];
+  const [faqs, setFaqs] = useState([]);
+
+  useEffect(() => {
+    fetchFaqs();
+  }, []);
+
+  const fetchFaqs = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=site/api-faqs`);
+      const result = await response.json();
+      if (result.status === "success") {
+        const formattedFaqs = result.data.map(faq => {
+          let icon;
+          switch (faq.category) {
+            case "Admission": icon = <FaGraduationCap className="text-indigo-600" />; break;
+            case "Documents": icon = <FaFileAlt className="text-blue-600" />; break;
+            case "Fee": icon = <FaRupeeSign className="text-orange-600" />; break;
+            case "Application": icon = <FaClipboardList className="text-green-600" />; break;
+            case "Counselling": icon = <FaChartLine className="text-purple-600" />; break;
+            case "Account": icon = <FaUserAlt className="text-rose-600" />; break;
+            default: icon = <FaQuestion className="text-gray-600" />; break;
+          }
+          return {
+            q: faq.question,
+            a: faq.answer,
+            icon: icon
+          };
+        });
+        setFaqs(formattedFaqs);
+      }
+    } catch (error) {
+      console.error("Failed to fetch FAQs:", error);
+    }
+  };
 
   const infoCards = [
     { icon: <FaPhone className="text-2xl" style={{ transform: "scaleX(-1)" }} />, title: t("contactCardCall"), text: "+919114422555", sub: t("contactCardCallSub"), bg: "bg-blue-500" },
@@ -348,7 +371,7 @@ const Contact = () => {
               </div>
 
               <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                {faqs.map((faq, i) => (
+                {faqs.slice(0, 5).map((faq, i) => (
                   <div key={i} className="border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition">
                     <button
                       onClick={() => toggleFaq(i)}
@@ -366,7 +389,7 @@ const Contact = () => {
                       />
                     </button>
                     <div
-                      className={`overflow-hidden transition-all duration-300 ${openFaq === i ? "max-h-40" : "max-h-0"
+                      className={`overflow-hidden transition-all duration-300 ${openFaq === i ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
                         }`}
                     >
                       <p className="px-4 pb-4 text-gray-600 text-sm leading-relaxed pl-11">
@@ -378,11 +401,12 @@ const Contact = () => {
               </div>
 
               <div className="mt-6">
-                <Link to="/help-center">
-                  <button className="text-indigo-600 font-semibold flex items-center gap-2 hover:gap-3 transition-all">
-                    {t("contactFaqViewAll")} <FaArrowRight size={14} />
-                  </button>
-                </Link>
+                <button 
+                  onClick={() => setIsFaqModalOpen(true)}
+                  className="text-indigo-600 font-semibold flex items-center gap-2 hover:gap-3 transition-all"
+                >
+                  {t("contactFaqViewAll")} <FaArrowRight size={14} />
+                </button>
               </div>
             </div>
 
@@ -413,6 +437,56 @@ const Contact = () => {
           </div>
         </div>
       </div>
+
+      {/* FAQ Modal */}
+      {isFaqModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl flex flex-col relative max-h-[90vh]">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+              <h3 className="text-xl font-bold text-gray-800">
+                {t("contactFaqTitle1")} <span className="text-indigo-600">{t("contactFaqTitle2")}</span>
+              </h3>
+              <button 
+                onClick={() => setIsFaqModalOpen(false)} 
+                className="text-gray-500 hover:text-red-500 hover:bg-red-50 transition-colors w-10 h-10 flex items-center justify-center rounded-full"
+              >
+                <FaTimes size={18} />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto custom-scrollbar rounded-b-2xl max-h-[520px]">
+              <div className="space-y-3">
+                {faqs.map((faq, i) => (
+                  <div key={i} className="border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition">
+                    <button
+                      onClick={() => toggleModalFaq(i)}
+                      className="w-full px-4 py-3 text-left flex justify-between items-center hover:bg-gray-50 transition"
+                    >
+                      <div className="flex gap-3 items-start">
+                        <div className="mt-0.5">{faq.icon}</div>
+                        <span className="font-semibold text-gray-800 text-sm md:text-base pr-4 flex-1">
+                          {faq.q}
+                        </span>
+                      </div>
+                      <FaChevronDown
+                        className={`text-indigo-600 transition-transform duration-300 flex-shrink-0 ${modalOpenFaq === i ? "rotate-180" : ""
+                          }`}
+                      />
+                    </button>
+                    <div
+                      className={`overflow-hidden transition-all duration-300 ${modalOpenFaq === i ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+                        }`}
+                    >
+                      <p className="px-4 pb-4 text-gray-600 text-sm leading-relaxed pl-11">
+                        {faq.a}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Custom CSS for animations */}
       <style>{`

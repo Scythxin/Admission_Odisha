@@ -546,6 +546,192 @@ class AuthController extends Controller
     }
 
     // =========================
+    // FORGOT PASSWORD
+    // =========================
+    public function actionForgotPassword()
+    {
+        $data = json_decode(file_get_contents("php://input"), true);
+        $email = $data['email'] ?? '';
+
+        if (empty($email)) {
+            return [
+                "status" => "error",
+                "message" => "Email is required"
+            ];
+        }
+
+        // FIND USER
+        $user = Yii::$app->db->createCommand(
+            "SELECT * FROM users WHERE email = :email AND is_status = 1"
+        )
+            ->bindValue(':email', $email)
+            ->queryOne();
+
+        if (!$user) {
+            return [
+                "status" => "error",
+                "message" => "Account not found with this email"
+            ];
+        }
+
+        // GENERATE OTP
+        $otp = rand(100000, 999999);
+
+        // SAVE OTP
+        Yii::$app->db->createCommand()->insert('otp_verification', [
+            'contact' => $email,
+            'otp' => $otp,
+            'expires_at' => date('Y-m-d H:i:s', strtotime('+5 minutes')),
+            'is_used' => 0,
+
+            'created_at' => date('Y-m-d H:i:s'),
+            'created_by' => null,
+            'updated_at' => null,
+            'updated_by' => null,
+            'is_status' => 1
+        ])->execute();
+
+        $mail = new PHPMailer(true);
+
+        try {
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+
+            $mail->Username = 'kajalthakur0520@gmail.com';
+            $mail->Password = 'jnwt fmwa enrz hfsb';
+
+            $mail->SMTPSecure = 'tls';
+            $mail->Port = 587;
+
+            $mail->setFrom('yourgmail@gmail.com', 'Admission Odisha');
+
+            $mail->addAddress($email);
+
+            $mail->isHTML(true);
+
+            $mail->Subject = 'Password Reset OTP';
+
+            $mail->Body = "
+                <h2>Password Reset Request</h2>
+                <p>Your OTP to reset your password is:</p>
+                <h1>$otp</h1>
+                <p>This OTP expires in 5 minutes.</p>
+            ";
+
+            $mail->send();
+
+        } catch (Exception $e) {
+            return [
+                "status" => "error",
+                "message" => "Email sending failed"
+            ];
+        }
+
+        return [
+            "status" => "success",
+            "message" => "OTP sent successfully to your email"
+        ];
+    }
+
+    // =========================
+    // RESET PASSWORD
+    // =========================
+    public function actionResetPassword()
+    {
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        $email = $data['email'] ?? '';
+        $otp = $data['otp'] ?? '';
+        $newPassword = $data['new_password'] ?? '';
+
+        if (empty($email) || empty($otp) || empty($newPassword)) {
+            return [
+                "status" => "error",
+                "message" => "Email, OTP and new password are required"
+            ];
+        }
+
+        // FIND OTP
+        $otpData = Yii::$app->db->createCommand(
+            "SELECT * FROM otp_verification
+             WHERE contact = :email
+             AND otp = :otp
+             AND is_used = 0
+             ORDER BY id DESC
+             LIMIT 1"
+        )
+            ->bindValue(':email', $email)
+            ->bindValue(':otp', $otp)
+            ->queryOne();
+
+        // INVALID OTP
+        if (!$otpData) {
+            return [
+                "status" => "error",
+                "message" => "Invalid OTP"
+            ];
+        }
+
+        // OTP EXPIRED
+        if (strtotime($otpData['expires_at']) < time()) {
+            return [
+                "status" => "error",
+                "message" => "OTP expired"
+            ];
+        }
+
+        // FIND USER
+        $user = Yii::$app->db->createCommand(
+            "SELECT * FROM users WHERE email = :email"
+        )
+            ->bindValue(':email', $email)
+            ->queryOne();
+
+        if (!$user) {
+            return [
+                "status" => "error",
+                "message" => "User not found"
+            ];
+        }
+
+        // MARK OTP USED AND UPDATE PASSWORD
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            Yii::$app->db->createCommand()->update(
+                'otp_verification',
+                [
+                    'is_used' => 1,
+                    'updated_at' => date('Y-m-d H:i:s')
+                ],
+                ['id' => $otpData['id']]
+            )->execute();
+
+            Yii::$app->db->createCommand()->update(
+                'users',
+                [
+                    'password' => password_hash($newPassword, PASSWORD_DEFAULT),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ],
+                ['id' => $user['id']]
+            )->execute();
+
+            $transaction->commit();
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            return [
+                "status" => "error",
+                "message" => "Failed to reset password"
+            ];
+        }
+
+        return [
+            "status" => "success",
+            "message" => "Password has been reset successfully"
+        ];
+    }
+
+    // =========================
     // LOGOUT
     // =========================
     public function actionLogout()
