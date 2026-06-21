@@ -10689,3 +10689,49 @@ INSERT INTO `faqs` (`id`, `question`, `answer`, `category`, `status`, `lastUpdat
 (10, 'What are the key challenges students face during the admission process?', 'Common challenges include understanding eligibility criteria, managing multiple application deadlines, gathering required documents, choosing the right college/course, financial planning, and dealing with competition. Our platform helps simplify these challenges.', 'Application', 'Active', '20 May 2024'),
 (11, 'What trends are shaping higher education choices today?', 'Key trends include digital learning integration, skill-based courses, online degrees, hybrid learning models, increased focus on employability, specialized certifications, and emphasis on holistic development beyond academics.', 'Counselling', 'Active', '20 May 2024'),
 (12, 'Is an entrance examination mandatory for all programs?', 'No, entrance exams are not mandatory for all programs. While professional courses like engineering, medical, and management often require entrance exams, many undergraduate and postgraduate programs offer direct admission based on merit or personal interviews.', 'Admission', 'Active', '20 May 2024');
+
+--
+-- Table structure for table `college_gallery`
+--
+
+DROP TABLE IF EXISTS `college_gallery`;
+CREATE TABLE `college_gallery` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `college_name` varchar(255) NOT NULL,
+  `image_name` varchar(255) NOT NULL,
+  `image_path` varchar(500) NOT NULL,
+  `uploaded_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_college_image` (`college_name`,`image_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `college_gallery`
+--
+
+LOCK TABLES `college_gallery` WRITE;
+/*!40000 ALTER TABLE `college_gallery` DISABLE KEYS */;
+INSERT INTO `college_gallery` VALUES ('1','ITER University','canteen.jpeg','uploads/college_gallery/ITER/canteen.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('2','ITER University','classroom.jpeg','uploads/college_gallery/ITER/classroom.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('3','ITER University','college.jpeg','uploads/college_gallery/ITER/college.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('4','ITER University','ground.jpeg','uploads/college_gallery/ITER/ground.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('5','ITER University','lab.jpeg','uploads/college_gallery/ITER/lab.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('6','KIIT University','AUDITORIUM.jpeg','uploads/college_gallery/KIIT/AUDITORIUM.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('7','KIIT University','CANTEEN.jpeg','uploads/college_gallery/KIIT/CANTEEN.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('8','KIIT University','CLASS.jpeg','uploads/college_gallery/KIIT/CLASS.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('9','KIIT University','KIIT MAIN BUILDING.jpeg','uploads/college_gallery/KIIT/KIIT MAIN BUILDING.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('10','KIIT University','LIBRARY.jpeg','uploads/college_gallery/KIIT/LIBRARY.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('11','Kalinga Institute of Medical Sciences','canteen.jpeg','uploads/college_gallery/KIMS/canteen.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('12','Kalinga Institute of Medical Sciences','class.jpeg','uploads/college_gallery/KIMS/class.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('13','Kalinga Institute of Medical Sciences','college.jpeg','uploads/college_gallery/KIMS/college.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('14','Kalinga Institute of Medical Sciences','ground.jpeg','uploads/college_gallery/KIMS/ground.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('15','Odisha University of Technology and Research','auditorium.jpeg','uploads/college_gallery/OUTR/auditorium.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('16','Odisha University of Technology and Research','canteen.jpeg','uploads/college_gallery/OUTR/canteen.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('17','Odisha University of Technology and Research','class.jpeg','uploads/college_gallery/OUTR/class.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('18','Odisha University of Technology and Research','college.jpeg','uploads/college_gallery/OUTR/college.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('19','SOA University','canteen.jpeg','uploads/college_gallery/SOA/canteen.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('20','SOA University','class.jpeg','uploads/college_gallery/SOA/class.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('21','SOA University','college.jpeg','uploads/college_gallery/SOA/college.jpeg','2026-06-21 11:19:09');
+INSERT INTO `college_gallery` VALUES ('22','SOA University','ground.jpeg','uploads/college_gallery/SOA/ground.jpeg','2026-06-21 11:19:09');
+/*!40000 ALTER TABLE `college_gallery` ENABLE KEYS */;
+UNLOCK TABLES;

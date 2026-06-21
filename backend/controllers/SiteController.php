@@ -481,6 +481,33 @@ class SiteController extends Controller
                 WHERE cc.college_id = :cid AND co.is_status = 1";
         $courses = Yii::$app->db->createCommand($sql, [':cid' => $id])->queryAll();
 
+        // Fetch dynamic campus gallery from college_gallery table
+        $galleryName = $college['name'];
+
+        if ($galleryName) {
+            $images = Yii::$app->db->createCommand("SELECT image_path, image_name FROM college_gallery WHERE college_name = :name", [':name' => $galleryName])->queryAll();
+            $formattedImages = [];
+            foreach ($images as $img) {
+                $nameWithoutExt = pathinfo($img['image_name'], PATHINFO_FILENAME);
+                $label = ucfirst(strtolower($nameWithoutExt));
+                
+                // Map common terms to proper names
+                if ($label == 'Class' || $label == 'Classroom') $label = 'Classroom';
+                elseif ($label == 'Canteen' || $label == 'Cafeteria') $label = 'Cafeteria';
+                elseif ($label == 'Lab' || $label == 'Laboratory') $label = 'Laboratory';
+                elseif ($label == 'Ground' || $label == 'Sports ground') $label = 'Sports Ground';
+                elseif ($label == 'College' || $label == 'Main building') $label = 'Campus';
+                
+                $formattedImages[] = [
+                    'label' => $label,
+                    'image' => $img['image_path']
+                ];
+            }
+            $college['campus_gallery'] = $formattedImages;
+        } else {
+            $college['campus_gallery'] = [];
+        }
+
         return [
             'status' => 'success',
             'data' => [

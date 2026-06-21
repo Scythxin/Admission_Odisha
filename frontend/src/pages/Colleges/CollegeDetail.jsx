@@ -260,16 +260,7 @@ const CollegeDetail = () => {
   };
 
   const getCampusGalleryItems = () => {
-      const labels = [
-          { label: 'Library', search: 'library reading room', icon: <BookOpen size={17} /> },
-          { label: 'Hostel', search: 'hostel building campus', icon: <Hotel size={17} /> },
-          { label: 'Sports Ground', search: 'sports ground campus', icon: <Maximize size={17} /> },
-          { label: 'Laboratory', search: 'medical laboratory students', icon: <FlaskConical size={17} /> },
-          { label: 'Auditorium', search: 'college auditorium', icon: <Users size={17} /> },
-          { label: 'Cafeteria', search: 'college cafeteria', icon: <Utensils size={17} /> },
-      ];
-
-      const rawGallery = college.gallery_images || college.gallery || college.campus_gallery || college.photos;
+      const rawGallery = college.campus_gallery || college.gallery_images || college.gallery || college.photos;
       let uploadedImages = [];
 
       if (Array.isArray(rawGallery)) {
@@ -277,18 +268,42 @@ const CollegeDetail = () => {
       } else if (typeof rawGallery === 'string' && rawGallery.trim()) {
           try {
               const parsed = JSON.parse(rawGallery);
-              uploadedImages = Array.isArray(parsed) ? parsed : rawGallery.split(',');
+              uploadedImages = Array.isArray(parsed) ? parsed : [];
           } catch {
-              uploadedImages = rawGallery.split(',');
+              uploadedImages = [];
           }
       }
 
-      const normalizedImages = uploadedImages
-          .map((item) => {
-              if (typeof item === 'string') return item.trim();
-              return item?.image || item?.url || item?.path || '';
-          })
-          .filter(Boolean);
+      // Default icons mapping based on label keyword
+      const getIconForLabel = (label) => {
+          const l = label.toLowerCase();
+          if (l.includes('libr')) return <BookOpen size={17} />;
+          if (l.includes('hostel')) return <Hotel size={17} />;
+          if (l.includes('sport') || l.includes('ground')) return <Maximize size={17} />;
+          if (l.includes('lab')) return <FlaskConical size={17} />;
+          if (l.includes('audit')) return <Users size={17} />;
+          if (l.includes('cafe') || l.includes('canteen')) return <Utensils size={17} />;
+          if (l.includes('class')) return <GraduationCap size={17} />;
+          return <Images size={17} />;
+      };
+
+      if (uploadedImages.length > 0 && typeof uploadedImages[0] === 'object' && uploadedImages[0].label) {
+          return uploadedImages.map((item) => ({
+              label: item.label,
+              image: getImageUrl(item.image, true),
+              icon: getIconForLabel(item.label)
+          }));
+      }
+
+      // Fallback if no valid structured gallery found
+      const defaultLabels = [
+          { label: 'Library', icon: <BookOpen size={17} /> },
+          { label: 'Hostel', icon: <Hotel size={17} /> },
+          { label: 'Sports Ground', icon: <Maximize size={17} /> },
+          { label: 'Laboratory', icon: <FlaskConical size={17} /> },
+          { label: 'Auditorium', icon: <Users size={17} /> },
+          { label: 'Cafeteria', icon: <Utensils size={17} /> },
+      ];
 
       const defaultImages = {
           'Library': 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=640&h=420&fit=crop',
@@ -299,11 +314,9 @@ const CollegeDetail = () => {
           'Cafeteria': 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=640&h=420&fit=crop'
       };
 
-      return labels.map((item, index) => ({
+      return defaultLabels.map((item) => ({
           ...item,
-          image: normalizedImages[index]
-              ? getImageUrl(normalizedImages[index], true)
-              : defaultImages[item.label] || 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=640&h=420&fit=crop',
+          image: defaultImages[item.label]
       }));
   };
 
