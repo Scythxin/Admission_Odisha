@@ -7,6 +7,9 @@ use yii\web\Controller;
 use yii\web\Response;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use app\models\User;
+use app\models\OtpVerification;
+use app\models\UserLogin;
 
 class AuthController extends Controller
 {
@@ -38,9 +41,7 @@ class AuthController extends Controller
             return ["status" => "error", "message" => "Required fields missing"];
         }
 
-        $existing = Yii::$app->db->createCommand("
-    SELECT * FROM users WHERE email = :email
-")->bindValue(':email', $data['email'])->queryOne();
+        $existing = User::find()->where(['email' => $data['email']])->one();
 
         if ($existing) {
             return [
@@ -53,18 +54,15 @@ class AuthController extends Controller
         $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
 
         // INSERT USER
-        Yii::$app->db->createCommand()->insert('users', [
-            'name' => $data['name'] ?? null,
-            'email' => $data['email'],
-            'phone' => $data['phone'] ?? null,
-            'password' => password_hash($data['password'], PASSWORD_DEFAULT),
-            'city' => $data['city'] ?? null,
-            'created_at' => date('Y-m-d H:i:s'),
-            'created_by' => null,
-            'updated_at' => null,
-            'updated_by' => null,
-            'is_status' => 1
-        ])->execute();
+        $user = new User();
+        $user->name = $data['name'] ?? null;
+        $user->email = $data['email'];
+        $user->phone = $data['phone'] ?? null;
+        $user->password = $hashedPassword;
+        $user->city = $data['city'] ?? null;
+        $user->created_at = date('Y-m-d H:i:s');
+        $user->is_status = 1;
+        $user->save(false);
 
         return [
             "status" => "success",
@@ -84,13 +82,7 @@ class AuthController extends Controller
         $password = $data['password'] ?? '';
 
         // FIND USER
-        $user = Yii::$app->db->createCommand(
-            "SELECT * FROM users 
-             WHERE email = :email 
-             AND is_status = 1"
-        )
-            ->bindValue(':email', $email)
-            ->queryOne();
+        $user = User::find()->where(['email' => $email, 'is_status' => 1])->one();
 
         // USER NOT FOUND
         if (!$user) {
@@ -101,7 +93,7 @@ class AuthController extends Controller
         }
 
         // PASSWORD VERIFY
-        if (!password_verify($password, $user['password'])) {
+        if (!password_verify($password, $user->password)) {
             return [
                 "status" => "error",
                 "message" => "Invalid password"
@@ -109,12 +101,11 @@ class AuthController extends Controller
         }
 
         // RATE LIMITING
-        $recentOtp = Yii::$app->db->createCommand(
-            "SELECT * FROM otp_verification WHERE contact = :email AND created_at >= :timeLimit"
-        )
-            ->bindValue(':email', $email)
-            ->bindValue(':timeLimit', date('Y-m-d H:i:s', strtotime('-1 minute')))
-            ->queryOne();
+        $timeLimit = date('Y-m-d H:i:s', strtotime('-1 minute'));
+        $recentOtp = OtpVerification::find()
+            ->where(['contact' => $email])
+            ->andWhere(['>=', 'created_at', $timeLimit])
+            ->one();
 
         if ($recentOtp) {
             return [
@@ -124,21 +115,17 @@ class AuthController extends Controller
         }
 
         // GENERATE OTP
-        $otp = random_int(100000, 999999);
+        $otp = (string) random_int(100000, 999999);
 
         // SAVE OTP
-        Yii::$app->db->createCommand()->insert('otp_verification', [
-            'contact' => $email,
-            'otp' => $otp,
-            'expires_at' => date('Y-m-d H:i:s', strtotime('+5 minutes')),
-            'is_used' => 0,
-
-            'created_at' => date('Y-m-d H:i:s'),
-            'created_by' => null,
-            'updated_at' => null,
-            'updated_by' => null,
-            'is_status' => 1
-        ])->execute();
+        $otpRecord = new OtpVerification();
+        $otpRecord->contact = $email;
+        $otpRecord->otp = $otp;
+        $otpRecord->expires_at = date('Y-m-d H:i:s', strtotime('+5 minutes'));
+        $otpRecord->is_used = 0;
+        $otpRecord->created_at = date('Y-m-d H:i:s');
+        $otpRecord->is_status = 1;
+        $otpRecord->save(false);
         $mail = new PHPMailer(true);
 
         try {
@@ -194,15 +181,10 @@ class AuthController extends Controller
         $otp = $data['otp'] ?? '';
 
         // FIND OTP
-        $otpData = Yii::$app->db->createCommand(
-            "SELECT * FROM otp_verification
-             WHERE contact = :email
-             AND is_used = 0
-             ORDER BY id DESC
-             LIMIT 1"
-        )
-            ->bindValue(':email', $email)
-            ->queryOne();
+        $otpData = OtpVerification::find()
+             ->where(['contact' => $email, 'is_used' => 0])
+             ->orderBy(['id' => SORT_DESC])
+             ->one();
 
         if (!$otpData) {
             return [
@@ -212,7 +194,7 @@ class AuthController extends Controller
         }
 
         // OTP EXPIRED
-        if (strtotime($otpData['expires_at']) < time()) {
+        if (strtotime($otpData->expires_at) < time()) {
             return [
                 "status" => "error",
                 "message" => "OTP expired"
@@ -220,8 +202,8 @@ class AuthController extends Controller
         }
 
         // COOLDOWN CHECK
-        if (isset($otpData['failed_attempts']) && $otpData['failed_attempts'] >= 3) {
-            $updatedAt = $otpData['updated_at'] ? strtotime($otpData['updated_at']) : strtotime($otpData['created_at']);
+        if ($otpData->failed_attempts >= 3) {
+            $updatedAt = $otpData->updated_at ? strtotime($otpData->updated_at) : strtotime($otpData->created_at);
             $timeSinceLastFail = time() - $updatedAt;
             if ($timeSinceLastFail < 30) {
                 $timeLeft = 30 - $timeSinceLastFail;
@@ -233,15 +215,12 @@ class AuthController extends Controller
         }
 
         // INVALID OTP
-        if (!hash_equals((string)$otpData['otp'], (string)$otp)) {
-            $failedAttempts = (isset($otpData['failed_attempts']) ? $otpData['failed_attempts'] : 0);
-            $failedAttempts = $failedAttempts >= 3 ? 1 : $failedAttempts + 1;
+        if (!hash_equals((string)$otpData->otp, (string)$otp)) {
+            $failedAttempts = $otpData->failed_attempts >= 3 ? 1 : $otpData->failed_attempts + 1;
             
-            Yii::$app->db->createCommand()->update(
-                'otp_verification',
-                ['failed_attempts' => $failedAttempts, 'updated_at' => date('Y-m-d H:i:s')],
-                ['id' => $otpData['id']]
-            )->execute();
+            $otpData->failed_attempts = $failedAttempts;
+            $otpData->updated_at = date('Y-m-d H:i:s');
+            $otpData->save(false);
 
             if ($failedAttempts >= 3) {
                 return [
@@ -258,21 +237,12 @@ class AuthController extends Controller
         }
 
         // MARK OTP USED
-        Yii::$app->db->createCommand()->update(
-            'otp_verification',
-            [
-                'is_used' => 1,
-                'updated_at' => date('Y-m-d H:i:s')
-            ],
-            ['id' => $otpData['id']]
-        )->execute();
+        $otpData->is_used = 1;
+        $otpData->updated_at = date('Y-m-d H:i:s');
+        $otpData->save(false);
 
         // GET USER
-        $user = Yii::$app->db->createCommand(
-            "SELECT * FROM users WHERE email = :email"
-        )
-            ->bindValue(':email', $email)
-            ->queryOne();
+        $user = User::find()->where(['email' => $email])->one();
 
         if (!$user) {
             Yii::$app->response->statusCode = 404;
@@ -327,43 +297,32 @@ class AuthController extends Controller
 
         // ================= SAVE LOGIN =================
 
-        Yii::$app->db->createCommand()->insert('user_login', [
+        $userLogin = new UserLogin();
+        $userLogin->user_id = $user->id;
+        $userLogin->login_time = date('Y-m-d H:i:s');
+        $userLogin->ip_address = Yii::$app->request->userIP;
+        $userLogin->device = $device;
+        $userLogin->browser = $browser;
+        $userLogin->os = $os;
+        $userLogin->token = $token;
+        $userLogin->created_at = date('Y-m-d H:i:s');
+        $userLogin->is_status = 1;
+        $userLogin->save(false);
 
-            'user_id' => $user['id'],
-
-            'login_time' => date('Y-m-d H:i:s'),
-
-            'ip_address' => Yii::$app->request->userIP,
-
-            'device' => $device,
-            'browser' => $browser,
-            'os' => $os,
-
-            'token' => $token,
-
-            'created_at' => date('Y-m-d H:i:s'),
-            'created_by' => null,
-
-            'updated_at' => null,
-            'updated_by' => null,
-
-            'is_status' => 1
-
-        ])->execute();
         return [
             "status" => "success",
             "message" => "OTP verified successfully",
             "token" => $token,
             "user" => [
-                "id" => $user['id'],
-                "name" => $user['name'],
-                "email" => $user['email'],
-                "phone" => $user['phone'],
-                "city" => $user['city'],
-                "gender" => $user['gender'],
-                "dob" => $user['dob'],
-                "is_admin" => (int) $user['is_admin'],
-                "profile_photo" => $user['profile_photo'] ?? null
+                "id" => $user->id,
+                "name" => $user->name,
+                "email" => $user->email,
+                "phone" => $user->phone,
+                "city" => $user->city,
+                "gender" => $user->gender,
+                "dob" => $user->dob,
+                "is_admin" => (int) $user->is_admin,
+                "profile_photo" => $user->profile_photo ?? null
             ]
         ];
     }
@@ -382,8 +341,7 @@ class AuthController extends Controller
             ];
         }
 
-        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
-            ->bindValue(':token', $token)->queryOne();
+        $userLogin = UserLogin::find()->where(['token' => $token])->one();
 
         if (!$userLogin) {
             return [
@@ -392,7 +350,7 @@ class AuthController extends Controller
             ];
         }
 
-        $user = \app\models\User::findOne($userLogin['user_id']);
+        $user = User::findOne($userLogin->user_id);
         if (!$user) {
             return [
                 "status" => "error",
@@ -430,8 +388,7 @@ class AuthController extends Controller
             ];
         }
 
-        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
-            ->bindValue(':token', $token)->queryOne();
+        $userLogin = UserLogin::find()->where(['token' => $token])->one();
 
         if (!$userLogin) {
             return [
@@ -440,7 +397,7 @@ class AuthController extends Controller
             ];
         }
 
-        $user = \app\models\User::findOne($userLogin['user_id']);
+        $user = User::findOne($userLogin->user_id);
         if (!$user) {
             return [
                 "status" => "error",
@@ -458,7 +415,7 @@ class AuthController extends Controller
 
         // Validate unique email (excluding current user)
         if (isset($data['email']) && $data['email'] !== $user->email) {
-            $existingEmail = \app\models\User::find()->where(['email' => $data['email']])->andWhere(['!=', 'id', $user->id])->one();
+            $existingEmail = User::find()->where(['email' => $data['email']])->andWhere(['!=', 'id', $user->id])->one();
             if ($existingEmail) {
                 return [
                     "status" => "error",
@@ -470,7 +427,7 @@ class AuthController extends Controller
 
         // Validate unique phone (excluding current user)
         if (isset($data['phone']) && $data['phone'] !== $user->phone) {
-            $existingPhone = \app\models\User::find()->where(['phone' => $data['phone']])->andWhere(['!=', 'id', $user->id])->one();
+            $existingPhone = User::find()->where(['phone' => $data['phone']])->andWhere(['!=', 'id', $user->id])->one();
             if ($existingPhone) {
                 return [
                     "status" => "error",
@@ -539,8 +496,7 @@ class AuthController extends Controller
             ];
         }
 
-        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
-            ->bindValue(':token', $token)->queryOne();
+        $userLogin = UserLogin::find()->where(['token' => $token])->one();
 
         if (!$userLogin) {
             return [
@@ -560,8 +516,7 @@ class AuthController extends Controller
             ];
         }
 
-        $user = Yii::$app->db->createCommand("SELECT * FROM users WHERE id = :id")
-            ->bindValue(':id', $userLogin['user_id'])->queryOne();
+        $user = User::findOne($userLogin->user_id);
 
         if (!$user) {
             return [
@@ -570,21 +525,16 @@ class AuthController extends Controller
             ];
         }
 
-        if (!password_verify($currentPassword, $user['password'])) {
+        if (!password_verify($currentPassword, $user->password)) {
             return [
                 "status" => "error",
                 "message" => "Incorrect current password"
             ];
         }
 
-        Yii::$app->db->createCommand()->update(
-            'users',
-            [
-                'password' => password_hash($newPassword, PASSWORD_DEFAULT),
-                'updated_at' => date('Y-m-d H:i:s')
-            ],
-            ['id' => $user['id']]
-        )->execute();
+        $user->password = password_hash($newPassword, PASSWORD_DEFAULT);
+        $user->updated_at = date('Y-m-d H:i:s');
+        $user->save(false);
 
         return [
             "status" => "success",
@@ -608,11 +558,7 @@ class AuthController extends Controller
         }
 
         // FIND USER
-        $user = Yii::$app->db->createCommand(
-            "SELECT * FROM users WHERE email = :email AND is_status = 1"
-        )
-            ->bindValue(':email', $email)
-            ->queryOne();
+        $user = User::find()->where(['email' => $email, 'is_status' => 1])->one();
 
         if (!$user) {
             return [
@@ -622,12 +568,11 @@ class AuthController extends Controller
         }
 
         // RATE LIMITING
-        $recentOtp = Yii::$app->db->createCommand(
-            "SELECT * FROM otp_verification WHERE contact = :email AND created_at >= :timeLimit"
-        )
-            ->bindValue(':email', $email)
-            ->bindValue(':timeLimit', date('Y-m-d H:i:s', strtotime('-1 minute')))
-            ->queryOne();
+        $timeLimit = date('Y-m-d H:i:s', strtotime('-1 minute'));
+        $recentOtp = OtpVerification::find()
+            ->where(['contact' => $email])
+            ->andWhere(['>=', 'created_at', $timeLimit])
+            ->one();
 
         if ($recentOtp) {
             return [
@@ -637,21 +582,17 @@ class AuthController extends Controller
         }
 
         // GENERATE OTP
-        $otp = random_int(100000, 999999);
+        $otp = (string) random_int(100000, 999999);
 
         // SAVE OTP
-        Yii::$app->db->createCommand()->insert('otp_verification', [
-            'contact' => $email,
-            'otp' => $otp,
-            'expires_at' => date('Y-m-d H:i:s', strtotime('+5 minutes')),
-            'is_used' => 0,
-
-            'created_at' => date('Y-m-d H:i:s'),
-            'created_by' => null,
-            'updated_at' => null,
-            'updated_by' => null,
-            'is_status' => 1
-        ])->execute();
+        $otpRecord = new OtpVerification();
+        $otpRecord->contact = $email;
+        $otpRecord->otp = $otp;
+        $otpRecord->expires_at = date('Y-m-d H:i:s', strtotime('+5 minutes'));
+        $otpRecord->is_used = 0;
+        $otpRecord->created_at = date('Y-m-d H:i:s');
+        $otpRecord->is_status = 1;
+        $otpRecord->save(false);
 
         $mail = new PHPMailer(true);
 
@@ -715,15 +656,10 @@ class AuthController extends Controller
         }
 
         // FIND OTP
-        $otpData = Yii::$app->db->createCommand(
-            "SELECT * FROM otp_verification
-             WHERE contact = :email
-             AND is_used = 0
-             ORDER BY id DESC
-             LIMIT 1"
-        )
-            ->bindValue(':email', $email)
-            ->queryOne();
+        $otpData = OtpVerification::find()
+             ->where(['contact' => $email, 'is_used' => 0])
+             ->orderBy(['id' => SORT_DESC])
+             ->one();
 
         if (!$otpData) {
             return [
@@ -733,7 +669,7 @@ class AuthController extends Controller
         }
 
         // OTP EXPIRED
-        if (strtotime($otpData['expires_at']) < time()) {
+        if (strtotime($otpData->expires_at) < time()) {
             return [
                 "status" => "error",
                 "message" => "OTP expired"
@@ -741,8 +677,8 @@ class AuthController extends Controller
         }
 
         // COOLDOWN CHECK
-        if (isset($otpData['failed_attempts']) && $otpData['failed_attempts'] >= 3) {
-            $updatedAt = $otpData['updated_at'] ? strtotime($otpData['updated_at']) : strtotime($otpData['created_at']);
+        if ($otpData->failed_attempts >= 3) {
+            $updatedAt = $otpData->updated_at ? strtotime($otpData->updated_at) : strtotime($otpData->created_at);
             $timeSinceLastFail = time() - $updatedAt;
             if ($timeSinceLastFail < 30) {
                 $timeLeft = 30 - $timeSinceLastFail;
@@ -754,15 +690,12 @@ class AuthController extends Controller
         }
 
         // INVALID OTP
-        if (!hash_equals((string)$otpData['otp'], (string)$otp)) {
-            $failedAttempts = (isset($otpData['failed_attempts']) ? $otpData['failed_attempts'] : 0);
-            $failedAttempts = $failedAttempts >= 3 ? 1 : $failedAttempts + 1;
+        if (!hash_equals((string)$otpData->otp, (string)$otp)) {
+            $failedAttempts = $otpData->failed_attempts >= 3 ? 1 : $otpData->failed_attempts + 1;
             
-            Yii::$app->db->createCommand()->update(
-                'otp_verification',
-                ['failed_attempts' => $failedAttempts, 'updated_at' => date('Y-m-d H:i:s')],
-                ['id' => $otpData['id']]
-            )->execute();
+            $otpData->failed_attempts = $failedAttempts;
+            $otpData->updated_at = date('Y-m-d H:i:s');
+            $otpData->save(false);
 
             if ($failedAttempts >= 3) {
                 return [
@@ -779,11 +712,7 @@ class AuthController extends Controller
         }
 
         // FIND USER
-        $user = Yii::$app->db->createCommand(
-            "SELECT * FROM users WHERE email = :email"
-        )
-            ->bindValue(':email', $email)
-            ->queryOne();
+        $user = User::find()->where(['email' => $email])->one();
 
         if (!$user) {
             return [
@@ -795,23 +724,13 @@ class AuthController extends Controller
         // MARK OTP USED AND UPDATE PASSWORD
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            Yii::$app->db->createCommand()->update(
-                'otp_verification',
-                [
-                    'is_used' => 1,
-                    'updated_at' => date('Y-m-d H:i:s')
-                ],
-                ['id' => $otpData['id']]
-            )->execute();
+            $otpData->is_used = 1;
+            $otpData->updated_at = date('Y-m-d H:i:s');
+            $otpData->save(false);
 
-            Yii::$app->db->createCommand()->update(
-                'users',
-                [
-                    'password' => password_hash($newPassword, PASSWORD_DEFAULT),
-                    'updated_at' => date('Y-m-d H:i:s')
-                ],
-                ['id' => $user['id']]
-            )->execute();
+            $user->password = password_hash($newPassword, PASSWORD_DEFAULT);
+            $user->updated_at = date('Y-m-d H:i:s');
+            $user->save(false);
 
             $transaction->commit();
         } catch (\Exception $e) {
@@ -842,14 +761,12 @@ class AuthController extends Controller
             ];
         }
 
-        Yii::$app->db->createCommand()->update(
-            'user_login',
-            [
-                'logout_time' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
-            ],
-            ['token' => $token]
-        )->execute();
+        $userLogin = UserLogin::find()->where(['token' => $token])->one();
+        if ($userLogin) {
+            $userLogin->logout_time = date('Y-m-d H:i:s');
+            $userLogin->updated_at = date('Y-m-d H:i:s');
+            $userLogin->save(false);
+        }
 
         return [
             "status" => "success",
