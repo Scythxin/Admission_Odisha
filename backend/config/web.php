@@ -40,7 +40,7 @@ $config = [
             'transport' => [
                 'scheme' => 'smtps',
                 'host' => 'smtp.gmail.com',
-                'username' => '2004bshree@gmail.com', // Your Gmail address
+                'username' => 'kajalthakur0520@gmail.com', // Your Gmail address
                 'password' => $secrets['gmail_app_password'] ?? 'PUT_YOUR_APP_PASSWORD_HERE',
                 'port' => 465,
             ],

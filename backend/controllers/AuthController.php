@@ -5,8 +5,7 @@ namespace app\controllers;
 use Yii;
 use yii\web\Controller;
 use yii\web\Response;
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+
 use app\models\User;
 use app\models\OtpVerification;
 use app\models\UserLogin;
@@ -126,38 +125,20 @@ class AuthController extends Controller
         $otpRecord->created_at = date('Y-m-d H:i:s');
         $otpRecord->is_status = 1;
         $otpRecord->save(false);
-        $mail = new PHPMailer(true);
-
         try {
-
-            $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-
-            $mail->Username = getenv('SMTP_USERNAME') ?: 'kajalthakur0520@gmail.com'; // TODO: Move to .env
-            $mail->Password = getenv('SMTP_PASSWORD') ?: 'jnwt fmwa enrz hfsb';       // TODO: Move to .env
-
-            $mail->SMTPSecure = 'tls';
-            $mail->Port = 587;
-
-            $mail->setFrom('yourgmail@gmail.com', 'Admission Odisha');
-
-            $mail->addAddress($email);
-
-            $mail->isHTML(true);
-
-            $mail->Subject = 'Your OTP Verification Code';
-
-            $mail->Body = "
+            $senderEmail = Yii::$app->params['senderEmail'] ?? 'yourgmail@gmail.com';
+            $senderName = Yii::$app->params['senderName'] ?? 'Admission Odisha';
+            Yii::$app->mailer->compose()
+                ->setFrom([$senderEmail => $senderName])
+                ->setTo($email)
+                ->setSubject('Your OTP Verification Code')
+                ->setHtmlBody("
         <h2>Your OTP is:</h2>
         <h1>$otp</h1>
         <p>This OTP expires in 5 minutes.</p>
-    ";
-
-            $mail->send();
-
-        } catch (Exception $e) {
-
+    ")
+                ->send();
+        } catch (\Exception $e) {
             return [
                 "status" => "error",
                 "message" => "Email sending failed"
@@ -594,37 +575,21 @@ class AuthController extends Controller
         $otpRecord->is_status = 1;
         $otpRecord->save(false);
 
-        $mail = new PHPMailer(true);
-
         try {
-            $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-
-            $mail->Username = getenv('SMTP_USERNAME') ?: 'kajalthakur0520@gmail.com'; // TODO: Move to .env
-            $mail->Password = getenv('SMTP_PASSWORD') ?: 'jnwt fmwa enrz hfsb';       // TODO: Move to .env
-
-            $mail->SMTPSecure = 'tls';
-            $mail->Port = 587;
-
-            $mail->setFrom('yourgmail@gmail.com', 'Admission Odisha');
-
-            $mail->addAddress($email);
-
-            $mail->isHTML(true);
-
-            $mail->Subject = 'Password Reset OTP';
-
-            $mail->Body = "
+            $senderEmail = Yii::$app->params['senderEmail'] ?? 'yourgmail@gmail.com';
+            $senderName = Yii::$app->params['senderName'] ?? 'Admission Odisha';
+            Yii::$app->mailer->compose()
+                ->setFrom([$senderEmail => $senderName])
+                ->setTo($email)
+                ->setSubject('Password Reset OTP')
+                ->setHtmlBody("
                 <h2>Password Reset Request</h2>
                 <p>Your OTP to reset your password is:</p>
                 <h1>$otp</h1>
                 <p>This OTP expires in 5 minutes.</p>
-            ";
-
-            $mail->send();
-
-        } catch (Exception $e) {
+            ")
+                ->send();
+        } catch (\Exception $e) {
             return [
                 "status" => "error",
                 "message" => "Email sending failed"
