@@ -233,7 +233,9 @@ const CollegeDetail = () => {
   useEffect(() => {
     const fetchCollegeDetail = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=site/api-college-detail&id=${id}`);
+        const token = localStorage.getItem("token");
+        const headers = token ? { Authorization: token } : {};
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=site/api-college-detail&id=${id}`, { headers });
         const result = await response.json();
         if (result.status === 'success') {
           setCollege(result.data.college);

@@ -7,6 +7,7 @@ $secrets = file_exists(__DIR__ . '/secrets.php') ? require __DIR__ . '/secrets.p
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
+    'timeZone' => 'Asia/Kolkata', // Set to Indian Standard Time (IST)
     'bootstrap' => ['log'],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',

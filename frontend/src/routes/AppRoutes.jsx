@@ -1,4 +1,6 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import API_BASE from "../config/api";
 import Home from "../pages/Home/Home";
 import MainLayout from "../layouts/MainLayout";
 import CollegeList from "../pages/Colleges/CollegePage";
@@ -16,14 +18,40 @@ import CourseDetail from "../pages/Course/CourseDetail";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import CollegeDetail from "../pages/Colleges/CollegeDetail";
 import CollegeCourseSpecializations from "../pages/Colleges/CollegeCourseSpecializations";
-import CollegeWishlist from "../pages/Colleges/CollegeWishlist";
+
 import { Navigate } from "react-router-dom";
 import Wishlist from "../pages/Colleges/Wishlist";
 
+const PageVisitTracker = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const logVisit = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      try {
+        await fetch(`${API_BASE}?r=site/api-log-page-visit`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token
+          },
+          body: JSON.stringify({ path: location.pathname })
+        });
+      } catch (e) {}
+    };
+    logVisit();
+  }, [location.pathname]);
+
+  return null;
+};
+
 const AppRoutes = () => {
   return (
-    <Routes>
-      {/* Existing routes */}
+    <>
+      <PageVisitTracker />
+      <Routes>
+        {/* Existing routes */}
       <Route
         path="/"
         element={
@@ -163,6 +191,7 @@ const AppRoutes = () => {
         element={<Dashboard />}
       />
     </Routes>
+    </>
   );
 };
 

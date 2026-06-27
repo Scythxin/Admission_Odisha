@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import API_BASE from "../../config/api";
 import {
   FaUsers,
@@ -47,30 +47,48 @@ const Avatar = ({ name }) => {
 const UserActivity = ({ setActiveNav }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activityType, setActivityType] = useState("All Activities");
-  const [userFilter, setUserFilter] = useState("All Users");
+  const [referenceType, setReferenceType] = useState("All Reference Types");
+  const [dateRange, setDateRange] = useState("Select Date Range");
   const [page, setPage] = useState(1);
   const [data, setData] = useState({ stats: null, logs: [], pagination: {} });
   const [loading, setLoading] = useState(true);
+  const appliedFilters = useRef({ searchTerm, activityType, referenceType, dateRange, page });
 
-  const fetchData = () => {
-    setLoading(true);
-    fetch(`${API_BASE}?r=dashboard/get-user-activity&search=${searchTerm}&activityType=${activityType}&userFilter=${userFilter}&page=${page}`)
+  const fetchData = (isPolling = false) => {
+    if (!isPolling) setLoading(true);
+
+    const filters = isPolling 
+      ? appliedFilters.current 
+      : { searchTerm, activityType, referenceType, dateRange, page };
+
+    if (!isPolling) {
+      appliedFilters.current = filters;
+    }
+
+    fetch(`${API_BASE}?r=dashboard/get-user-activity&search=${filters.searchTerm}&activityType=${filters.activityType}&referenceType=${filters.referenceType}&dateRange=${filters.dateRange}&page=${filters.page}&_t=${new Date().getTime()}`)
       .then((res) => res.json())
       .then((res) => {
         if (res.status === "success") {
           setData(res.data);
         }
-        setLoading(false);
+        if (!isPolling) setLoading(false);
       })
       .catch((err) => {
         console.error("Error fetching activity:", err);
-        setLoading(false);
+        if (!isPolling) setLoading(false);
       });
   };
 
   useEffect(() => {
     fetchData();
   }, [page]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchData(true);
+    }, 15000); // Poll every 15 seconds
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleFilter = () => {
     setPage(1);
@@ -80,11 +98,21 @@ const UserActivity = ({ setActiveNav }) => {
   const handleReset = () => {
     setSearchTerm("");
     setActivityType("All Activities");
-    setUserFilter("All Users");
+    setReferenceType("All Reference Types");
+    setDateRange("Select Date Range");
     setPage(1);
+
+    appliedFilters.current = {
+      searchTerm: "",
+      activityType: "All Activities",
+      referenceType: "All Reference Types",
+      dateRange: "Select Date Range",
+      page: 1,
+    };
+
     setTimeout(() => {
         setLoading(true);
-        fetch(`${API_BASE}?r=dashboard/get-user-activity&search=&activityType=All Activities&userFilter=All Users&page=1`)
+        fetch(`${API_BASE}?r=dashboard/get-user-activity&search=&activityType=All Activities&referenceType=All Reference Types&dateRange=Select Date Range&page=1&_t=${new Date().getTime()}`)
           .then((res) => res.json())
           .then((res) => {
             if (res.status === "success") setData(res.data);
@@ -116,6 +144,9 @@ const UserActivity = ({ setActiveNav }) => {
       typeIcon = <FaEye />;
     } else if (type.includes("Course")) {
       typeBadge = "bg-teal-100 text-teal-700";
+      typeIcon = <FaEye />;
+    } else if (type.includes("Page")) {
+      typeBadge = "bg-purple-100 text-purple-700";
       typeIcon = <FaEye />;
     }
     return { typeBadge, typeIcon };
@@ -238,33 +269,41 @@ const UserActivity = ({ setActiveNav }) => {
             value={activityType}
             onChange={(e) => setActivityType(e.target.value)}
           >
-            <option>All Activities</option>
+            <option value="All Activities">All Activity Types</option>
             <option>Login</option>
-            <option>Wishlist</option>
-            <option>Enquiry</option>
+            <option>Wishlist Added</option>
+            <option>Enquiry Submitted</option>
+            <option>College Viewed</option>
+            <option>Course Viewed</option>
+            <option>Page Viewed</option>
+            <option>Profile Updated</option>
+            <option>Logout</option>
           </select>
         </div>
         <div className="w-full sm:w-auto">
           <select
             className="w-full sm:w-auto px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 focus:outline-none focus:border-indigo-500 transition cursor-pointer"
-            value={userFilter}
-            onChange={(e) => setUserFilter(e.target.value)}
+            value={referenceType}
+            onChange={(e) => setReferenceType(e.target.value)}
           >
-            <option>All Users</option>
-            <option>Active Users</option>
-            <option>Inactive Users</option>
+            <option>All Reference Types</option>
+            <option>College</option>
+            <option>Course</option>
+            <option>Profile</option>
           </select>
         </div>
-        <div className="flex items-center gap-2">
-          <input
-            type="date"
-            className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 focus:outline-none focus:border-indigo-500 transition"
-          />
-          <span className="text-gray-400">-</span>
-          <input
-            type="date"
-            className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 focus:outline-none focus:border-indigo-500 transition"
-          />
+        <div className="w-full sm:w-auto">
+          <select
+            className="w-full sm:w-auto px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 focus:outline-none focus:border-indigo-500 transition cursor-pointer"
+            value={dateRange}
+            onChange={(e) => setDateRange(e.target.value)}
+          >
+            <option>Select Date Range</option>
+            <option>Today</option>
+            <option>Yesterday</option>
+            <option>Last 7 Days</option>
+            <option>Last 30 Days</option>
+          </select>
         </div>
         <div className="flex items-center gap-2 ml-auto">
           <button onClick={handleFilter} className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition shadow-sm">
@@ -285,13 +324,13 @@ const UserActivity = ({ setActiveNav }) => {
           <table className="w-full text-sm text-left">
             <thead className="bg-gray-50/50 text-gray-500 text-xs font-semibold">
               <tr>
-                <th className="py-4 pl-6 pr-4">#</th>
+                <th className="py-4 pl-6 pr-4">ID</th>
                 <th className="py-4 px-4">User</th>
                 <th className="py-4 px-4">Activity Type</th>
-                <th className="py-4 px-4">Details</th>
-                <th className="py-4 px-4">IP Address</th>
-                <th className="py-4 px-4">Date & Time</th>
-                <th className="py-4 pr-6 pl-4"></th>
+                <th className="py-4 px-4">Reference Type</th>
+                <th className="py-4 px-4">Reference</th>
+                <th className="py-4 px-4">Description</th>
+                <th className="py-4 pr-6 pl-4">Created At</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -330,19 +369,15 @@ const UserActivity = ({ setActiveNav }) => {
                         <span
                           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium ${typeBadge}`}
                         >
-                          {typeIcon}
                           {log.type}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-gray-600">{log.details}</td>
-                      <td className="py-3 px-4 text-gray-500">{log.ip}</td>
-                      <td className="py-3 px-4 text-gray-500 whitespace-nowrap">
-                        {log.date}
-                      </td>
-                      <td className="py-3 pr-6 pl-4 text-right">
-                        <button className="text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 p-2 rounded-lg transition opacity-0 group-hover:opacity-100">
-                          <FaEye />
-                        </button>
+                      <td className="py-3 px-4 text-gray-600 text-sm">{log.reference_type}</td>
+                      <td className="py-3 px-4 text-gray-600 text-sm">{log.reference}</td>
+                      <td className="py-3 px-4 text-gray-600 text-sm">{log.details}</td>
+                      <td className="py-3 pr-6 pl-4 text-gray-500 text-xs">
+                        <div>{log.date1}</div>
+                        <div>{log.date2}</div>
                       </td>
                     </tr>
                   );

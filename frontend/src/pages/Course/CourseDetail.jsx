@@ -28,7 +28,9 @@ export default function CourseDetail() {
             try {
                 setLoading(true);
                 const slugToFetch = courseSlug || 'btech';
-                const res = await fetch(`${API_BASE}?r=site/api-general-course-detail&slug=${slugToFetch}`);
+                const token = localStorage.getItem("token");
+                const headers = token ? { Authorization: token } : {};
+                const res = await fetch(`${API_BASE}?r=site/api-general-course-detail&slug=${slugToFetch}`, { headers });
                 const result = await res.json();
 
                 if (result.status === 'success') {

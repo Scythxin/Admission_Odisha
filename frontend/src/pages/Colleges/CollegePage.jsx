@@ -52,7 +52,9 @@ const CollegePage = () => {
   useEffect(() => {
     const fetchColleges = async () => {
       try {
-        const response = await fetch(`${API_BASE}?r=site/api-colleges`);
+        const token = localStorage.getItem("token");
+        const headers = token ? { Authorization: token } : {};
+        const response = await fetch(`${API_BASE}?r=site/api-colleges`, { headers });
         const result = await response.json();
         if (result.status === "success") {
           const colleges = Array.isArray(result.data) ? result.data : [];

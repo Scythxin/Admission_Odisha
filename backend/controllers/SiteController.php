@@ -10,6 +10,7 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\ApiContactForm;
+use app\models\UserActivity;
 
 class SiteController extends Controller
 {
@@ -18,7 +19,7 @@ class SiteController extends Controller
      */
     public function beforeAction($action)
     {
-        if (in_array($action->id, ['api-settings', 'api-contact', 'api-courses', 'api-course-detail', 'api-general-course-detail', 'api-field-detail', 'api-colleges', 'api-college-detail', 'api-college-course-specializations', 'api-submit-enquiry', 'api-get-wishlist', 'api-add-wishlist', 'api-remove-wishlist', 'api-toggle-wishlist', 'api-get-wishlist-colleges', 'api-clear-wishlist', 'api-faqs'])) {
+        if (in_array($action->id, ['api-settings', 'api-contact', 'api-courses', 'api-course-detail', 'api-general-course-detail', 'api-field-detail', 'api-colleges', 'api-college-detail', 'api-college-course-specializations', 'api-submit-enquiry', 'api-get-wishlist', 'api-add-wishlist', 'api-remove-wishlist', 'api-toggle-wishlist', 'api-get-wishlist-colleges', 'api-clear-wishlist', 'api-faqs', 'api-log-page-visit'])) {
             $this->enableCsrfValidation = false;
         }
         return parent::beforeAction($action);
@@ -227,6 +228,8 @@ class SiteController extends Controller
 
         $field = Yii::$app->db->createCommand("SELECT * FROM fields WHERE id = :id", [':id' => $specialization['field_id']])->queryOne();
 
+        UserActivity::log(null, 'Course Viewed', 'Course', null, "Viewed " . $specialization['name']);
+
         return [
             'status' => 'success',
             'data' => [
@@ -309,6 +312,8 @@ class SiteController extends Controller
                 }
             }
         }
+
+        UserActivity::log(null, 'Course Viewed', 'Course', null, "Viewed general course " . $course['short_name']);
 
         return [
             'status' => 'success',
@@ -445,6 +450,7 @@ class SiteController extends Controller
 
         // Default: return list of colleges from the database
         $colleges = Yii::$app->db->createCommand("SELECT * FROM colleges")->queryAll();
+
         return [
             'status' => 'success',
             'data' => $colleges
@@ -508,6 +514,8 @@ class SiteController extends Controller
             $college['campus_gallery'] = [];
         }
 
+        UserActivity::log(null, 'College Viewed', 'College', $college['id'], "Viewed " . $college['name']);
+
         return [
             'status' => 'success',
             'data' => [
@@ -557,6 +565,33 @@ class SiteController extends Controller
         ];
     }
     /**
+     * Handles API for generic page visits
+     */
+    public function actionApiLogPageVisit()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $requestData = Yii::$app->request->getBodyParams();
+        $path = isset($requestData['path']) ? $requestData['path'] : '';
+
+        if ($path) {
+            $pageName = $path;
+            if ($path === '/') $pageName = 'Home Page';
+            elseif (strpos($path, '/about') !== false) $pageName = 'About Page';
+            elseif (strpos($path, '/contact') !== false) $pageName = 'Contact Page';
+            elseif (strpos($path, '/colleges') !== false && strpos($path, '/colleges/') === false) $pageName = 'Colleges Directory';
+            elseif (strpos($path, '/courses') !== false && strpos($path, '/courses/') === false) $pageName = 'Courses Directory';
+            elseif (strpos($path, '/dashboard') !== false) $pageName = 'Dashboard';
+            elseif (strpos($path, '/wishlist') !== false) $pageName = 'Wishlist Page';
+
+            // ignore specific college/course pages since they are handled in backend endpoints
+            if (strpos($path, '/college/') === false && strpos($path, '/course/') === false && strpos($path, '/field/') === false) {
+                UserActivity::log(null, 'Page Viewed', 'Page', null, "Viewed $pageName");
+            }
+        }
+        return ['status' => 'success'];
+    }
+
+    /**
      * Handles API enquiry submission from the floating popup.
      *
      * @return Response|array
@@ -589,6 +624,15 @@ class SiteController extends Controller
                 'guidance' => $guidance,
                 'created_at' => date('Y-m-d H:i:s'),
             ])->execute();
+
+            $token = Yii::$app->request->headers->get('Authorization');
+            if ($token) {
+                $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
+                    ->bindValue(':token', $token)->queryOne();
+                if ($userLogin) {
+                    UserActivity::log($userLogin['user_id'], 'Enquiry Submitted', 'Enquiry', null, "Enquiry for courses: $courses");
+                }
+            }
 
             return ['status' => 'success', 'message' => 'Enquiry submitted successfully.'];
         } catch (\Exception $e) {
@@ -665,6 +709,7 @@ class SiteController extends Controller
 
         if ($existing) {
             Yii::$app->db->createCommand()->delete('wishlist', ['user_id' => $userLogin['user_id'], 'college_id' => $collegeId])->execute();
+            UserActivity::log($userLogin['user_id'], 'Wishlist Removed', 'College', $collegeId);
             return ['status' => 'success', 'message' => 'Removed from wishlist', 'is_wishlisted' => false];
         } else {
             Yii::$app->db->createCommand()->insert('wishlist', [
@@ -672,6 +717,7 @@ class SiteController extends Controller
                 'college_id' => $collegeId,
                 'created_at' => date('Y-m-d H:i:s')
             ])->execute();
+            UserActivity::log($userLogin['user_id'], 'Wishlist Added', 'College', $collegeId);
             return ['status' => 'success', 'message' => 'Added to wishlist', 'is_wishlisted' => true];
         }
     }
@@ -720,6 +766,8 @@ class SiteController extends Controller
             'created_at' => date('Y-m-d H:i:s')
         ])->execute();
 
+        UserActivity::log($userLogin['user_id'], 'Wishlist Added', 'College', $collegeId);
+
         return ['status' => 'success', 'message' => 'Added to wishlist', 'is_wishlisted' => true];
     }
 
@@ -753,6 +801,8 @@ class SiteController extends Controller
         }
 
         Yii::$app->db->createCommand()->delete('wishlist', ['user_id' => $userLogin['user_id'], 'college_id' => $collegeId])->execute();
+
+        UserActivity::log($userLogin['user_id'], 'Wishlist Removed', 'College', $collegeId);
 
         return ['status' => 'success', 'message' => 'Removed from wishlist', 'is_wishlisted' => false];
     }

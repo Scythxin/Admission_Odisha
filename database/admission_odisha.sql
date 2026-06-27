@@ -8195,6 +8195,9 @@ CREATE TABLE `user_activity` (
     `specialization_id` int(11) DEFAULT NULL,
     `course_id` int(11) DEFAULT NULL,
     `activity_type` varchar(50) DEFAULT NULL,
+    `reference_type` varchar(50) DEFAULT NULL,
+    `reference_id` int(11) DEFAULT NULL,
+    `description` text DEFAULT NULL,
     `ip_address` varchar(45) DEFAULT NULL,
     `created_at` datetime DEFAULT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
@@ -8555,23 +8558,23 @@ VALUES (
 -- Dumping data for table `user_activity`
 --
 
-INSERT INTO `user_activity` (`user_id`, `field_id`, `specialization_id`, `course_id`, `activity_type`, `ip_address`, `created_at`) VALUES 
-(2, 1, 1, 1, 'Viewed Course', '192.168.1.10', NOW()),
-(3, 2, 17, NULL, 'Searched Specialization', '192.168.1.11', NOW()),
-(4, 3, 21, NULL, 'Viewed Field', '192.168.1.12', NOW()),
-(5, 1, 1, 1, 'Inquired', '192.168.1.13', NOW()),
-(4, NULL, NULL, NULL, 'Login', '192.168.1.1', '2026-06-11 20:21:00'),
-(4, NULL, NULL, NULL, 'Login', '192.168.1.8', '2026-06-11 22:21:00'),
-(4, 1, NULL, 4, 'Added to Wishlist', '192.168.1.5', '2026-06-09 22:21:00'),
-(2, 3, NULL, 4, 'Viewed College', '192.168.1.3', '2026-06-10 18:21:00'),
-(5, NULL, NULL, NULL, 'Submitted Enquiry', '192.168.1.6', '2026-06-11 14:21:00'),
-(3, NULL, NULL, NULL, 'Profile Updated', '192.168.1.2', '2026-06-09 18:21:00'),
-(4, 1, NULL, 4, 'Viewed Course', '192.168.1.7', '2026-06-11 22:21:00'),
-(5, NULL, NULL, NULL, 'Removed from Wishlist', '192.168.1.9', '2026-06-09 10:21:00'),
-(4, NULL, NULL, NULL, 'Login', '10.0.0.1', '2026-06-09 18:21:00'),
-(4, NULL, NULL, NULL, 'Submitted Enquiry', '10.0.0.2', '2026-06-10 22:21:00'),
-(3, 3, NULL, 1, 'Viewed Course', '172.16.0.5', '2026-06-12 01:21:00'),
-(3, 1, NULL, 3, 'Viewed College', '172.16.0.8', '2026-06-08 15:21:00');
+INSERT INTO `user_activity` (`user_id`, `field_id`, `specialization_id`, `course_id`, `activity_type`, `reference_type`, `reference_id`, `description`, `ip_address`, `created_at`) VALUES 
+(2, 1, 1, 1, 'Viewed Course', 'Course', 1, 'Viewed course details for B.Tech', '192.168.1.10', NOW()),
+(3, 2, 17, NULL, 'Searched Specialization', NULL, NULL, 'Searched for specialization', '192.168.1.11', NOW()),
+(4, 3, 21, NULL, 'Viewed Field', 'Field', 3, 'Viewed engineering field', '192.168.1.12', NOW()),
+(5, 1, 1, 1, 'Inquired', 'Course', 1, 'Submitted an enquiry for B.Tech', '192.168.1.13', NOW()),
+(4, NULL, NULL, NULL, 'Login', NULL, NULL, 'User logged into the platform', '192.168.1.1', '2026-06-11 20:21:00'),
+(4, NULL, NULL, NULL, 'Login', NULL, NULL, 'User logged into the platform', '192.168.1.8', '2026-06-11 22:21:00'),
+(4, 1, NULL, 4, 'Added to Wishlist', 'College', 4, 'Added KIIT University to wishlist', '192.168.1.5', '2026-06-09 22:21:00'),
+(2, 3, NULL, 4, 'Viewed College', 'College', 4, 'Viewed KIIT University details', '192.168.1.3', '2026-06-10 18:21:00'),
+(5, NULL, NULL, NULL, 'Submitted Enquiry', NULL, NULL, 'Submitted general enquiry', '192.168.1.6', '2026-06-11 14:21:00'),
+(3, NULL, NULL, NULL, 'Profile Updated', 'Profile', NULL, 'Updated profile information', '192.168.1.2', '2026-06-09 18:21:00'),
+(4, 1, NULL, 4, 'Viewed Course', 'Course', 4, 'Viewed course details', '192.168.1.7', '2026-06-11 22:21:00'),
+(5, NULL, NULL, NULL, 'Removed from Wishlist', 'College', 5, 'Removed ITER from wishlist', '192.168.1.9', '2026-06-09 10:21:00'),
+(4, NULL, NULL, NULL, 'Login', NULL, NULL, 'User logged into the platform', '10.0.0.1', '2026-06-09 18:21:00'),
+(4, NULL, NULL, NULL, 'Submitted Enquiry', NULL, NULL, 'Submitted general enquiry', '10.0.0.2', '2026-06-10 22:21:00'),
+(3, 3, NULL, 1, 'Viewed Course', 'Course', 1, 'Viewed B.Tech course details', '172.16.0.5', '2026-06-12 01:21:00'),
+(3, 1, NULL, 3, 'Viewed College', 'College', 3, 'Viewed NIT Rourkela details', '172.16.0.8', '2026-06-08 15:21:00');
 
 --
 -- Table structure for table `general_courses`

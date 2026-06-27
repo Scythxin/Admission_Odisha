@@ -57,7 +57,9 @@ export default function AllCourses() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await fetch(`${API_BASE}?r=site/api-courses`);
+        const token = localStorage.getItem("token");
+        const headers = token ? { Authorization: token } : {};
+        const res = await fetch(`${API_BASE}?r=site/api-courses`, { headers });
         if (!res.ok) throw new Error("Failed to fetch courses");
         const json = await res.json();
         if (json.status === "success") {

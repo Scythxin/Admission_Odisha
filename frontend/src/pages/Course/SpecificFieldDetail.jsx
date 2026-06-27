@@ -36,8 +36,10 @@ const SpecificFieldDetail = () => {
     const fetchCourseData = async () => {
       try {
         const encodedName = encodeURIComponent(specializationName);
+        const token = localStorage.getItem("token");
+        const headers = token ? { Authorization: token } : {};
         const res = await fetch(
-          `${API_BASE}?r=site/api-course-detail&name=${encodedName}`
+          `${API_BASE}?r=site/api-course-detail&name=${encodedName}`, { headers }
         );
 
         if (!res.ok) {

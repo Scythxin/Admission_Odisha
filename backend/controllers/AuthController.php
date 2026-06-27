@@ -9,6 +9,7 @@ use yii\web\Response;
 use app\models\User;
 use app\models\OtpVerification;
 use app\models\UserLogin;
+use app\models\UserActivity;
 
 class AuthController extends Controller
 {
@@ -290,6 +291,8 @@ class AuthController extends Controller
         $userLogin->is_status = 1;
         $userLogin->save(false);
 
+        UserActivity::log($user->id, 'Login');
+
         return [
             "status" => "success",
             "message" => "OTP verified successfully",
@@ -438,6 +441,7 @@ class AuthController extends Controller
         $user->updated_at = date('Y-m-d H:i:s');
 
         if ($user->save()) {
+            UserActivity::log($user->id, 'Profile Updated', 'Profile', $user->id);
             return [
                 "status" => "success",
                 "message" => "Profile updated successfully",
@@ -731,6 +735,7 @@ class AuthController extends Controller
             $userLogin->logout_time = date('Y-m-d H:i:s');
             $userLogin->updated_at = date('Y-m-d H:i:s');
             $userLogin->save(false);
+            UserActivity::log($userLogin->user_id, 'Logout');
         }
 
         return [

@@ -494,15 +494,22 @@ class DashboardController extends Controller
                 'u.email',
                 'u.is_status as user_status',
                 'ua.activity_type',
+                'ua.reference_type',
+                'ua.reference_id',
+                'ua.description',
                 'ua.ip_address',
                 'ua.created_at',
                 'f.name as field_name',
-                'c.name as course_name'
+                'c.name as course_name',
+                'col.name as college_name',
+                'ref_c.name as ref_course_name'
             ])
             ->from('user_activity ua')
             ->leftJoin('users u', 'ua.user_id = u.id')
             ->leftJoin('fields f', 'ua.field_id = f.id')
-            ->leftJoin('courses c', 'ua.course_id = c.id');
+            ->leftJoin('courses c', 'ua.course_id = c.id')
+            ->leftJoin('colleges col', "ua.reference_type = 'College' AND ua.reference_id = col.id")
+            ->leftJoin('courses ref_c', "ua.reference_type = 'Course' AND ua.reference_id = ref_c.id");
 
         if (!empty($search)) {
             $query->andWhere(['or', ['like', 'u.name', $search], ['like', 'u.email', $search]]);
@@ -530,20 +537,48 @@ class DashboardController extends Controller
 
         $formattedLogs = [];
         foreach ($logs as $log) {
-            $details = '';
-            if (strpos($log['activity_type'], 'Login') !== false) {
-                $details = 'User logged in to the system';
-            } elseif (strpos($log['activity_type'], 'Wishlist') !== false) {
-                $item = $log['course_name'] ?? $log['field_name'] ?? 'item';
-                $details = "Action on Wishlist for $item";
-            } elseif (strpos($log['activity_type'], 'Enquiry') !== false) {
-                $details = 'Submitted an enquiry';
-            } elseif (strpos($log['activity_type'], 'Course') !== false) {
-                $details = 'Viewed course details for ' . ($log['course_name'] ?? 'Unknown');
-            } elseif (strpos($log['activity_type'], 'College') !== false) {
-                $details = 'Viewed college details';
-            } else {
-                $details = 'Performed ' . $log['activity_type'];
+            $details = $log['description'];
+            if (!$details) {
+                if (strpos($log['activity_type'], 'Login') !== false) {
+                    $details = 'User logged in to the platform';
+                } elseif (strpos($log['activity_type'], 'Logout') !== false) {
+                    $details = 'User logged out from the platform';
+                } elseif (strpos($log['activity_type'], 'Wishlist') !== false) {
+                    $item = $log['course_name'] ?? $log['field_name'] ?? 'item';
+                    $details = "Action on Wishlist for $item";
+                } elseif (strpos($log['activity_type'], 'Enquiry') !== false) {
+                    $details = 'Submitted an enquiry';
+                } elseif (strpos($log['activity_type'], 'Course') !== false) {
+                    $details = 'Viewed course details';
+                } elseif (strpos($log['activity_type'], 'College') !== false) {
+                    $details = 'Viewed college details';
+                } elseif (strpos($log['activity_type'], 'Profile') !== false) {
+                    $details = 'Updated profile information';
+                } else {
+                    $details = 'Performed ' . $log['activity_type'];
+                }
+            }
+
+            $reference = '-';
+            if (!empty($log['reference_type'])) {
+                if (!empty($log['reference_id'])) {
+                    $refName = '';
+                    if ($log['reference_type'] === 'College' && !empty($log['college_name'])) {
+                        $refName = $log['college_name'];
+                    } elseif ($log['reference_type'] === 'Course' && !empty($log['ref_course_name'])) {
+                        $refName = $log['ref_course_name'];
+                    }
+                    
+                    if ($refName) {
+                        $reference = $refName . ' (ID: ' . $log['reference_id'] . ')';
+                    } else {
+                        $reference = $log['reference_type'] . ' (ID: ' . $log['reference_id'] . ')';
+                    }
+                } else {
+                    // If no ID exists, try to extract the reference name from the description
+                    $extractedName = str_replace(['Viewed general course ', 'Viewed '], '', $log['description']);
+                    $reference = $extractedName ? $extractedName : $log['reference_type'];
+                }
             }
 
             $formattedLogs[] = [
@@ -551,9 +586,13 @@ class DashboardController extends Controller
                 'name' => $log['name'] ?? 'Unknown User',
                 'email' => $log['email'] ?? '',
                 'type' => $log['activity_type'],
+                'reference_type' => !empty($log['reference_type']) ? $log['reference_type'] : '-',
+                'reference' => $reference,
                 'details' => $details,
                 'ip' => $log['ip_address'] ?? 'Unknown',
-                'date' => date('d M Y, h:i A', strtotime($log['created_at']))
+                'date' => date('d M Y, h:i A', strtotime($log['created_at'])),
+                'date1' => date('d M Y', strtotime($log['created_at'])),
+                'date2' => date('h:i A', strtotime($log['created_at']))
             ];
         }
 
