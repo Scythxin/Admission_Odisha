@@ -22,6 +22,16 @@ import CollegeCourseSpecializations from "../pages/Colleges/CollegeCourseSpecial
 import { Navigate } from "react-router-dom";
 import Wishlist from "../pages/Colleges/Wishlist";
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  
+  return null;
+};
+
 const PageVisitTracker = () => {
   const location = useLocation();
 
@@ -49,6 +59,7 @@ const PageVisitTracker = () => {
 const AppRoutes = () => {
   return (
     <>
+      <ScrollToTop />
       <PageVisitTracker />
       <Routes>
         {/* Existing routes */}

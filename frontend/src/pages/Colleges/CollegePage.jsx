@@ -24,6 +24,53 @@ import soa from "/src/assets/images/colleges/soa.jpg";
 import nit from "/src/assets/images/colleges/nit.jpg";
 import templeImg from "/src/assets/images/temple.png";
 
+const CustomSelect = ({ value, options, onChange, t }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (selectRef.current && !selectRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedOption = options.find((opt) => opt.value === value) || options[0];
+
+  return (
+    <div className="relative w-full h-full flex items-center" ref={selectRef}>
+      <div
+        className="w-full px-3 py-2 text-gray-600 bg-transparent text-sm cursor-pointer flex justify-between items-center"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className="truncate pr-2">{selectedOption?.labelKey ? t(selectedOption.labelKey) : selectedOption?.label}</span>
+        <ChevronDown size={16} className={`transform transition-transform text-gray-400 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+      </div>
+      {isOpen && (
+        <div className="absolute top-[110%] left-0 min-w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-[60] max-h-60 overflow-y-auto custom-scrollbar">
+          {options.map((option) => (
+            <div
+              key={option.value}
+              className={`px-3 py-2 hover:bg-gray-50 cursor-pointer text-sm border-b last:border-b-0 border-gray-100 ${
+                value === option.value ? 'bg-[#4F46E5]/5 text-[#4F46E5] font-medium' : 'text-gray-700'
+              }`}
+              onClick={() => {
+                onChange(option.value);
+                setIsOpen(false);
+              }}
+            >
+              {option.labelKey ? t(option.labelKey) : option.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const CollegePage = () => {
   const { t } = useTranslation();
   const [allColleges, setAllColleges] = useState([]);
@@ -32,6 +79,7 @@ const CollegePage = () => {
   const [selectedDistrict, setSelectedDistrict] = useState("All Districts");
   const [selectedType, setSelectedType] = useState("All Types");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [sortBy, setSortBy] = useState("popularity");
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [loopNum, setLoopNum] = useState(0);
@@ -97,7 +145,7 @@ const CollegePage = () => {
       return;
     }
     setVisibleColleges(8);
-  }, [searchQuery, selectedDistrict, selectedType, selectedCategory]);
+  }, [searchQuery, selectedDistrict, selectedType, selectedCategory, sortBy]);
 
   const filteredColleges = allColleges.filter((college) => {
     const matchName =
@@ -117,8 +165,17 @@ const CollegePage = () => {
     return matchName && matchDistrict && matchType && matchCategory;
   });
 
-  const displayedColleges = filteredColleges.slice(0, visibleColleges);
-  const hasMore = visibleColleges < filteredColleges.length;
+  const sortedColleges = [...filteredColleges].sort((a, b) => {
+    if (sortBy === "rating") {
+      return (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0);
+    } else if (sortBy === "name") {
+      return (a.name || "").localeCompare(b.name || "");
+    }
+    return 0; // Default to popularity (initial order)
+  });
+
+  const displayedColleges = sortedColleges.slice(0, visibleColleges);
+  const hasMore = visibleColleges < sortedColleges.length;
 
   const loadMore = () => {
     setIsLoading(true);
@@ -256,7 +313,7 @@ const CollegePage = () => {
                       className="w-full px-3 py-2 outline-none bg-transparent text-gray-700 placeholder:text-gray-400 text-sm"
                     />
                     {showSuggestions && searchQuery && (
-                      <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
+                      <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto custom-scrollbar">
                         {allColleges
                           .filter((c) =>
                             c.name
@@ -301,46 +358,31 @@ const CollegePage = () => {
                     )}
                   </div>
 
-                  <div className="w-full md:w-[20%] border-b md:border-b-0 md:border-r border-gray-200">
-                    <select
+                  <div className="w-full md:w-[20%] border-b md:border-b-0 md:border-r border-gray-200 relative">
+                    <CustomSelect
                       value={selectedDistrict}
-                      onChange={(e) => setSelectedDistrict(e.target.value)}
-                      className="w-full px-2 py-3 outline-none text-gray-600 bg-transparent text-sm"
-                    >
-                      {districts.map((district) => (
-                        <option key={district.value} value={district.value}>
-                          {t(district.labelKey)}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={setSelectedDistrict}
+                      options={districts}
+                      t={t}
+                    />
                   </div>
 
-                  <div className="w-full md:w-[20%] border-b md:border-b-0 md:border-r border-gray-200">
-                    <select
+                  <div className="w-full md:w-[20%] border-b md:border-b-0 md:border-r border-gray-200 relative">
+                    <CustomSelect
                       value={selectedType}
-                      onChange={(e) => setSelectedType(e.target.value)}
-                      className="w-full px-2 py-3 outline-none text-gray-600 bg-transparent text-sm"
-                    >
-                      {collegeTypes.map((type) => (
-                        <option key={type.value} value={type.value}>
-                          {t(type.labelKey)}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={setSelectedType}
+                      options={collegeTypes}
+                      t={t}
+                    />
                   </div>
 
-                  <div className="w-full md:w-[20%]">
-                    <select
+                  <div className="w-full md:w-[20%] relative">
+                    <CustomSelect
                       value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="w-full px-2 py-3 outline-none text-gray-600 bg-transparent text-sm"
-                    >
-                      {categories.map((category) => (
-                        <option key={category.value} value={category.value}>
-                          {t(category.labelKey)}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={setSelectedCategory}
+                      options={categories}
+                      t={t}
+                    />
                   </div>
                 </div>
 
@@ -463,10 +505,14 @@ const CollegePage = () => {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-500">{t("collegeSortBy")}</span>
-            <select className="text-sm bg-transparent text-[#4F46E5] font-medium outline-none">
-              <option>{t("collegeSortPopularity")}</option>
-              <option>{t("collegeSortRating")}</option>
-              <option>{t("collegeSortName")}</option>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="text-sm bg-transparent text-[#4F46E5] font-medium outline-none cursor-pointer"
+            >
+              <option value="popularity">{t("collegeSortPopularity")}</option>
+              <option value="rating">{t("collegeSortRating")}</option>
+              <option value="name">{t("collegeSortName")}</option>
             </select>
           </div>
         </div>
@@ -609,6 +655,23 @@ const CollegePage = () => {
         }
         .animate-blink {
           animation: blink 1s infinite;
+        }
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #cbd5e1 transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
         }
       `}</style>
     </div>
