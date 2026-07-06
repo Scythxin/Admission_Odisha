@@ -396,6 +396,51 @@ class DashboardController extends Controller
         return ['status' => 'success', 'message' => 'Course created successfully.'];
     }
 
+    public function actionUpdateCourse()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $id = $data['id'] ?? null;
+        $name = $data['name'] ?? '';
+        $field_id = $data['field_id'] ?? null;
+        $specialization_id = $data['specialization_id'] ?? null;
+        $duration = $data['duration'] ?? '';
+        $degree_level = $data['degree_level'] ?? 'Undergraduate';
+        $status = $data['status'] ?? 'Active';
+
+        if (empty($id) || empty($name)) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'ID and Course name are required.'];
+        }
+
+        $is_status = ($status === 'Active') ? 1 : 0;
+
+        Yii::$app->db->createCommand()->update('courses', [
+            'name' => $name,
+            'field_id' => $field_id ?: null,
+            'specialization_id' => $specialization_id ?: null,
+            'duration' => $duration,
+            'degree_level' => $degree_level,
+            'is_status' => $is_status,
+        ], 'id = :id', [':id' => $id])->execute();
+
+        return ['status' => 'success', 'message' => 'Course updated successfully.'];
+    }
+
+    public function actionDeleteCourse()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $id = $data['id'] ?? null;
+
+        if (empty($id)) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'ID is required.'];
+        }
+
+        Yii::$app->db->createCommand()->delete('courses', 'id = :id', [':id' => $id])->execute();
+
+        return ['status' => 'success', 'message' => 'Course deleted successfully.'];
+    }
+
     public function actionGetCourses()
     {
         $courses = Yii::$app->db->createCommand("
@@ -731,5 +776,249 @@ class DashboardController extends Controller
         Yii::$app->db->createCommand()->delete('faqs', 'id = :id', [':id' => $id])->execute();
 
         return ['status' => 'success', 'message' => 'FAQ deleted successfully.'];
+    }
+
+    public function actionUploadMedia()
+    {
+        $type = Yii::$app->request->post('type', 'banners');
+        $folder = Yii::$app->request->post('folder', '');
+        $oldFilename = Yii::$app->request->post('old_filename', '');
+
+        $allowedTypes = ['banners', 'avatars', 'college_gallery', 'colleges'];
+        if (!in_array($type, $allowedTypes)) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Invalid media type.'];
+        }
+
+        if (!empty($folder)) {
+            $folder = preg_replace('/[^a-zA-Z0-9_\- ]/', '', $folder);
+            $uploadDir = Yii::getAlias('@webroot') . '/uploads/' . $type . '/' . $folder;
+            $urlPrefix = '/uploads/' . $type . '/' . $folder . '/';
+        } else {
+            $uploadDir = Yii::getAlias('@webroot') . '/uploads/' . $type;
+            $urlPrefix = '/uploads/' . $type . '/';
+        }
+
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            $tmpName = $_FILES['image']['tmp_name'];
+            $originalName = basename($_FILES['image']['name']);
+            $ext = pathinfo($originalName, PATHINFO_EXTENSION);
+            
+            if (!empty($oldFilename)) {
+                $fileName = basename($oldFilename);
+            } else {
+                $fileName = uniqid() . '.' . $ext;
+            }
+
+            $destination = $uploadDir . '/' . $fileName;
+
+            if (move_uploaded_file($tmpName, $destination)) {
+                return [
+                    'status' => 'success', 
+                    'message' => 'File uploaded successfully.',
+                    'url' => $urlPrefix . $fileName,
+                    'filename' => $fileName
+                ];
+            } else {
+                Yii::$app->response->statusCode = 500;
+                return ['status' => 'error', 'message' => 'Failed to save uploaded file.'];
+            }
+        }
+
+        Yii::$app->response->statusCode = 400;
+        return ['status' => 'error', 'message' => 'No file uploaded or upload error.'];
+    }
+
+    public function actionListMedia()
+    {
+        $type = Yii::$app->request->get('type', 'banners');
+        $folder = Yii::$app->request->get('folder', '');
+        
+        $allowedTypes = ['banners', 'avatars', 'college_gallery', 'colleges'];
+        if (!in_array($type, $allowedTypes)) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Invalid media type.'];
+        }
+
+        if (!empty($folder)) {
+            $folder = preg_replace('/[^a-zA-Z0-9_\- ]/', '', $folder);
+            $uploadDir = Yii::getAlias('@webroot') . '/uploads/' . $type . '/' . $folder;
+            $urlPrefix = '/uploads/' . $type . '/' . $folder . '/';
+        } else {
+            $uploadDir = Yii::getAlias('@webroot') . '/uploads/' . $type;
+            $urlPrefix = '/uploads/' . $type . '/';
+        }
+        
+        $items = [];
+
+        if (is_dir($uploadDir)) {
+            $files = scandir($uploadDir);
+            foreach ($files as $file) {
+                if ($file !== '.' && $file !== '..') {
+                    $filePath = $uploadDir . '/' . $file;
+                    $isDir = is_dir($filePath);
+                    
+                    if (!$isDir && is_file($filePath)) {
+                        $items[] = [
+                            'filename' => $file,
+                            'url' => $urlPrefix . $file,
+                            'mtime' => filemtime($filePath),
+                            'is_dir' => false
+                        ];
+                    } elseif ($isDir) {
+                        $items[] = [
+                            'filename' => $file,
+                            'url' => null,
+                            'mtime' => filemtime($filePath),
+                            'is_dir' => true
+                        ];
+                    }
+                }
+            }
+        }
+        
+        usort($items, function($a, $b) {
+            if ($a['is_dir'] && !$b['is_dir']) return -1;
+            if (!$a['is_dir'] && $b['is_dir']) return 1;
+            return $b['mtime'] - $a['mtime'];
+        });
+
+        return ['status' => 'success', 'data' => $items];
+    }
+
+    public function actionDeleteMedia()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $type = $data['type'] ?? '';
+        $folder = $data['folder'] ?? '';
+        $filename = $data['filename'] ?? '';
+
+        if (empty($type) || empty($filename)) {
+            $type = Yii::$app->request->get('type');
+            $folder = Yii::$app->request->get('folder', '');
+            $filename = Yii::$app->request->get('filename');
+        }
+
+        $allowedTypes = ['banners', 'avatars', 'college_gallery', 'colleges'];
+        if (!in_array($type, $allowedTypes) || empty($filename)) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Invalid parameters.'];
+        }
+
+        if (!empty($folder)) {
+            $folder = preg_replace('/[^a-zA-Z0-9_\- ]/', '', $folder);
+            $filePath = Yii::getAlias('@webroot') . '/uploads/' . $type . '/' . $folder . '/' . basename($filename);
+        } else {
+            $filePath = Yii::getAlias('@webroot') . '/uploads/' . $type . '/' . basename($filename);
+        }
+
+        if (file_exists($filePath)) {
+            if (is_dir($filePath)) {
+                $files = array_diff(scandir($filePath), array('.','..'));
+                foreach ($files as $file) {
+                    unlink("$filePath/$file");
+                }
+                if (rmdir($filePath)) {
+                    return ['status' => 'success', 'message' => 'Folder deleted successfully.'];
+                }
+            } elseif (is_file($filePath)) {
+                if (unlink($filePath)) {
+                    return ['status' => 'success', 'message' => 'File deleted successfully.'];
+                }
+            }
+            Yii::$app->response->statusCode = 500;
+            return ['status' => 'error', 'message' => 'Failed to delete file or folder.'];
+        }
+
+        Yii::$app->response->statusCode = 404;
+        return ['status' => 'error', 'message' => 'File not found.'];
+    }
+
+    public function actionCreateMediaFolder()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $type = $data['type'] ?? 'college_gallery';
+        $folder = $data['folder'] ?? '';
+
+        $allowedTypes = ['banners', 'avatars', 'college_gallery', 'colleges'];
+        if (!in_array($type, $allowedTypes) || empty(trim($folder))) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Invalid parameters.'];
+        }
+
+        $folder = preg_replace('/[^a-zA-Z0-9_\- ]/', '', $folder);
+        $folder = trim($folder);
+        
+        if (empty($folder)) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Invalid folder name.'];
+        }
+
+        $uploadDir = Yii::getAlias('@webroot') . '/uploads/' . $type . '/' . $folder;
+
+        if (!is_dir($uploadDir)) {
+            if (mkdir($uploadDir, 0777, true)) {
+                return ['status' => 'success', 'message' => 'Folder created successfully.', 'folder' => $folder];
+            } else {
+                Yii::$app->response->statusCode = 500;
+                return ['status' => 'error', 'message' => 'Failed to create folder.'];
+            }
+        }
+
+        Yii::$app->response->statusCode = 400;
+        return ['status' => 'error', 'message' => 'Folder already exists.'];
+    }
+
+    public function actionUpdateCollege()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $id = $data['id'] ?? null;
+
+        if (empty($id)) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'ID is required.'];
+        }
+
+        $updateData = [
+            'name' => isset($data['name']) ? trim($data['name']) : null,
+            'location' => isset($data['location']) ? trim($data['location']) : null,
+            'rating' => isset($data['rating']) ? $data['rating'] : null,
+            'image' => isset($data['image']) ? $data['image'] : null,
+            'banner_image' => isset($data['banner_image']) ? $data['banner_image'] : null,
+            'description' => isset($data['description']) ? $data['description'] : null,
+            'type' => isset($data['type']) ? $data['type'] : null,
+            'established_year' => isset($data['established_year']) ? $data['established_year'] : null,
+            'website' => isset($data['website']) ? $data['website'] : null,
+            'address' => isset($data['address']) ? $data['address'] : null,
+            'courses' => isset($data['courses']) ? json_encode($data['courses']) : null,
+            'is_status' => isset($data['is_status']) ? (int) $data['is_status'] : 1,
+        ];
+
+        // Filter out nulls to only update provided fields if needed, 
+        // but here we expect the full object from the frontend form.
+        $updateData = array_filter($updateData, function($v) { return !is_null($v); });
+
+        Yii::$app->db->createCommand()->update('colleges', $updateData, 'id = :id', [':id' => $id])->execute();
+
+        return ['status' => 'success', 'message' => 'College updated successfully.'];
+    }
+
+    public function actionDeleteCollege()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $id = $data['id'] ?? null;
+
+        if (empty($id)) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'ID is required.'];
+        }
+
+        Yii::$app->db->createCommand()->delete('colleges', 'id = :id', [':id' => $id])->execute();
+
+        return ['status' => 'success', 'message' => 'College deleted successfully.'];
     }
 }

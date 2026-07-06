@@ -11,6 +11,7 @@ import UserActivity from "./UserActivity";
 import AdminFaq from "./AdminFaq";
 import AdminScholarships from "./AdminScholarships";
 import AdminFeedback from "./AdminFeedback";
+import AdminBanners from "./AdminBanners";
 import {
   FaBook,
   FaLayerGroup,
@@ -670,6 +671,10 @@ const Dashboard = () => {
                             setActiveNav("Enquiries / Leads");
                             break;
 
+                          case "Upload Banner":
+                            setActiveNav("Banners");
+                            break;
+
                           default:
                             break;
                         }
@@ -711,6 +716,9 @@ const Dashboard = () => {
           )}
           {activeNav === "Scholarships" && (
             <AdminScholarships setActiveNav={setActiveNav} />
+          )}
+          {activeNav === "Banners" && (
+            <AdminBanners setActiveNav={setActiveNav} />
           )}
           {activeNav === "User Activity" && (
             <UserActivity setActiveNav={setActiveNav} />
