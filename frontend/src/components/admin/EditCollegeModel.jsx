@@ -1,30 +1,30 @@
 import React, { useEffect, useRef, useState } from "react";
 import API_BASE from "../../config/api";
 
-export default function AddCollegeModel({ onClose, onCreated }) {
+export default function EditCollegeModel({ college, onClose, onUpdated }) {
   const overlayRef = useRef(null);
   const dialogRef = useRef(null);
 
   const [form, setForm] = useState({
-    name: "",
-    shortName: "",
-    location: "",
-    rating: "",
-    description: "",
-    type: "",
-    status: "Active",
-    established: "",
-    website: "",
-    address: "",
-    image: "",
-    banner_image: "",
+    id: college?.id || "",
+    name: college?.name || "",
+    shortName: college?.short_name || "",
+    location: college?.location || "",
+    rating: college?.rating || "",
+    description: college?.description || "",
+    type: college?.type || "",
+    status: college?.status === "Active" || college?.is_status === 1 ? "Active" : "Inactive",
+    established: college?.established_year || "",
+    website: college?.website || "",
+    address: college?.address || "",
+    image: college?.image || "",
+    banner_image: college?.banner_image || "",
   });
 
   const [availableBanners, setAvailableBanners] = useState([]);
   const [availableImages, setAvailableImages] = useState([]);
 
   useEffect(() => {
-    // Fetch available banners
     fetch(`${API_BASE}?r=dashboard/list-media&type=banners`)
       .then(res => res.json())
       .then(json => {
@@ -34,7 +34,6 @@ export default function AddCollegeModel({ onClose, onCreated }) {
       })
       .catch(console.error);
 
-    // Fetch available college images
     fetch(`${API_BASE}?r=dashboard/list-media&type=colleges`)
       .then(res => res.json())
       .then(json => {
@@ -68,10 +67,11 @@ export default function AddCollegeModel({ onClose, onCreated }) {
     // Phase 2: call backend API to create a college
     setSubmitting(true);
     setError(null);
-    fetch(`${API_BASE}?r=site/api-colleges`, {
+    fetch(`${API_BASE}?r=dashboard/update-college`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        id: form.id,
         name: form.name,
         short_name: form.shortName,
         location: form.location,
@@ -91,11 +91,11 @@ export default function AddCollegeModel({ onClose, onCreated }) {
         if (!res.ok || json.status === "error") {
           throw new Error(json.message || `Server error (${res.status})`);
         }
-        onCreated?.();
+        onUpdated?.();
       })
       .catch((err) => {
         console.error(err);
-        setError(err.message || "Failed to create college");
+        setError(err.message || "Failed to update college");
       })
       .finally(() => setSubmitting(false));
   }
@@ -120,10 +120,10 @@ export default function AddCollegeModel({ onClose, onCreated }) {
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="text-lg font-semibold text-slate-900">
-                Add College
+                Edit College
               </h2>
               <p className="mt-1 text-sm text-slate-500">
-                Add a new college record and keep the dashboard list in sync.
+                Update college information and keep the dashboard list in sync.
               </p>
             </div>
             <button
@@ -382,10 +382,10 @@ export default function AddCollegeModel({ onClose, onCreated }) {
               </button>
               <button
                 type="submit"
-                className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+                className="rounded-2xl bg-amber-500 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-600 disabled:opacity-60"
                 disabled={submitting}
               >
-                {submitting ? "Saving..." : "Save College"}
+                {submitting ? "Saving..." : "Update College"}
               </button>
             </div>
           </div>

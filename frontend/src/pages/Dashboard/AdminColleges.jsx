@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import API_BASE from "../../config/api";
 import { FaSearch, FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import AddCollegeModel from "../../components/admin/AddCollegeModel";
+import EditCollegeModel from "../../components/admin/EditCollegeModel";
 
 const ROW_OPTIONS = [5, 10, 15, 20];
 function parseCourses(courses) {
@@ -53,6 +54,7 @@ function getPaginationItems(page, totalPages) {
 
 export default function AdminColleges() {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingCollege, setEditingCollege] = useState(null);
   const [colleges, setColleges] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [availableUniversities, setAvailableUniversities] = useState([]);
@@ -65,6 +67,26 @@ export default function AdminColleges() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this college?")) return;
+    try {
+      const res = await fetch(`${API_BASE}?r=dashboard/delete-college`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+      });
+      const json = await res.json();
+      if (json.status === "success") {
+        fetchColleges();
+      } else {
+        alert(json.message || "Failed to delete college.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting college.");
+    }
+  };
 
   useEffect(() => {
     fetchColleges();
@@ -193,6 +215,16 @@ export default function AdminColleges() {
             onClose={() => setShowAddModal(false)}
             onCreated={() => {
               setShowAddModal(false);
+              fetchColleges();
+            }}
+          />
+        )}
+        {editingCollege && (
+          <EditCollegeModel
+            college={editingCollege}
+            onClose={() => setEditingCollege(null)}
+            onUpdated={() => {
+              setEditingCollege(null);
               fetchColleges();
             }}
           />
@@ -428,13 +460,15 @@ export default function AdminColleges() {
                         </button>
                         <button
                           type="button"
-                          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
+                          onClick={() => setEditingCollege(college)}
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-amber-50 text-amber-600 hover:bg-amber-100 transition"
                           title="Edit"
                         >
                           <FaEdit className="h-4 w-4" />
                         </button>
                         <button
                           type="button"
+                          onClick={() => handleDelete(college.id)}
                           className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-red-50 text-red-600 hover:bg-red-100 transition"
                           title="Delete"
                         >
