@@ -552,6 +552,61 @@ class DashboardController extends Controller
         ];
     }
 
+    public function actionUpdateUser()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $id = $data['id'] ?? null;
+        if (!$id) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'User ID is required.'];
+        }
+
+        $updateData = [];
+        if (isset($data['name'])) $updateData['name'] = $data['name'];
+        if (isset($data['phone'])) $updateData['phone'] = $data['phone'];
+        if (isset($data['city'])) $updateData['city'] = $data['city'];
+        if (isset($data['gender'])) $updateData['gender'] = $data['gender'];
+        
+        if (isset($data['status'])) {
+            if ($data['status'] === 'Active') $updateData['is_status'] = 1;
+            elseif ($data['status'] === 'Blocked') $updateData['is_status'] = 2;
+            else $updateData['is_status'] = 0; // Inactive
+        }
+
+        if (!empty($updateData)) {
+            try {
+                Yii::$app->db->createCommand()->update('users', $updateData, 'id = :id', [':id' => $id])->execute();
+            } catch (\Exception $e) {
+                Yii::$app->response->statusCode = 500;
+                return ['status' => 'error', 'message' => 'Failed to update user.'];
+            }
+        }
+
+        return ['status' => 'success', 'message' => 'User updated successfully.'];
+    }
+
+    public function actionDeleteUser()
+    {
+        $id = Yii::$app->request->get('id');
+        if (!$id) {
+            $data = Yii::$app->request->getBodyParams();
+            $id = $data['id'] ?? null;
+        }
+
+        if (!$id) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'User ID is required.'];
+        }
+
+        try {
+            Yii::$app->db->createCommand()->delete('users', 'id = :id', [':id' => $id])->execute();
+            return ['status' => 'success', 'message' => 'User deleted successfully.'];
+        } catch (\Exception $e) {
+            Yii::$app->response->statusCode = 500;
+            return ['status' => 'error', 'message' => 'Failed to delete user.'];
+        }
+    }
+
     public function actionGetUserActivity()
     {
         $search = Yii::$app->request->get('search', '');
