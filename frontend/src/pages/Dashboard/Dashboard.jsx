@@ -12,6 +12,10 @@ import AdminFaq from "./AdminFaq";
 import AdminScholarships from "./AdminScholarships";
 import AdminFeedback from "./AdminFeedback";
 import AdminBanners from "./AdminBanners";
+import AdminSpecializationDetails from "./AdminSpecializationDetails";
+import AdminCourseCollegeMapping from "./AdminCourseCollegeMapping";
+import AdminSettings from "./AdminSettings";
+import AdminCourseDetails from "./AdminCourseDetails";
 import {
   FaBook,
   FaLayerGroup,
@@ -27,14 +31,9 @@ import {
   FaCog,
   FaClipboardList,
   FaBars,
-  FaBell,
   FaChevronDown,
-  FaSearch,
   FaExternalLinkAlt,
-  FaPlus,
-  FaEye,
   FaComments,
-  FaGraduationCap as FaScholarshipIcon,
 } from "react-icons/fa";
 import {
   LineChart,
@@ -47,11 +46,9 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend,
 } from "recharts";
 
 const topFieldsColors = ["#6366f1", "#ec4899", "#22c55e", "#f97316", "#60a5fa"];
-const userActivityColors = ["#6366f1", "#ec4899", "#f97316"];
 
 const quickActions = [
   {
@@ -99,6 +96,7 @@ const navItems = [
   { label: "Specializations", icon: <FaLayerGroup /> },
   { label: "Specialization Details", icon: <FaClipboardList /> },
   { label: "Courses", icon: <FaGraduationCap /> },
+  { label: "Course Details", icon: <FaClipboardList /> },
   { label: "Colleges", icon: <FaUniversity /> },
   { label: "Course - College Mapping", icon: <FaBook /> },
   { label: "USER MANAGEMENT", section: true },
@@ -112,7 +110,6 @@ const navItems = [
   { label: "Website Feedback", icon: <FaComments /> },
   { label: "Scholarships", icon: <FaGraduationCap /> },
   { label: "Settings", icon: <FaCog /> },
-  { label: "Activity Logs", icon: <FaClipboardList /> },
 ];
 
 /* ── STAT CARD ── */
@@ -315,21 +312,6 @@ const Dashboard = () => {
             <h1 className="text-xl font-bold text-gray-800">{activeNav}</h1>
           </div>
           <div className="flex items-center gap-4">
-            {/* Search */}
-            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-400">
-              <FaSearch className="text-xs" />
-              <span>Search here...</span>
-              <span className="ml-6 bg-gray-200 text-gray-500 text-[10px] px-1.5 py-0.5 rounded font-mono">
-                ctrl + /
-              </span>
-            </div>
-            {/* Bell */}
-            <div className="relative cursor-pointer">
-              <FaBell className="text-gray-500 text-lg" />
-              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">
-                8
-              </span>
-            </div>
             {/* User */}
             <div className="relative">
               <div
@@ -724,6 +706,18 @@ const Dashboard = () => {
             <UserActivity setActiveNav={setActiveNav} />
           )}
           {activeNav === "FAQ's" && <AdminFaq setActiveNav={setActiveNav} />}
+          {activeNav === "Specialization Details" && (
+            <AdminSpecializationDetails setActiveNav={setActiveNav} />
+          )}
+          {activeNav === "Course - College Mapping" && (
+            <AdminCourseCollegeMapping setActiveNav={setActiveNav} />
+          )}
+          {activeNav === "Course Details" && (
+            <AdminCourseDetails setActiveNav={setActiveNav} />
+          )}
+          {activeNav === "Settings" && (
+            <AdminSettings setActiveNav={setActiveNav} />
+          )}
 
           {/* FOOTER */}
           <div className="flex items-center justify-between text-xs text-gray-400 py-2">

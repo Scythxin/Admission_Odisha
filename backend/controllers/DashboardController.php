@@ -1021,4 +1021,252 @@ class DashboardController extends Controller
 
         return ['status' => 'success', 'message' => 'College deleted successfully.'];
     }
+
+    // --- SPECIALIZATION DETAILS ---
+    public function actionGetSpecializationDetails()
+    {
+        $details = Yii::$app->db->createCommand("
+            SELECT sd.*, s.name as specialization_name 
+            FROM specialization_details sd
+            LEFT JOIN specializations s ON sd.specialization_id = s.id
+            ORDER BY sd.id DESC
+        ")->queryAll();
+        return ['status' => 'success', 'data' => $details];
+    }
+
+    public function actionCreateSpecializationDetail()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        if (empty($data['specialization_id'])) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Specialization ID is required.'];
+        }
+        Yii::$app->db->createCommand()->insert('specialization_details', [
+            'specialization_id' => $data['specialization_id'],
+            'intro' => $data['intro'] ?? '',
+            'eligibility' => $data['eligibility'] ?? '',
+            'is_status' => isset($data['status']) && $data['status'] === 'Active' ? 1 : 0,
+            'created_at' => date('Y-m-d H:i:s'),
+        ])->execute();
+        return ['status' => 'success', 'message' => 'Detail created successfully.'];
+    }
+
+    public function actionUpdateSpecializationDetail()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        if (empty($data['id']) || empty($data['specialization_id'])) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'ID and Specialization ID are required.'];
+        }
+        Yii::$app->db->createCommand()->update('specialization_details', [
+            'specialization_id' => $data['specialization_id'],
+            'intro' => $data['intro'] ?? '',
+            'eligibility' => $data['eligibility'] ?? '',
+            'is_status' => isset($data['status']) && $data['status'] === 'Active' ? 1 : 0,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ], 'id = :id', [':id' => $data['id']])->execute();
+        return ['status' => 'success', 'message' => 'Detail updated successfully.'];
+    }
+
+    public function actionDeleteSpecializationDetail()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $id = $data['id'] ?? null;
+        if (empty($id)) return ['status' => 'error', 'message' => 'ID required.'];
+        Yii::$app->db->createCommand()->delete('specialization_details', 'id = :id', [':id' => $id])->execute();
+        return ['status' => 'success', 'message' => 'Detail deleted successfully.'];
+    }
+
+    // --- COURSE-COLLEGE MAPPINGS ---
+    public function actionGetMappings()
+    {
+        $mappings = Yii::$app->db->createCommand("
+            SELECT m.*, c.name as college_name, cr.name as course_name, s.name as specialization_name 
+            FROM college_course_specializations m
+            LEFT JOIN colleges c ON m.college_id = c.id
+            LEFT JOIN courses cr ON m.course_id = cr.id
+            LEFT JOIN specializations s ON m.specialization_id = s.id
+            ORDER BY m.id DESC
+        ")->queryAll();
+        return ['status' => 'success', 'data' => $mappings];
+    }
+
+    public function actionCreateMapping()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        if (empty($data['college_id']) || empty($data['course_id'])) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'College and Course IDs are required.'];
+        }
+        Yii::$app->db->createCommand()->insert('college_course_specializations', [
+            'college_id' => $data['college_id'],
+            'course_id' => $data['course_id'],
+            'specialization_id' => $data['specialization_id'] ?: null,
+            'total_seats' => $data['total_seats'] ?? 0,
+            'short_desc' => $data['short_desc'] ?? '',
+            'created_at' => date('Y-m-d H:i:s'),
+        ])->execute();
+        return ['status' => 'success', 'message' => 'Mapping created successfully.'];
+    }
+
+    public function actionUpdateMapping()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        if (empty($data['id']) || empty($data['college_id']) || empty($data['course_id'])) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'ID, College, and Course IDs are required.'];
+        }
+        Yii::$app->db->createCommand()->update('college_course_specializations', [
+            'college_id' => $data['college_id'],
+            'course_id' => $data['course_id'],
+            'specialization_id' => $data['specialization_id'] ?: null,
+            'total_seats' => $data['total_seats'] ?? 0,
+            'short_desc' => $data['short_desc'] ?? '',
+            'updated_at' => date('Y-m-d H:i:s'),
+        ], 'id = :id', [':id' => $data['id']])->execute();
+        return ['status' => 'success', 'message' => 'Mapping updated successfully.'];
+    }
+
+    public function actionDeleteMapping()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $id = $data['id'] ?? null;
+        if (empty($id)) return ['status' => 'error', 'message' => 'ID required.'];
+        Yii::$app->db->createCommand()->delete('college_course_specializations', 'id = :id', [':id' => $id])->execute();
+        return ['status' => 'success', 'message' => 'Mapping deleted successfully.'];
+    }
+
+    // --- SETTINGS ---
+    public function actionGetSettings()
+    {
+        $settings = Yii::$app->db->createCommand("SELECT * FROM settings ORDER BY id DESC")->queryAll();
+        return ['status' => 'success', 'data' => $settings];
+    }
+
+    public function actionCreateSetting()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        if (empty($data['setting_key'])) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Setting Key is required.'];
+        }
+        try {
+            Yii::$app->db->createCommand()->insert('settings', [
+                'setting_key' => $data['setting_key'],
+                'setting_value' => $data['setting_value'] ?? '',
+                'is_status' => isset($data['status']) && $data['status'] === 'Active' ? 1 : 0,
+                'created_at' => date('Y-m-d H:i:s'),
+            ])->execute();
+            return ['status' => 'success', 'message' => 'Setting created successfully.'];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => 'Error: Key might already exist.'];
+        }
+    }
+
+    public function actionUpdateSetting()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        if (empty($data['id']) || empty($data['setting_key'])) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'ID and Setting Key are required.'];
+        }
+        try {
+            Yii::$app->db->createCommand()->update('settings', [
+                'setting_key' => $data['setting_key'],
+                'setting_value' => $data['setting_value'] ?? '',
+                'is_status' => isset($data['status']) && $data['status'] === 'Active' ? 1 : 0,
+                'updated_at' => date('Y-m-d H:i:s'),
+            ], 'id = :id', [':id' => $data['id']])->execute();
+            return ['status' => 'success', 'message' => 'Setting updated successfully.'];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => 'Error: Key might already exist.'];
+        }
+    }
+
+    public function actionDeleteSetting()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $id = $data['id'] ?? null;
+        if (empty($id)) return ['status' => 'error', 'message' => 'ID required.'];
+        Yii::$app->db->createCommand()->delete('settings', 'id = :id', [':id' => $id])->execute();
+        return ['status' => 'success', 'message' => 'Setting deleted successfully.'];
+    }
+
+    // --- COURSE DETAILS ---
+    public function actionGetCourseDetails()
+    {
+        $details = Yii::$app->db->createCommand("SELECT * FROM course_details ORDER BY id DESC")->queryAll();
+        return ['status' => 'success', 'data' => $details];
+    }
+
+    public function actionCreateCourseDetail()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        if (empty($data['slug'])) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Slug is required.'];
+        }
+        
+        // Encode JSON fields if they are arrays, else use empty JSON array string
+        $career = is_array($data['career_opportunities']) ? json_encode($data['career_opportunities']) : '[]';
+        $eligibility = is_array($data['eligibility']) ? json_encode($data['eligibility']) : '[]';
+
+        Yii::$app->db->createCommand()->insert('course_details', [
+            'slug' => $data['slug'],
+            'category' => $data['category'] ?? '',
+            'short_name' => $data['short_name'] ?? '',
+            'full_name' => $data['full_name'] ?? '',
+            'rating' => $data['rating'] ?? null,
+            'reviews_count' => $data['reviews_count'] ?? 0,
+            'badge' => $data['badge'] ?? '',
+            'short_description' => $data['short_description'] ?? '',
+            'about_description' => $data['about_description'] ?? '',
+            'fees_range' => $data['fees_range'] ?? '',
+            'career_opportunities' => $career,
+            'eligibility' => $eligibility,
+        ])->execute();
+        
+        return ['status' => 'success', 'message' => 'Course Detail created successfully.'];
+    }
+
+    public function actionUpdateCourseDetail()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        if (empty($data['id']) || empty($data['slug'])) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'ID and Slug are required.'];
+        }
+        
+        $career = is_array($data['career_opportunities']) ? json_encode($data['career_opportunities']) : '[]';
+        $eligibility = is_array($data['eligibility']) ? json_encode($data['eligibility']) : '[]';
+
+        Yii::$app->db->createCommand()->update('course_details', [
+            'slug' => $data['slug'],
+            'category' => $data['category'] ?? '',
+            'short_name' => $data['short_name'] ?? '',
+            'full_name' => $data['full_name'] ?? '',
+            'rating' => $data['rating'] ?? null,
+            'reviews_count' => $data['reviews_count'] ?? 0,
+            'badge' => $data['badge'] ?? '',
+            'short_description' => $data['short_description'] ?? '',
+            'about_description' => $data['about_description'] ?? '',
+            'fees_range' => $data['fees_range'] ?? '',
+            'career_opportunities' => $career,
+            'eligibility' => $eligibility,
+        ], 'id = :id', [':id' => $data['id']])->execute();
+        
+        return ['status' => 'success', 'message' => 'Course Detail updated successfully.'];
+    }
+
+    public function actionDeleteCourseDetail()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $id = $data['id'] ?? null;
+        if (empty($id)) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'ID is required.'];
+        }
+        Yii::$app->db->createCommand()->delete('course_details', 'id = :id', [':id' => $id])->execute();
+        return ['status' => 'success', 'message' => 'Course Detail deleted successfully.'];
+    }
 }

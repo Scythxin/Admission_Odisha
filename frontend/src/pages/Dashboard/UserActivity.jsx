@@ -9,7 +9,6 @@ import {
   FaSearch,
   FaFilter,
   FaUndo,
-  FaEye,
   FaDownload,
   FaArrowUp,
   FaArrowDown,
@@ -121,35 +120,27 @@ const UserActivity = ({ setActiveNav }) => {
     }, 50);
   };
 
-  const getBadgeAndIcon = (type) => {
+  const getBadge = (type) => {
     let typeBadge = "bg-gray-100 text-gray-700";
-    let typeIcon = <FaEye />;
-    if (!type) return { typeBadge, typeIcon };
+    if (!type) return typeBadge;
     
     if (type.includes("Login")) {
       typeBadge = "bg-green-100 text-green-700";
-      typeIcon = <FaSignInAlt />;
     } else if (type.includes("Wishlist")) {
       typeBadge = "bg-pink-100 text-pink-700";
-      typeIcon = <FaHeart />;
       if (type.includes("Removed")) typeBadge = "bg-red-100 text-red-700";
     } else if (type.includes("Enquiry") || type.includes("Inquired")) {
       typeBadge = "bg-indigo-100 text-indigo-700";
-      typeIcon = <FaCommentDots />;
     } else if (type.includes("Profile")) {
       typeBadge = "bg-orange-100 text-orange-700";
-      typeIcon = <FaUserEdit />;
     } else if (type.includes("College")) {
       typeBadge = "bg-blue-100 text-blue-700";
-      typeIcon = <FaEye />;
     } else if (type.includes("Course")) {
       typeBadge = "bg-teal-100 text-teal-700";
-      typeIcon = <FaEye />;
     } else if (type.includes("Page")) {
       typeBadge = "bg-purple-100 text-purple-700";
-      typeIcon = <FaEye />;
     }
-    return { typeBadge, typeIcon };
+    return typeBadge;
   };
 
   const stats = data.stats || {};
@@ -348,7 +339,7 @@ const UserActivity = ({ setActiveNav }) => {
                 </tr>
               ) : (
                 data.logs.map((log) => {
-                  const { typeBadge, typeIcon } = getBadgeAndIcon(log.type);
+                  const typeBadge = getBadge(log.type);
                   return (
                     <tr key={log.id} className="hover:bg-gray-50/50 transition group">
                       <td className="py-3 pl-6 pr-4 text-gray-500 font-medium">
