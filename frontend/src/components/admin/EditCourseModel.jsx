@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 
 export default function EditCourseModel({ course, onClose, onUpdated }) {
   const overlayRef = useRef(null);
@@ -21,14 +21,14 @@ export default function EditCourseModel({ course, onClose, onUpdated }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${API_BASE}?r=dashboard/get-fields`)
+    fetchWithAuth(`${API_BASE}?r=dashboard/get-fields`)
       .then((res) => res.json())
       .then((json) => {
         if (json.status === "success") setFields(json.data || []);
       })
       .catch(console.error);
 
-    fetch(`${API_BASE}?r=dashboard/get-specializations`)
+    fetchWithAuth(`${API_BASE}?r=dashboard/get-specializations`)
       .then((res) => res.json())
       .then((json) => {
         if (json.status === "success") setSpecializations(json.data || []);
@@ -58,7 +58,7 @@ export default function EditCourseModel({ course, onClose, onUpdated }) {
     setSubmitting(true);
     setError(null);
 
-    fetch(`${API_BASE}?r=dashboard/update-course`, {
+    fetchWithAuth(`${API_BASE}?r=dashboard/update-course`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

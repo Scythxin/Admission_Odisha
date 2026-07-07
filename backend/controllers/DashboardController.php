@@ -21,6 +21,38 @@ class DashboardController extends Controller
         }
 
         Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $headers = Yii::$app->request->headers;
+        $authHeader = $headers->get('Authorization');
+
+        if (!$authHeader) {
+            Yii::$app->response->statusCode = 401;
+            echo json_encode(['status' => 'error', 'message' => 'Unauthorized: Missing Authorization header']);
+            exit;
+        }
+
+        $token = str_replace('Bearer ', '', $authHeader);
+
+        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
+            ->bindValue(':token', $token)
+            ->queryOne();
+
+        if (!$userLogin) {
+            Yii::$app->response->statusCode = 401;
+            echo json_encode(['status' => 'error', 'message' => 'Unauthorized: Invalid token']);
+            exit;
+        }
+
+        $user = Yii::$app->db->createCommand("SELECT is_admin FROM users WHERE id = :id")
+            ->bindValue(':id', $userLogin['user_id'])
+            ->queryOne();
+
+        if (!$user || $user['is_admin'] != 1) {
+            Yii::$app->response->statusCode = 403;
+            echo json_encode(['status' => 'error', 'message' => 'Forbidden: Admin access required']);
+            exit;
+        }
+
         return parent::beforeAction($action);
     }
 
@@ -55,6 +87,19 @@ class DashboardController extends Controller
         ];
 
         return $stats;
+    }
+
+    public function actionGetColleges()
+    {
+        $colleges = Yii::$app->db->createCommand("SELECT * FROM colleges ORDER BY id DESC")->queryAll();
+
+        foreach ($colleges as &$college) {
+            $college['courses'] = Yii::$app->db->createCommand("SELECT cr.* FROM courses cr JOIN college_course_specializations ccs ON ccs.course_id = cr.id WHERE ccs.college_id = :id")
+                ->bindValue(':id', $college['id'])
+                ->queryAll();
+        }
+
+        return ['status' => 'success', 'data' => $colleges];
     }
 
     public function actionGetFields()
@@ -861,7 +906,25 @@ class DashboardController extends Controller
         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
             $tmpName = $_FILES['image']['tmp_name'];
             $originalName = basename($_FILES['image']['name']);
-            $ext = pathinfo($originalName, PATHINFO_EXTENSION);
+            $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+            
+            // 1. Validate Extension
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            if (!in_array($ext, $allowedExtensions)) {
+                Yii::$app->response->statusCode = 400;
+                return ['status' => 'error', 'message' => 'Invalid file extension. Only JPG, PNG, GIF, and WEBP are allowed.'];
+            }
+
+            // 2. Validate MIME Type
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($finfo, $tmpName);
+            finfo_close($finfo);
+
+            $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!in_array($mimeType, $allowedMimeTypes)) {
+                Yii::$app->response->statusCode = 400;
+                return ['status' => 'error', 'message' => 'Invalid file content. The file is not a valid image.'];
+            }
             
             if (!empty($oldFilename)) {
                 $fileName = basename($oldFilename);
@@ -1026,6 +1089,43 @@ class DashboardController extends Controller
 
         Yii::$app->response->statusCode = 400;
         return ['status' => 'error', 'message' => 'Folder already exists.'];
+    }
+
+    public function actionCreateCollege()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $name = isset($data['name']) ? trim($data['name']) : '';
+        $location = isset($data['location']) ? trim($data['location']) : '';
+        if (empty($name) || empty($location)) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Name and location are required.'];
+        }
+
+        try {
+            $insertData = [
+                'name' => $name,
+                'location' => $location,
+                'rating' => isset($data['rating']) ? $data['rating'] : null,
+                'image' => isset($data['image']) ? $data['image'] : null,
+                'banner_image' => isset($data['banner_image']) ? $data['banner_image'] : null,
+                'description' => isset($data['description']) ? $data['description'] : null,
+                'type' => isset($data['type']) ? $data['type'] : null,
+                'established_year' => isset($data['established_year']) ? $data['established_year'] : null,
+                'website' => isset($data['website']) ? $data['website'] : null,
+                'address' => isset($data['address']) ? $data['address'] : null,
+                'courses' => isset($data['courses']) ? json_encode($data['courses']) : null,
+                'created_at' => date('Y-m-d H:i:s'),
+                'is_status' => isset($data['is_status']) ? (int) $data['is_status'] : 1,
+            ];
+
+            Yii::$app->db->createCommand()->insert('colleges', $insertData)->execute();
+            $id = Yii::$app->db->getLastInsertID();
+
+            return ['status' => 'success', 'data' => ['id' => $id]];
+        } catch (\Exception $e) {
+            Yii::$app->response->statusCode = 500;
+            return ['status' => 'error', 'message' => 'Failed to create college.'];
+        }
     }
 
     public function actionUpdateCollege()

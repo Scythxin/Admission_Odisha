@@ -11,6 +11,7 @@ import {
   FaStar,
   FaRegTimesCircle,
 } from "react-icons/fa";
+import Pagination from "../../components/admin/Pagination";
 
 const feedbackStats = [
   {
@@ -117,6 +118,8 @@ export default function AdminFeedback({ setActiveNav }) {
   const [ratingFilter, setRatingFilter] = useState("All Ratings");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [dateFilter, setDateFilter] = useState("Any Date");
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const filteredFeedback = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
@@ -155,7 +158,11 @@ export default function AdminFeedback({ setActiveNav }) {
     setRatingFilter("All Ratings");
     setStatusFilter("All Status");
     setDateFilter("Any Date");
+    setPage(1);
   };
+
+  const totalPages = Math.max(Math.ceil(filteredFeedback.length / rowsPerPage), 1);
+  const paginatedFeedback = filteredFeedback.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   return (
     <div className="space-y-6">
@@ -212,7 +219,7 @@ export default function AdminFeedback({ setActiveNav }) {
                 id="feedbackSearch"
                 type="text"
                 value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
+                onChange={(event) => { setSearchQuery(event.target.value); setPage(1); }}
                 placeholder="Search feedback by user, message or suggestion..."
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-12 pr-4 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               />
@@ -226,7 +233,7 @@ export default function AdminFeedback({ setActiveNav }) {
             <select
               id="ratingFilter"
               value={ratingFilter}
-              onChange={(event) => setRatingFilter(event.target.value)}
+              onChange={(event) => { setRatingFilter(event.target.value); setPage(1); }}
               className="w-full rounded-2xl border border-slate-200 bg-white py-3 px-4 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
             >
               {ratingOptions.map((option) => (
@@ -244,7 +251,7 @@ export default function AdminFeedback({ setActiveNav }) {
             <select
               id="statusFilter"
               value={statusFilter}
-              onChange={(event) => setStatusFilter(event.target.value)}
+              onChange={(event) => { setStatusFilter(event.target.value); setPage(1); }}
               className="w-full rounded-2xl border border-slate-200 bg-white py-3 px-4 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
             >
               {statusOptions.map((option) => (
@@ -264,7 +271,7 @@ export default function AdminFeedback({ setActiveNav }) {
               <select
                 id="dateFilter"
                 value={dateFilter}
-                onChange={(event) => setDateFilter(event.target.value)}
+                onChange={(event) => { setDateFilter(event.target.value); setPage(1); }}
                 className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-12 pr-4 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               >
                 {dateOptions.map((option) => (
@@ -343,7 +350,7 @@ export default function AdminFeedback({ setActiveNav }) {
               </tr>
             </thead>
             <tbody>
-              {filteredFeedback.map((item) => (
+              {paginatedFeedback.map((item) => (
                 <tr
                   key={item.id}
                   className="group transition hover:bg-slate-50/80"
@@ -408,6 +415,19 @@ export default function AdminFeedback({ setActiveNav }) {
               ))}
             </tbody>
           </table>
+        )}
+
+        {filteredFeedback.length > 0 && (
+          <div className="mt-8">
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              setPage={setPage}
+              rowsPerPage={rowsPerPage}
+              setRowsPerPage={setRowsPerPage}
+              totalItems={filteredFeedback.length}
+            />
+          </div>
         )}
       </div>
     </div>

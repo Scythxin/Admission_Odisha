@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 
 export default function AdminSettings() {
@@ -21,7 +21,7 @@ export default function AdminSettings() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/get-settings`);
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/get-settings`);
       const json = await res.json();
       if (json.status === "success") setSettings(json.data || []);
     } catch (err) {
@@ -43,7 +43,7 @@ export default function AdminSettings() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this setting?")) return;
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/delete-setting`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/delete-setting`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id })
@@ -59,7 +59,7 @@ export default function AdminSettings() {
     e.preventDefault();
     const endpoint = editingId ? "update-setting" : "create-setting";
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/${endpoint}`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, id: editingId })

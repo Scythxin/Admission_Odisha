@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 import { FaSearch, FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import Pagination from "../../components/admin/Pagination";
 import AddCollegeModel from "../../components/admin/AddCollegeModel";
@@ -57,9 +57,13 @@ export default function AdminColleges() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this college?")) return;
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/delete-college`, {
+      const token = localStorage.getItem("token");
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/delete-college`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify({ id })
       });
       const json = await res.json();
@@ -107,7 +111,12 @@ export default function AdminColleges() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${API_BASE}?r=site/api-colleges`);
+      const token = localStorage.getItem("token");
+      const response = await fetchWithAuth(`${API_BASE}?r=dashboard/get-colleges`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
       if (!response.ok) {
         throw new Error(`Failed to fetch colleges (${response.status})`);
       }

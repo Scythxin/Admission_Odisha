@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 import {
   FaUsers,
   FaSignInAlt,
@@ -66,7 +66,7 @@ const UserActivity = ({ setActiveNav }) => {
       appliedFilters.current = filters;
     }
 
-    fetch(`${API_BASE}?r=dashboard/get-user-activity&search=${filters.searchTerm}&activityType=${filters.activityType}&referenceType=${filters.referenceType}&dateRange=${filters.dateRange}&page=${filters.page}&perPage=${filters.rowsPerPage}&_t=${new Date().getTime()}`)
+    fetchWithAuth(`${API_BASE}?r=dashboard/get-user-activity&search=${filters.searchTerm}&activityType=${filters.activityType}&referenceType=${filters.referenceType}&dateRange=${filters.dateRange}&page=${filters.page}&perPage=${filters.rowsPerPage}&_t=${new Date().getTime()}`)
       .then((res) => res.json())
       .then((res) => {
         if (res.status === "success") {
@@ -113,7 +113,7 @@ const UserActivity = ({ setActiveNav }) => {
 
     setTimeout(() => {
         setLoading(true);
-        fetch(`${API_BASE}?r=dashboard/get-user-activity&search=&activityType=All Activities&referenceType=All Reference Types&dateRange=Select Date Range&page=1&perPage=${rowsPerPage}&_t=${new Date().getTime()}`)
+        fetchWithAuth(`${API_BASE}?r=dashboard/get-user-activity&search=&activityType=All Activities&referenceType=All Reference Types&dateRange=Select Date Range&page=1&perPage=${rowsPerPage}&_t=${new Date().getTime()}`)
           .then((res) => res.json())
           .then((res) => {
             if (res.status === "success") setData(res.data);

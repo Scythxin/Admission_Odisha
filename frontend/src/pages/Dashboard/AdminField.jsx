@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 import {
   FaCog, FaHeartbeat, FaBriefcase, FaPalette,
   FaFlask, FaBalanceScale, FaPencilAlt, FaConciergeBell,
-  FaDesktop, FaGraduationCap, FaQuestionCircle, FaPlus, FaEdit, FaTrash
+  FaDesktop, FaGraduationCap, FaQuestionCircle, FaPlus, FaEdit, FaTrash, FaSearch
 } from "react-icons/fa";
 import Pagination from "../../components/admin/Pagination";
 
@@ -421,14 +421,20 @@ export default function AdminField() {
   const [deleteId, setDeleteId] = useState(null);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const totalPages = Math.max(Math.ceil(fields.length / perPage), 1);
-  const paginated = fields.slice((page - 1) * perPage, page * perPage);
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  const filteredFields = fields.filter(field =>
+    (field.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+    (field.description?.toLowerCase() || "").includes(searchQuery.toLowerCase())
+  );
+  const totalPages = Math.max(Math.ceil(filteredFields.length / perPage), 1);
+  const paginated = filteredFields.slice((page - 1) * perPage, page * perPage);
 
   async function fetchFields() {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch(`${API_BASE}?r=dashboard/get-fields`);
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/get-fields`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const result = await res.json();
       if (result.status === "success") {
@@ -451,7 +457,7 @@ export default function AdminField() {
   async function handleSave({ name, description, status, icon }) {
     try {
       if (modal.mode === "add") {
-        const res = await fetch(`${API_BASE}?r=dashboard/create-field`, {
+        const res = await fetchWithAuth(`${API_BASE}?r=dashboard/create-field`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -472,7 +478,7 @@ export default function AdminField() {
           throw new Error(result.message || "Failed to create field");
         }
       } else {
-        const res = await fetch(`${API_BASE}?r=dashboard/update-field`, {
+        const res = await fetchWithAuth(`${API_BASE}?r=dashboard/update-field`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -503,7 +509,7 @@ export default function AdminField() {
 
   async function handleDelete(id) {
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/delete-field`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/delete-field`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -539,6 +545,20 @@ export default function AdminField() {
         >
           <span className="text-base leading-none">+</span> Add New Field
         </button>
+      </div>
+
+      {/* Search Bar */}
+      <div className="flex items-center gap-3">
+        <div className="relative w-full sm:w-72">
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+            placeholder="Search by field or description..."
+            className="w-full rounded-xl border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm text-gray-700 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all"
+          />
+        </div>
       </div>
 
       {/* Table */}
@@ -630,7 +650,7 @@ export default function AdminField() {
           setPage={setPage}
           rowsPerPage={perPage}
           setRowsPerPage={setPerPage}
-          totalItems={fields.length}
+          totalItems={filteredFields.length}
         />
       </div>
 

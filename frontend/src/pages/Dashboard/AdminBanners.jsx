@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FaUpload, FaTrash, FaImage, FaUserCircle, FaUniversity, FaCameraRetro, FaSyncAlt, FaFolder, FaFolderPlus, FaArrowLeft } from "react-icons/fa";
-import API_BASE, { ASSETS_BASE } from "../../config/api";
+import { FaUpload, FaTrash, FaImage, FaUserCircle, FaUniversity, FaCameraRetro, FaSyncAlt, FaFolder, FaFolderPlus, FaArrowLeft, FaSearch } from "react-icons/fa";
+import Pagination from "../../components/admin/Pagination";
+import API_BASE, { ASSETS_BASE, fetchWithAuth } from "../../config/api";
 
 const tabs = [
   { id: "banners", label: "Banners", icon: <FaImage /> },
@@ -19,6 +20,9 @@ export default function AdminBanners({ setActiveNav }) {
   const [updatingImage, setUpdatingImage] = useState(null);
 
   const [currentFolder, setCurrentFolder] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(12);
 
   useEffect(() => {
     setCurrentFolder(null); // Reset folder when tab changes
@@ -32,7 +36,7 @@ export default function AdminBanners({ setActiveNav }) {
     setLoading(true);
     try {
       const url = `${API_BASE}?r=dashboard/list-media&type=${type}${folder ? `&folder=${folder}` : ""}`;
-      const res = await fetch(url);
+      const res = await fetchWithAuth(url);
       const json = await res.json();
       if (json.status === "success") {
         setImages(json.data || []);
@@ -76,7 +80,7 @@ export default function AdminBanners({ setActiveNav }) {
     }
 
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/upload-media`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/upload-media`, {
         method: "POST",
         body: formData,
       });
@@ -98,7 +102,7 @@ export default function AdminBanners({ setActiveNav }) {
     if (!window.confirm(`Are you sure you want to delete ${filename}?`)) return;
 
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/delete-media`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/delete-media`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: activeTab, filename, folder: currentFolder || "" }),
@@ -120,7 +124,7 @@ export default function AdminBanners({ setActiveNav }) {
     if (!folderName || !folderName.trim()) return;
 
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/create-media-folder`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/create-media-folder`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: activeTab, folder: folderName }),
@@ -136,6 +140,17 @@ export default function AdminBanners({ setActiveNav }) {
       alert("Error creating folder.");
     }
   };
+
+  const filteredData = images.filter((item) =>
+    item.filename.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.max(Math.ceil(filteredData.length / rowsPerPage), 1);
+  const currentPage = Math.min(page, totalPages);
+  const displayedData = filteredData.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
 
   return (
     <div className="space-y-6 animate-fade-in pb-10">
@@ -203,6 +218,20 @@ export default function AdminBanners({ setActiveNav }) {
         ))}
       </div>
 
+      {/* Search Bar */}
+      <div className="flex items-center gap-3">
+        <div className="relative w-full sm:w-72">
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+            placeholder="Search by file name..."
+            className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-10 pr-4 text-sm text-slate-700 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all"
+          />
+        </div>
+      </div>
+
       {/* Media Grid */}
       <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm min-h-[400px]">
         {currentFolder && (
@@ -227,7 +256,7 @@ export default function AdminBanners({ setActiveNav }) {
               <p>Loading media...</p>
             </div>
           </div>
-        ) : images.length === 0 ? (
+        ) : displayedData.length === 0 ? (
           <div className="flex h-64 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 text-slate-400">
             <FaImage className="mb-4 text-5xl text-slate-300" />
             <p className="text-lg font-semibold text-slate-600">No items found</p>
@@ -235,7 +264,7 @@ export default function AdminBanners({ setActiveNav }) {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {images.map((item) => (
+            {displayedData.map((item) => (
               item.is_dir ? (
                 <div 
                   key={item.filename}
@@ -299,6 +328,20 @@ export default function AdminBanners({ setActiveNav }) {
                 </div>
               )
             ))}
+          </div>
+        )}
+        
+        {/* Pagination */}
+        {!loading && displayedData.length > 0 && (
+          <div className="mt-8">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              setPage={setPage}
+              rowsPerPage={rowsPerPage}
+              setRowsPerPage={setRowsPerPage}
+              totalItems={filteredData.length}
+            />
           </div>
         )}
       </div>

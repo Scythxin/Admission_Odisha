@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 import AdminField from "./AdminField";
 import AdminSpecializations from "./AdminSpecializations";
 import AdminEnquiry from "./AdminEnquiry";
@@ -196,7 +196,7 @@ const Dashboard = () => {
       setUser(JSON.parse(userData));
     }
 
-    fetch(`${API_BASE}?r=dashboard/stats`)
+    fetchWithAuth(`${API_BASE}?r=dashboard/stats`)
       .then((res) => res.json())
       .then((data) => {
         setStats(data);
