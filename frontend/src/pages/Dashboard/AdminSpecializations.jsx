@@ -6,6 +6,7 @@ import {
     FaFlask, FaLeaf, FaGlobeAsia, FaPencilAlt, FaMusic, FaEdit, FaTrash,
     FaPlus, FaChevronLeft, FaChevronRight, FaCheck,
 } from "react-icons/fa";
+import Pagination from "../../components/admin/Pagination";
 
 /* ── ICONS ── */
 const ICONS = [
@@ -267,12 +268,13 @@ const AdminSpecializations = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [page, setPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     
     const [modalConfig, setModalConfig] = useState(null); // { mode: 'add' | 'edit', spec?: obj }
     const [deleteTarget, setDelete] = useState(null);
 
-    const totalPages = Math.ceil(specs.length / PAGE_SIZE) || 1;
-    const paged = specs.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    const totalPages = Math.max(Math.ceil(specs.length / rowsPerPage), 1);
+    const paged = specs.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
     const fetchData = async () => {
         try {
@@ -458,35 +460,14 @@ const AdminSpecializations = () => {
                     </tbody>
                 </table>
 
-                {/* Pagination */}
-                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 bg-gray-50/30">
-                    <p className="text-xs text-gray-400">
-                        Showing {specs.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1} to {Math.min(page * PAGE_SIZE, specs.length)} of {specs.length} specializations
-                    </p>
-                    <div className="flex items-center gap-1">
-                        <button
-                            onClick={() => setPage(p => Math.max(1, p - 1))}
-                            disabled={page === 1}
-                            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
-                            <FaChevronLeft className="text-xs" />
-                        </button>
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                            <button key={p} onClick={() => setPage(p)}
-                                className={`w-8 h-8 rounded-lg text-sm font-semibold transition
-                                    ${page === p
-                                        ? "bg-indigo-600 text-white border border-indigo-600"
-                                        : "border border-gray-200 text-gray-500 hover:bg-gray-50"}`}>
-                                {p}
-                            </button>
-                        ))}
-                        <button
-                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                            disabled={page === totalPages || totalPages === 0}
-                            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
-                            <FaChevronRight className="text-xs" />
-                        </button>
-                    </div>
-                </div>
+                <Pagination 
+                    currentPage={page}
+                    totalPages={totalPages}
+                    setPage={setPage}
+                    rowsPerPage={rowsPerPage}
+                    setRowsPerPage={setRowsPerPage}
+                    totalItems={specs.length}
+                />
             </div>
 
             {/* Modals */}

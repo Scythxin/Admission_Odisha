@@ -15,6 +15,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
+import Pagination from "../../components/admin/Pagination";
 
 // Dummy data removed, fetching from API
 
@@ -49,6 +50,7 @@ const UserActivity = ({ setActiveNav }) => {
   const [referenceType, setReferenceType] = useState("All Reference Types");
   const [dateRange, setDateRange] = useState("Select Date Range");
   const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [data, setData] = useState({ stats: null, logs: [], pagination: {} });
   const [loading, setLoading] = useState(true);
   const appliedFilters = useRef({ searchTerm, activityType, referenceType, dateRange, page });
@@ -58,13 +60,13 @@ const UserActivity = ({ setActiveNav }) => {
 
     const filters = isPolling 
       ? appliedFilters.current 
-      : { searchTerm, activityType, referenceType, dateRange, page };
+      : { searchTerm, activityType, referenceType, dateRange, page, rowsPerPage };
 
     if (!isPolling) {
       appliedFilters.current = filters;
     }
 
-    fetch(`${API_BASE}?r=dashboard/get-user-activity&search=${filters.searchTerm}&activityType=${filters.activityType}&referenceType=${filters.referenceType}&dateRange=${filters.dateRange}&page=${filters.page}&_t=${new Date().getTime()}`)
+    fetch(`${API_BASE}?r=dashboard/get-user-activity&search=${filters.searchTerm}&activityType=${filters.activityType}&referenceType=${filters.referenceType}&dateRange=${filters.dateRange}&page=${filters.page}&perPage=${filters.rowsPerPage}&_t=${new Date().getTime()}`)
       .then((res) => res.json())
       .then((res) => {
         if (res.status === "success") {
@@ -80,7 +82,7 @@ const UserActivity = ({ setActiveNav }) => {
 
   useEffect(() => {
     fetchData();
-  }, [page]);
+  }, [page, rowsPerPage]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -111,7 +113,7 @@ const UserActivity = ({ setActiveNav }) => {
 
     setTimeout(() => {
         setLoading(true);
-        fetch(`${API_BASE}?r=dashboard/get-user-activity&search=&activityType=All Activities&referenceType=All Reference Types&dateRange=Select Date Range&page=1&_t=${new Date().getTime()}`)
+        fetch(`${API_BASE}?r=dashboard/get-user-activity&search=&activityType=All Activities&referenceType=All Reference Types&dateRange=Select Date Range&page=1&perPage=${rowsPerPage}&_t=${new Date().getTime()}`)
           .then((res) => res.json())
           .then((res) => {
             if (res.status === "success") setData(res.data);
@@ -378,31 +380,14 @@ const UserActivity = ({ setActiveNav }) => {
           </table>
         </div>
 
-        {/* PAGINATION */}
-        <div className="p-4 border-t border-gray-100 flex items-center justify-between text-sm text-gray-500">
-          <div>
-            Showing {(page - 1) * 10 + 1} to {Math.min(page * 10, data.pagination.total || 0)} of {data.pagination.total || 0} entries
-          </div>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-400 transition disabled:opacity-50"
-            >
-              <FaChevronLeft className="text-xs" />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 font-semibold border border-indigo-100 transition">
-              {page}
-            </button>
-            <button
-              onClick={() => setPage((p) => p + 1)}
-              disabled={page * 10 >= (data.pagination.total || 0)}
-              className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition disabled:opacity-50"
-            >
-              <FaChevronRight className="text-xs" />
-            </button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={page}
+          totalPages={data.pagination.total_pages || Math.ceil((data.pagination.total || 0) / rowsPerPage) || 1}
+          setPage={setPage}
+          rowsPerPage={rowsPerPage}
+          setRowsPerPage={setRowsPerPage}
+          totalItems={data.pagination.total || 0}
+        />
       </div>
     </div>
   );

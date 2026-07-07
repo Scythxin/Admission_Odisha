@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import API_BASE from "../../config/api";
+import { FaPlus, FaSearch, FaFilter, FaRedo, FaEye, FaEdit, FaTrash } from "react-icons/fa";
+import Pagination from "../../components/admin/Pagination";
 import AddCourseModel from "../../components/admin/AddCourseModel";
 import EditCourseModel from "../../components/admin/EditCourseModel";
 
@@ -154,7 +156,7 @@ export default function CoursesManagement() {
           onClick={() => setShowAddModal(true)}
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm shadow-blue-200 transition-all"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <FaPlus />
           Add Course
         </button>
         {showAddModal && (
@@ -200,7 +202,7 @@ export default function CoursesManagement() {
         {/* Filters */}
         <div className="p-4 border-b border-slate-50 flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[200px] max-w-xs">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <FaSearch className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Search by course name..."
@@ -218,7 +220,7 @@ export default function CoursesManagement() {
             </select>
           ))}
           <button className="flex items-center gap-1.5 px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 active:scale-95 transition-all shadow-sm shadow-blue-200">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <FaFilter />
             Filter
           </button>
           <button
@@ -228,7 +230,7 @@ export default function CoursesManagement() {
             }}
             className="flex items-center gap-1.5 px-4 py-2.5 border border-slate-200 text-slate-500 text-sm font-medium rounded-xl hover:bg-slate-50 active:scale-95 transition-all"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+            <FaRedo />
             Reset
           </button>
         </div>
@@ -324,18 +326,15 @@ export default function CoursesManagement() {
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-1.5">
-                          <button className="p-2 rounded-lg text-blue-400 hover:bg-blue-50 hover:text-blue-600 transition-colors" title="View">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                          </button>
                           <button 
                             onClick={() => setEditingCourse(course)}
                             className="p-2 rounded-lg text-amber-400 hover:bg-amber-50 hover:text-amber-600 transition-colors" title="Edit">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            <FaEdit className="text-sm" />
                           </button>
                           <button 
                             onClick={() => handleDelete(course.id)}
                             className="p-2 rounded-lg text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors" title="Delete">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                            <FaTrash className="text-sm" />
                           </button>
                         </div>
                       </td>
@@ -347,90 +346,14 @@ export default function CoursesManagement() {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="px-5 py-3.5 border-t border-slate-100 flex items-center justify-between">
-          <p className="text-xs text-slate-400">
-            Showing {totalFiltered === 0 ? 0 : (currentPage - 1) * perPage + 1} to {Math.min(currentPage * perPage, totalFiltered)} of <span className="font-semibold text-slate-600">{totalFiltered}</span> entries
-          </p>
-          <div className="flex items-center gap-1.5">
-            {/* Shift window left by 5 pages */}
-            <button
-              onClick={() => setPageWindowStart(prev => Math.max(1, prev - 5))}
-              disabled={pageWindowStart === 1}
-              className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-slate-500 disabled:opacity-30 hover:bg-slate-100 transition text-xs font-bold"
-              title="Previous 5 Pages"
-            >
-              «
-            </button>
-
-            <button
-              onClick={() => {
-                const newPage = Math.max(1, currentPage - 1);
-                setCurrentPage(newPage);
-                if (newPage < pageWindowStart) {
-                  setPageWindowStart(Math.max(1, pageWindowStart - 5));
-                }
-              }}
-              disabled={currentPage === 1 || totalFiltered === 0}
-              className="p-2 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 disabled:opacity-30 transition-colors"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            
-            {Array.from(
-              { length: Math.min(10, totalPages - pageWindowStart + 1) },
-              (_, i) => pageWindowStart + i
-            ).map((p) => (
-              <button
-                key={p}
-                onClick={() => setCurrentPage(p)}
-                className={`w-8 h-8 rounded-lg text-sm font-semibold transition-all ${
-                  currentPage === p
-                    ? "bg-blue-600 text-white shadow-sm shadow-blue-200"
-                    : "text-slate-500 hover:bg-slate-100"
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-
-            <button
-              onClick={() => {
-                const newPage = Math.min(totalPages, currentPage + 1);
-                setCurrentPage(newPage);
-                if (newPage >= pageWindowStart + 10) {
-                  setPageWindowStart(Math.min(Math.max(1, totalPages - 9), pageWindowStart + 5));
-                }
-              }}
-              disabled={currentPage === totalPages || totalFiltered === 0}
-              className="p-2 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 disabled:opacity-30 transition-colors"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-
-            {/* Shift window right by 5 pages */}
-            <button
-              onClick={() => setPageWindowStart(prev => Math.min(Math.max(1, totalPages - 9), prev + 5))}
-              disabled={pageWindowStart + 9 >= totalPages}
-              className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-slate-500 disabled:opacity-30 hover:bg-slate-100 transition text-xs font-bold"
-              title="Next 5 Pages"
-            >
-              »
-            </button>
-            <select
-              value={perPage}
-              onChange={(e) => {
-                setPerPage(parseInt(e.target.value));
-                setCurrentPage(1);
-              }}
-              className="ml-1 pl-2 pr-6 py-1.5 text-xs border border-slate-200 rounded-lg bg-slate-50 text-slate-500 appearance-none cursor-pointer"
-            >
-              <option value="5">5 / page</option>
-              <option value="10">10 / page</option>
-              <option value="25">25 / page</option>
-            </select>
-          </div>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          setPage={setCurrentPage}
+          rowsPerPage={perPage}
+          setRowsPerPage={setPerPage}
+          totalItems={totalFiltered}
+        />
       </div>
     </div>
   );

@@ -15,6 +15,7 @@ import {
   FaChevronRight,
   FaTimes,
 } from "react-icons/fa";
+import Pagination from "../../components/admin/Pagination";
 
 const categoryColors = {
   Admission: "bg-purple-100 text-purple-600",
@@ -33,6 +34,9 @@ const AdminFaq = ({ setActiveNav }) => {
   const [modalConfig, setModalConfig] = useState(null);
   const [deleteModal, setDeleteModal] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     fetchFaqs();
@@ -106,6 +110,9 @@ const AdminFaq = ({ setActiveNav }) => {
       statusFilter === "All Status" || faq.status === statusFilter;
     return matchesSearch && matchesCategory && matchesStatus;
   });
+
+  const totalPages = Math.max(Math.ceil(filteredFaqs.length / rowsPerPage), 1);
+  const paginatedFaqs = filteredFaqs.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   return (
     <div className="space-y-6">
@@ -252,7 +259,7 @@ const AdminFaq = ({ setActiveNav }) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredFaqs.map((faq) => (
+              {paginatedFaqs.map((faq) => (
                 <tr key={faq.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-900">{faq.id}</td>
                   <td className="px-6 py-4 text-gray-700 font-medium">{faq.question}</td>
@@ -279,9 +286,6 @@ const AdminFaq = ({ setActiveNav }) => {
                   <td className="px-6 py-4 text-gray-500">{faq.lastUpdated}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-2">
-                      <button className="w-8 h-8 flex items-center justify-center text-indigo-500 bg-indigo-50 border border-indigo-100 rounded-md hover:bg-indigo-500 hover:text-white transition-colors" title="View">
-                        <FaEye className="text-[13px]" />
-                      </button>
                       <button onClick={() => setModalConfig({ mode: "edit", faq })} className="w-8 h-8 flex items-center justify-center text-blue-500 bg-blue-50 border border-blue-100 rounded-md hover:bg-blue-500 hover:text-white transition-colors" title="Edit">
                         <FaEdit className="text-[13px]" />
                       </button>
@@ -296,33 +300,14 @@ const AdminFaq = ({ setActiveNav }) => {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
-          <p className="text-sm text-gray-500">
-            Showing 1 to {filteredFaqs.length} of {faqs.length} entries
-          </p>
-          <div className="flex items-center gap-1">
-            <button className="w-8 h-8 flex items-center justify-center text-gray-400 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
-              <FaChevronLeft className="text-xs" />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center text-white bg-indigo-500 rounded-md font-medium text-sm shadow-sm">
-              1
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center text-gray-600 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm">
-              2
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center text-gray-600 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm">
-              3
-            </button>
-            <span className="w-8 h-8 flex items-center justify-center text-gray-400 text-sm">...</span>
-            <button className="w-8 h-8 flex items-center justify-center text-gray-600 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm">
-              7
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center text-gray-400 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
-              <FaChevronRight className="text-xs" />
-            </button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          setPage={setPage}
+          rowsPerPage={rowsPerPage}
+          setRowsPerPage={setRowsPerPage}
+          totalItems={filteredFaqs.length}
+        />
       </div>
 
       {/* Modals */}

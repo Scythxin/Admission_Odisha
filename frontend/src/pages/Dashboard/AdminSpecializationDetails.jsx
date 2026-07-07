@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import API_BASE from "../../config/api";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import Pagination from "../../components/admin/Pagination";
 
 export default function AdminSpecializationDetails() {
   const [details, setDetails] = useState([]);
@@ -8,6 +9,9 @@ export default function AdminSpecializationDetails() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   
   const [form, setForm] = useState({
     specialization_id: "",
@@ -88,6 +92,9 @@ export default function AdminSpecializationDetails() {
     setForm({ specialization_id: "", intro: "", eligibility: "", status: "Active" });
   };
 
+  const totalPages = Math.max(Math.ceil(details.length / rowsPerPage), 1);
+  const paginatedDetails = details.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -117,10 +124,10 @@ export default function AdminSpecializationDetails() {
           <tbody className="divide-y divide-slate-100">
             {loading ? (
               <tr><td colSpan="5" className="p-4 text-center">Loading...</td></tr>
-            ) : details.length === 0 ? (
+            ) : paginatedDetails.length === 0 ? (
               <tr><td colSpan="5" className="p-4 text-center">No details found.</td></tr>
             ) : (
-              details.map(item => (
+              paginatedDetails.map(item => (
                 <tr key={item.id} className="hover:bg-slate-50">
                   <td className="px-4 py-3 font-medium text-slate-900">{item.specialization_name || "Unknown"}</td>
                   <td className="px-4 py-3 max-w-xs truncate" title={item.intro}>{item.intro || "-"}</td>
@@ -141,6 +148,15 @@ export default function AdminSpecializationDetails() {
             )}
           </tbody>
         </table>
+        
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          setPage={setPage}
+          rowsPerPage={rowsPerPage}
+          setRowsPerPage={setRowsPerPage}
+          totalItems={details.length}
+        />
       </div>
 
       {showModal && (

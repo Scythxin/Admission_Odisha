@@ -7,6 +7,7 @@ import {
   FaUser, FaUniversity, FaGraduationCap, FaQuestionCircle,
   FaFileAlt, FaTimes, FaWhatsapp
 } from "react-icons/fa";
+import Pagination from "../../components/admin/Pagination";
 
 /* ── STAT CARD ── */
 const StatCard = ({ icon, label, value, iconBg }) => (
@@ -420,72 +421,14 @@ export default function AdminEnquiry() {
         </div>
 
         {/* ── PAGINATION BAR ── */}
-        <div className="flex flex-col sm:flex-row items-center justify-between px-5 py-4 border-t border-gray-100 bg-gray-50/40 gap-4">
-          <p className="text-xs text-gray-400 font-semibold">
-            Showing {total === 0 ? 0 : (page - 1) * perPage + 1} to {Math.min(page * perPage, total)} of {total} entries
-          </p>
-
-          <div className="flex items-center gap-5">
-            {/* Page Count Selection */}
-            <div className="relative flex items-center gap-2">
-              <select
-                value={perPage}
-                onChange={(event) => {
-                  setPerPage(parseInt(event.target.value));
-                  setPage(1);
-                }}
-                className="appearance-none bg-white border border-gray-200 rounded-lg px-3 py-1.5 pr-8 text-xs font-semibold text-gray-600 outline-none cursor-pointer focus:border-blue-500 transition"
-              >
-                <option value="5">5/page</option>
-                <option value="10">10/page</option>
-                <option value="20">20/page</option>
-                <option value="50">50/page</option>
-              </select>
-              <FaChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[8px] text-gray-500" />
-            </div>
-
-            {/* Pagination Controls */}
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 disabled:opacity-30 hover:bg-gray-100 transition text-xs font-bold"
-              >
-                &lt;
-              </button>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => {
-                // simple pagination logic to limit number of buttons
-                if (totalPages > 5 && Math.abs(page - n) > 1 && n !== 1 && n !== totalPages) {
-                  if (n === 2 || n === totalPages - 1) {
-                    return <span key={n} className="text-xs text-gray-400 px-1 font-bold">...</span>;
-                  }
-                  return null;
-                }
-                return (
-                  <button
-                    key={n}
-                    onClick={() => setPage(n)}
-                    className={`w-8 h-8 flex items-center justify-center rounded-lg text-xs font-extrabold transition ${page === n
-                        ? "bg-blue-600 text-white shadow-md shadow-blue-100"
-                        : "border border-gray-200 text-gray-500 hover:bg-gray-100"
-                      }`}
-                  >
-                    {n}
-                  </button>
-                );
-              })}
-
-              <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages || totalPages === 0}
-                className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 disabled:opacity-30 hover:bg-gray-100 transition text-xs font-bold"
-              >
-                &gt;
-              </button>
-            </div>
-          </div>
-        </div>
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          setPage={setPage}
+          rowsPerPage={perPage}
+          setRowsPerPage={setPerPage}
+          totalItems={total}
+        />
       </div>
 
       {/* ── DETAILS MODAL ── */}

@@ -3,8 +3,9 @@ import API_BASE from "../../config/api";
 import {
   FaCog, FaHeartbeat, FaBriefcase, FaPalette,
   FaFlask, FaBalanceScale, FaPencilAlt, FaConciergeBell,
-  FaDesktop, FaGraduationCap, FaQuestionCircle
+  FaDesktop, FaGraduationCap, FaQuestionCircle, FaPlus, FaEdit, FaTrash
 } from "react-icons/fa";
+import Pagination from "../../components/admin/Pagination";
 
 function getIconAndColor(icon, index = 0) {
   const defaultColors = [
@@ -419,8 +420,8 @@ export default function AdminField() {
   const [modal, setModal] = useState(null); // { mode: 'add'|'edit', field? }
   const [deleteId, setDeleteId] = useState(null);
   const [page, setPage] = useState(1);
-  const perPage = 8;
-  const totalPages = Math.ceil(fields.length / perPage);
+  const [perPage, setPerPage] = useState(10);
+  const totalPages = Math.max(Math.ceil(fields.length / perPage), 1);
   const paginated = fields.slice((page - 1) * perPage, page * perPage);
 
   async function fetchFields() {
@@ -605,14 +606,14 @@ export default function AdminField() {
                           className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-indigo-500 hover:bg-indigo-50 hover:border-indigo-200 transition-colors"
                           title="Edit"
                         >
-                          ✏️
+                          <FaEdit />
                         </button>
                         <button
                           onClick={() => setDeleteId(field.id)}
                           className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
                           title="Delete"
                         >
-                          🗑️
+                          <FaTrash />
                         </button>
                       </div>
                     </td>
@@ -623,41 +624,14 @@ export default function AdminField() {
           </tbody>
         </table>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-t border-gray-100 bg-gray-50/40">
-          <p className="text-xs text-gray-400">
-            Showing {fields.length === 0 ? 0 : (page - 1) * perPage + 1} to {Math.min(page * perPage, fields.length)} of {fields.length} fields
-          </p>
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 disabled:opacity-30 hover:bg-gray-100 transition-colors text-xs"
-            >
-              ‹
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
-              <button
-                key={n}
-                onClick={() => setPage(n)}
-                className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs font-semibold transition-colors ${
-                  page === n
-                    ? "bg-indigo-600 text-white"
-                    : "border border-gray-200 text-gray-500 hover:bg-gray-100"
-                }`}
-              >
-                {n}
-              </button>
-            ))}
-            <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages || totalPages === 0}
-              className="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 disabled:opacity-30 hover:bg-gray-100 transition-colors text-xs"
-            >
-              ›
-            </button>
-          </div>
-        </div>
+        <Pagination 
+          currentPage={page}
+          totalPages={totalPages}
+          setPage={setPage}
+          rowsPerPage={perPage}
+          setRowsPerPage={setPerPage}
+          totalItems={fields.length}
+        />
       </div>
 
       {/* Add/Edit Modal */}
