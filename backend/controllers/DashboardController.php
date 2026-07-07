@@ -94,7 +94,7 @@ class DashboardController extends Controller
         $colleges = Yii::$app->db->createCommand("SELECT * FROM colleges ORDER BY id DESC")->queryAll();
 
         foreach ($colleges as &$college) {
-            $college['courses'] = Yii::$app->db->createCommand("SELECT * FROM courses WHERE college_id = :id")
+            $college['courses'] = Yii::$app->db->createCommand("SELECT cr.* FROM courses cr JOIN college_course_specializations ccs ON ccs.course_id = cr.id WHERE ccs.college_id = :id")
                 ->bindValue(':id', $college['id'])
                 ->queryAll();
         }
@@ -1089,6 +1089,43 @@ class DashboardController extends Controller
 
         Yii::$app->response->statusCode = 400;
         return ['status' => 'error', 'message' => 'Folder already exists.'];
+    }
+
+    public function actionCreateCollege()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $name = isset($data['name']) ? trim($data['name']) : '';
+        $location = isset($data['location']) ? trim($data['location']) : '';
+        if (empty($name) || empty($location)) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Name and location are required.'];
+        }
+
+        try {
+            $insertData = [
+                'name' => $name,
+                'location' => $location,
+                'rating' => isset($data['rating']) ? $data['rating'] : null,
+                'image' => isset($data['image']) ? $data['image'] : null,
+                'banner_image' => isset($data['banner_image']) ? $data['banner_image'] : null,
+                'description' => isset($data['description']) ? $data['description'] : null,
+                'type' => isset($data['type']) ? $data['type'] : null,
+                'established_year' => isset($data['established_year']) ? $data['established_year'] : null,
+                'website' => isset($data['website']) ? $data['website'] : null,
+                'address' => isset($data['address']) ? $data['address'] : null,
+                'courses' => isset($data['courses']) ? json_encode($data['courses']) : null,
+                'created_at' => date('Y-m-d H:i:s'),
+                'is_status' => isset($data['is_status']) ? (int) $data['is_status'] : 1,
+            ];
+
+            Yii::$app->db->createCommand()->insert('colleges', $insertData)->execute();
+            $id = Yii::$app->db->getLastInsertID();
+
+            return ['status' => 'success', 'data' => ['id' => $id]];
+        } catch (\Exception $e) {
+            Yii::$app->response->statusCode = 500;
+            return ['status' => 'error', 'message' => 'Failed to create college.'];
+        }
     }
 
     public function actionUpdateCollege()

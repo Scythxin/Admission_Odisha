@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import API_BASE, { fetchWithAuth } from "../../config/api";
-import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus, FaSearch } from "react-icons/fa";
+import Pagination from "../../components/admin/Pagination";
 
 export default function AdminCourseCollegeMapping() {
   const [mappings, setMappings] = useState([]);
@@ -10,6 +11,9 @@ export default function AdminCourseCollegeMapping() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   
   const [form, setForm] = useState({
     college_id: "",
@@ -28,7 +32,7 @@ export default function AdminCourseCollegeMapping() {
     try {
       const [resMap, resCol, resCur, resSpec] = await Promise.all([
         fetchWithAuth(`${API_BASE}?r=dashboard/get-mappings`),
-        fetchWithAuth(`${API_BASE}?r=site/api-colleges`),
+        fetchWithAuth(`${API_BASE}?r=dashboard/get-colleges`),
         fetchWithAuth(`${API_BASE}?r=dashboard/get-courses`),
         fetchWithAuth(`${API_BASE}?r=dashboard/get-specializations`)
       ]);
@@ -101,6 +105,18 @@ export default function AdminCourseCollegeMapping() {
     setForm({ college_id: "", course_id: "", specialization_id: "", total_seats: "", short_desc: "" });
   };
 
+  const filteredData = mappings.filter((item) =>
+    (item.college_name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+    (item.course_name?.toLowerCase() || "").includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.max(Math.ceil(filteredData.length / rowsPerPage), 1);
+  const currentPage = Math.min(page, totalPages);
+  const displayedData = filteredData.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -114,6 +130,20 @@ export default function AdminCourseCollegeMapping() {
         >
           <FaPlus /> Add Mapping
         </button>
+      </div>
+
+      {/* Search Bar */}
+      <div className="flex items-center gap-3">
+        <div className="relative w-full sm:w-72">
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+            placeholder="Search by college or course..."
+            className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-10 pr-4 text-sm text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+          />
+        </div>
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -130,10 +160,10 @@ export default function AdminCourseCollegeMapping() {
           <tbody className="divide-y divide-slate-100">
             {loading ? (
               <tr><td colSpan="5" className="p-4 text-center">Loading...</td></tr>
-            ) : mappings.length === 0 ? (
+            ) : displayedData.length === 0 ? (
               <tr><td colSpan="5" className="p-4 text-center">No mappings found.</td></tr>
             ) : (
-              mappings.map(item => (
+              displayedData.map(item => (
                 <tr key={item.id} className="hover:bg-slate-50">
                   <td className="px-4 py-3 font-medium text-slate-900">{item.college_name || "Unknown"}</td>
                   <td className="px-4 py-3">{item.course_name || "Unknown"}</td>
@@ -151,6 +181,20 @@ export default function AdminCourseCollegeMapping() {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {!loading && displayedData.length > 0 && (
+        <div className="mt-6">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setPage={setPage}
+            rowsPerPage={rowsPerPage}
+            setRowsPerPage={setRowsPerPage}
+            totalItems={filteredData.length}
+          />
+        </div>
+      )}
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">

@@ -68,7 +68,7 @@ export default function AddCollegeModel({ onClose, onCreated }) {
     // Phase 2: call backend API to create a college
     setSubmitting(true);
     setError(null);
-    fetchWithAuth(`${API_BASE}?r=site/api-colleges`, {
+    fetchWithAuth(`${API_BASE}?r=dashboard/create-college`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import API_BASE, { fetchWithAuth } from "../../config/api";
 import { FaEdit, FaTrash, FaPlus, FaSearch } from "react-icons/fa";
+import Pagination from "../../components/admin/Pagination";
 
 export default function AdminCourseDetails() {
   const [details, setDetails] = useState([]);
@@ -8,6 +9,8 @@ export default function AdminCourseDetails() {
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   
   const [form, setForm] = useState({
     slug: "",
@@ -125,6 +128,9 @@ export default function AdminCourseDetails() {
     (d.full_name || "").toLowerCase().includes(search.toLowerCase())
   );
 
+  const totalPages = Math.max(Math.ceil(filteredDetails.length / rowsPerPage), 1);
+  const paginatedDetails = filteredDetails.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -146,7 +152,7 @@ export default function AdminCourseDetails() {
             type="text" 
             placeholder="Search by slug or full name..." 
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="w-full text-sm outline-none bg-transparent"
         />
       </div>
@@ -168,7 +174,7 @@ export default function AdminCourseDetails() {
             ) : filteredDetails.length === 0 ? (
               <tr><td colSpan="5" className="p-4 text-center">No details found.</td></tr>
             ) : (
-              filteredDetails.map(item => (
+              paginatedDetails.map(item => (
                 <tr key={item.id} className="hover:bg-slate-50">
                   <td className="px-4 py-3 font-medium text-slate-900">{item.slug}</td>
                   <td className="px-4 py-3">{item.full_name || item.short_name || "-"}</td>
@@ -190,6 +196,18 @@ export default function AdminCourseDetails() {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {!loading && filteredDetails.length > 0 && (
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          setPage={setPage}
+          rowsPerPage={rowsPerPage}
+          setRowsPerPage={setRowsPerPage}
+          totalItems={filteredDetails.length}
+        />
+      )}
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">

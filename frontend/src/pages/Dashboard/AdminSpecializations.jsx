@@ -4,7 +4,7 @@ import {
     FaCode, FaCog, FaBolt, FaBuilding, FaHeartbeat, FaStethoscope,
     FaChartBar, FaBalanceScale, FaBrain, FaMicrochip, FaRobot,
     FaFlask, FaLeaf, FaGlobeAsia, FaPencilAlt, FaMusic, FaEdit, FaTrash,
-    FaPlus, FaChevronLeft, FaChevronRight, FaCheck,
+    FaPlus, FaChevronLeft, FaChevronRight, FaCheck, FaSearch
 } from "react-icons/fa";
 import Pagination from "../../components/admin/Pagination";
 
@@ -272,9 +272,15 @@ const AdminSpecializations = () => {
     
     const [modalConfig, setModalConfig] = useState(null); // { mode: 'add' | 'edit', spec?: obj }
     const [deleteTarget, setDelete] = useState(null);
+    const [searchQuery, setSearchQuery] = useState("");
 
-    const totalPages = Math.max(Math.ceil(specs.length / rowsPerPage), 1);
-    const paged = specs.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+    const filteredSpecs = specs.filter((item) =>
+        (item.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+        (item.description?.toLowerCase() || "").includes(searchQuery.toLowerCase())
+    );
+
+    const totalPages = Math.max(Math.ceil(filteredSpecs.length / rowsPerPage), 1);
+    const paged = filteredSpecs.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
     const fetchData = async () => {
         try {
@@ -376,6 +382,20 @@ const AdminSpecializations = () => {
                 </button>
             </div>
 
+            {/* Search Bar */}
+            <div className="flex items-center gap-3 mb-6">
+                <div className="relative w-full sm:w-72">
+                    <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+                        placeholder="Search specializations..."
+                        className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-700 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 transition-all"
+                    />
+                </div>
+            </div>
+
             {/* Table */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <table className="w-full text-sm">
@@ -466,7 +486,7 @@ const AdminSpecializations = () => {
                     setPage={setPage}
                     rowsPerPage={rowsPerPage}
                     setRowsPerPage={setRowsPerPage}
-                    totalItems={specs.length}
+                    totalItems={filteredSpecs.length}
                 />
             </div>
 

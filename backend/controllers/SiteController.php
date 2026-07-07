@@ -411,44 +411,7 @@ class SiteController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
-        // If POST, create a new college (Phase 3)
-        if (Yii::$app->request->isPost) {
-            $data = Yii::$app->request->getBodyParams();
-            $name = isset($data['name']) ? trim($data['name']) : '';
-            $location = isset($data['location']) ? trim($data['location']) : '';
-            if (empty($name) || empty($location)) {
-                Yii::$app->response->statusCode = 400;
-                return ['status' => 'error', 'message' => 'Name and location are required.'];
-            }
-
-            try {
-                $insertData = [
-                    'name' => $name,
-                    'location' => $location,
-                    'rating' => isset($data['rating']) ? $data['rating'] : null,
-                    'image' => isset($data['image']) ? $data['image'] : null,
-                    'banner_image' => isset($data['banner_image']) ? $data['banner_image'] : null,
-                    'description' => isset($data['description']) ? $data['description'] : null,
-                    'type' => isset($data['type']) ? $data['type'] : null,
-                    'established_year' => isset($data['established_year']) ? $data['established_year'] : null,
-                    'website' => isset($data['website']) ? $data['website'] : null,
-                    'address' => isset($data['address']) ? $data['address'] : null,
-                    'courses' => isset($data['courses']) ? json_encode($data['courses']) : null,
-                    'created_at' => date('Y-m-d H:i:s'),
-                    'is_status' => isset($data['is_status']) ? (int) $data['is_status'] : 1,
-                ];
-
-                Yii::$app->db->createCommand()->insert('colleges', $insertData)->execute();
-                $id = Yii::$app->db->getLastInsertID();
-
-                return ['status' => 'success', 'data' => ['id' => $id]];
-            } catch (\Exception $e) {
-                Yii::$app->response->statusCode = 500;
-                return ['status' => 'error', 'message' => 'Failed to create college.'];
-            }
-        }
-
-        // Default: return list of colleges from the database
+        // Return list of colleges from the database
         $colleges = Yii::$app->db->createCommand("SELECT * FROM colleges")->queryAll();
 
         return [

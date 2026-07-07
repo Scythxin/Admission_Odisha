@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import API_BASE, { fetchWithAuth } from "../../config/api";
-import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus, FaSearch } from "react-icons/fa";
 import Pagination from "../../components/admin/Pagination";
 
 export default function AdminSpecializationDetails() {
@@ -12,6 +12,7 @@ export default function AdminSpecializationDetails() {
   
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
   
   const [form, setForm] = useState({
     specialization_id: "",
@@ -92,8 +93,12 @@ export default function AdminSpecializationDetails() {
     setForm({ specialization_id: "", intro: "", eligibility: "", status: "Active" });
   };
 
-  const totalPages = Math.max(Math.ceil(details.length / rowsPerPage), 1);
-  const paginatedDetails = details.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+  const filteredDetails = details.filter((item) =>
+    (item.specialization_name?.toLowerCase() || "").includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.max(Math.ceil(filteredDetails.length / rowsPerPage), 1);
+  const paginatedDetails = filteredDetails.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   return (
     <div className="space-y-6">
@@ -108,6 +113,20 @@ export default function AdminSpecializationDetails() {
         >
           <FaPlus /> Add Detail
         </button>
+      </div>
+
+      {/* Search Bar */}
+      <div className="flex items-center gap-3">
+        <div className="relative w-full sm:w-72">
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+            placeholder="Search by specialization..."
+            className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-10 pr-4 text-sm text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+          />
+        </div>
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -155,7 +174,7 @@ export default function AdminSpecializationDetails() {
           setPage={setPage}
           rowsPerPage={rowsPerPage}
           setRowsPerPage={setRowsPerPage}
-          totalItems={details.length}
+          totalItems={filteredDetails.length}
         />
       </div>
 

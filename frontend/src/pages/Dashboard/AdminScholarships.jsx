@@ -7,6 +7,7 @@ import {
   FaTrash,
   FaSync,
 } from "react-icons/fa";
+import Pagination from "../../components/admin/Pagination";
 
 const scholarshipStats = [
   {
@@ -160,6 +161,7 @@ export default function AdminScholarships({ setActiveNav }) {
   const [status, setStatus] = useState("All Status");
   const [provider, setProvider] = useState("All Providers");
   const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const filteredScholarships = useMemo(() => {
     return scholarshipRows.filter((item) => {
@@ -179,7 +181,6 @@ export default function AdminScholarships({ setActiveNav }) {
     });
   }, [searchQuery, category, status, provider]);
 
-  const rowsPerPage = 7;
   const totalPages = Math.max(
     Math.ceil(filteredScholarships.length / rowsPerPage),
     1,
@@ -452,45 +453,18 @@ export default function AdminScholarships({ setActiveNav }) {
           </table>
         )}
 
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-slate-500">
-            Page {currentPage} of {totalPages}
-          </p>
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-              className="inline-flex h-10 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-600 transition disabled:cursor-not-allowed disabled:opacity-50 hover:bg-slate-50"
-            >
-              Previous
-            </button>
-            {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-              (page) => (
-                <button
-                  key={page}
-                  type="button"
-                  onClick={() => handlePageChange(page)}
-                  className={`inline-flex h-10 min-w-[38px] items-center justify-center rounded-2xl border px-4 text-sm transition ${
-                    currentPage === page
-                      ? "border-indigo-500 bg-indigo-600 text-white"
-                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                  }`}
-                >
-                  {page}
-                </button>
-              ),
-            )}
-            <button
-              type="button"
-              disabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
-              className="inline-flex h-10 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-600 transition disabled:cursor-not-allowed disabled:opacity-50 hover:bg-slate-50"
-            >
-              Next
-            </button>
+        {filteredScholarships.length > 0 && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              setPage={setCurrentPage}
+              rowsPerPage={rowsPerPage}
+              setRowsPerPage={setRowsPerPage}
+              totalItems={filteredScholarships.length}
+            />
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
