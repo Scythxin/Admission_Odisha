@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 
 export default function AddCollegeModel({ onClose, onCreated }) {
   const overlayRef = useRef(null);
@@ -25,7 +25,7 @@ export default function AddCollegeModel({ onClose, onCreated }) {
 
   useEffect(() => {
     // Fetch available banners
-    fetch(`${API_BASE}?r=dashboard/list-media&type=banners`)
+    fetchWithAuth(`${API_BASE}?r=dashboard/list-media&type=banners`)
       .then(res => res.json())
       .then(json => {
         if (json.status === "success") {
@@ -35,7 +35,7 @@ export default function AddCollegeModel({ onClose, onCreated }) {
       .catch(console.error);
 
     // Fetch available college images
-    fetch(`${API_BASE}?r=dashboard/list-media&type=colleges`)
+    fetchWithAuth(`${API_BASE}?r=dashboard/list-media&type=colleges`)
       .then(res => res.json())
       .then(json => {
         if (json.status === "success") {
@@ -68,7 +68,7 @@ export default function AddCollegeModel({ onClose, onCreated }) {
     // Phase 2: call backend API to create a college
     setSubmitting(true);
     setError(null);
-    fetch(`${API_BASE}?r=site/api-colleges`, {
+    fetchWithAuth(`${API_BASE}?r=site/api-colleges`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

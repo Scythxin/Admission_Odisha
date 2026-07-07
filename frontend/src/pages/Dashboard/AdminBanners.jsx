@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaUpload, FaTrash, FaImage, FaUserCircle, FaUniversity, FaCameraRetro, FaSyncAlt, FaFolder, FaFolderPlus, FaArrowLeft } from "react-icons/fa";
-import API_BASE, { ASSETS_BASE } from "../../config/api";
+import API_BASE, { ASSETS_BASE, fetchWithAuth } from "../../config/api";
 
 const tabs = [
   { id: "banners", label: "Banners", icon: <FaImage /> },
@@ -32,7 +32,7 @@ export default function AdminBanners({ setActiveNav }) {
     setLoading(true);
     try {
       const url = `${API_BASE}?r=dashboard/list-media&type=${type}${folder ? `&folder=${folder}` : ""}`;
-      const res = await fetch(url);
+      const res = await fetchWithAuth(url);
       const json = await res.json();
       if (json.status === "success") {
         setImages(json.data || []);
@@ -76,7 +76,7 @@ export default function AdminBanners({ setActiveNav }) {
     }
 
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/upload-media`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/upload-media`, {
         method: "POST",
         body: formData,
       });
@@ -98,7 +98,7 @@ export default function AdminBanners({ setActiveNav }) {
     if (!window.confirm(`Are you sure you want to delete ${filename}?`)) return;
 
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/delete-media`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/delete-media`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: activeTab, filename, folder: currentFolder || "" }),
@@ -120,7 +120,7 @@ export default function AdminBanners({ setActiveNav }) {
     if (!folderName || !folderName.trim()) return;
 
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/create-media-folder`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/create-media-folder`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: activeTab, folder: folderName }),

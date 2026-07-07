@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import Pagination from "../../components/admin/Pagination";
 
@@ -27,11 +27,11 @@ export default function AdminSpecializationDetails() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/get-specialization-details`);
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/get-specialization-details`);
       const json = await res.json();
       if (json.status === "success") setDetails(json.data || []);
       
-      const resSpec = await fetch(`${API_BASE}?r=dashboard/get-specializations`);
+      const resSpec = await fetchWithAuth(`${API_BASE}?r=dashboard/get-specializations`);
       const jsonSpec = await resSpec.json();
       if (jsonSpec.status === "success") setSpecializations(jsonSpec.data || []);
     } catch (err) {
@@ -54,7 +54,7 @@ export default function AdminSpecializationDetails() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this specialization detail?")) return;
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/delete-specialization-detail`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/delete-specialization-detail`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id })
@@ -70,7 +70,7 @@ export default function AdminSpecializationDetails() {
     e.preventDefault();
     const endpoint = editingId ? "update-specialization-detail" : "create-specialization-detail";
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/${endpoint}`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, id: editingId })

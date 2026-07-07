@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 
 export default function AdminCourseCollegeMapping() {
@@ -27,10 +27,10 @@ export default function AdminCourseCollegeMapping() {
     setLoading(true);
     try {
       const [resMap, resCol, resCur, resSpec] = await Promise.all([
-        fetch(`${API_BASE}?r=dashboard/get-mappings`),
-        fetch(`${API_BASE}?r=site/api-colleges`),
-        fetch(`${API_BASE}?r=dashboard/get-courses`),
-        fetch(`${API_BASE}?r=dashboard/get-specializations`)
+        fetchWithAuth(`${API_BASE}?r=dashboard/get-mappings`),
+        fetchWithAuth(`${API_BASE}?r=site/api-colleges`),
+        fetchWithAuth(`${API_BASE}?r=dashboard/get-courses`),
+        fetchWithAuth(`${API_BASE}?r=dashboard/get-specializations`)
       ]);
       
       const jsonMap = await resMap.json();
@@ -63,7 +63,7 @@ export default function AdminCourseCollegeMapping() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this mapping?")) return;
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/delete-mapping`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/delete-mapping`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id })
@@ -79,7 +79,7 @@ export default function AdminCourseCollegeMapping() {
     e.preventDefault();
     const endpoint = editingId ? "update-mapping" : "create-mapping";
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/${endpoint}`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, id: editingId })

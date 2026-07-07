@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 import { FaEdit, FaTrash, FaPlus, FaSearch } from "react-icons/fa";
 
 export default function AdminCourseDetails() {
@@ -31,7 +31,7 @@ export default function AdminCourseDetails() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/get-course-details`);
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/get-course-details`);
       const json = await res.json();
       if (json.status === "success") setDetails(json.data || []);
     } catch (err) {
@@ -69,7 +69,7 @@ export default function AdminCourseDetails() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this course detail?")) return;
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/delete-course-detail`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/delete-course-detail`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id })
@@ -94,7 +94,7 @@ export default function AdminCourseDetails() {
     };
 
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/${endpoint}`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

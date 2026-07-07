@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 import { FaSearch, FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import Pagination from "../../components/admin/Pagination";
 import AddCollegeModel from "../../components/admin/AddCollegeModel";
@@ -58,7 +58,7 @@ export default function AdminColleges() {
     if (!window.confirm("Are you sure you want to delete this college?")) return;
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API_BASE}?r=dashboard/delete-college`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/delete-college`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -112,7 +112,7 @@ export default function AdminColleges() {
       setError(null);
 
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE}?r=dashboard/get-colleges`, {
+      const response = await fetchWithAuth(`${API_BASE}?r=dashboard/get-colleges`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }

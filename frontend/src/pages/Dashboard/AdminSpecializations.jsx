@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 import {
     FaCode, FaCog, FaBolt, FaBuilding, FaHeartbeat, FaStethoscope,
     FaChartBar, FaBalanceScale, FaBrain, FaMicrochip, FaRobot,
@@ -281,8 +281,8 @@ const AdminSpecializations = () => {
             setLoading(true);
             setError(null);
             const [specsRes, fieldsRes] = await Promise.all([
-                fetch(`${API_BASE}?r=dashboard/get-specializations`),
-                fetch(`${API_BASE}?r=dashboard/get-fields`)
+                fetchWithAuth(`${API_BASE}?r=dashboard/get-specializations`),
+                fetchWithAuth(`${API_BASE}?r=dashboard/get-fields`)
             ]);
             
             if (!specsRes.ok || !fieldsRes.ok) throw new Error("Failed to fetch data");
@@ -318,7 +318,7 @@ const AdminSpecializations = () => {
                 payload.id = modalConfig.spec.id;
             }
 
-            const res = await fetch(url, {
+            const res = await fetchWithAuth(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
@@ -340,7 +340,7 @@ const AdminSpecializations = () => {
 
     const handleDelete = async (id) => {
         try {
-            const res = await fetch(`${API_BASE}?r=dashboard/delete-specialization`, {
+            const res = await fetchWithAuth(`${API_BASE}?r=dashboard/delete-specialization`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id }),

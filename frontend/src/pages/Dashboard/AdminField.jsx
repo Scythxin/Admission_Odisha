@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 import {
   FaCog, FaHeartbeat, FaBriefcase, FaPalette,
   FaFlask, FaBalanceScale, FaPencilAlt, FaConciergeBell,
@@ -428,7 +428,7 @@ export default function AdminField() {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch(`${API_BASE}?r=dashboard/get-fields`);
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/get-fields`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const result = await res.json();
       if (result.status === "success") {
@@ -451,7 +451,7 @@ export default function AdminField() {
   async function handleSave({ name, description, status, icon }) {
     try {
       if (modal.mode === "add") {
-        const res = await fetch(`${API_BASE}?r=dashboard/create-field`, {
+        const res = await fetchWithAuth(`${API_BASE}?r=dashboard/create-field`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -472,7 +472,7 @@ export default function AdminField() {
           throw new Error(result.message || "Failed to create field");
         }
       } else {
-        const res = await fetch(`${API_BASE}?r=dashboard/update-field`, {
+        const res = await fetchWithAuth(`${API_BASE}?r=dashboard/update-field`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -503,7 +503,7 @@ export default function AdminField() {
 
   async function handleDelete(id) {
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/delete-field`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/delete-field`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

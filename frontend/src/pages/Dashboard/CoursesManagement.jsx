@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 import { FaPlus, FaSearch, FaFilter, FaRedo, FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import Pagination from "../../components/admin/Pagination";
 import AddCourseModel from "../../components/admin/AddCourseModel";
@@ -64,7 +64,7 @@ export default function CoursesManagement() {
     if (!window.confirm("Are you sure you want to delete this course?")) return;
     
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/delete-course`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/delete-course`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id })
@@ -89,7 +89,7 @@ export default function CoursesManagement() {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch(`${API_BASE}?r=dashboard/get-courses`);
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/get-courses`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const result = await res.json();
       if (result.status === "success") {

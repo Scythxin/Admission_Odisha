@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 import { FaSearch, FaEye, FaEdit, FaTrash, FaUserPlus, FaFileImport, FaFilter, FaUndo } from "react-icons/fa";
 import Pagination from "../../components/admin/Pagination";
 
@@ -40,7 +40,7 @@ export default function AdminUsers({ setActiveNav }) {
   const handleSaveUser = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/update-user`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/update-user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(selectedUser)
@@ -60,7 +60,7 @@ export default function AdminUsers({ setActiveNav }) {
   const handleDeleteUser = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/delete-user`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/delete-user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id })
@@ -84,7 +84,7 @@ export default function AdminUsers({ setActiveNav }) {
       const qStatus = encodeURIComponent(pStatus);
       const qGender = encodeURIComponent(pGender);
 
-      const res = await fetch(`${API_BASE}?r=dashboard/get-users&search=${qSearch}&city=${qCity}&status=${qStatus}&gender=${qGender}&page=${pPage}&perPage=${pPerPage}`);
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/get-users&search=${qSearch}&city=${qCity}&status=${qStatus}&gender=${qGender}&page=${pPage}&perPage=${pPerPage}`);
       const result = await res.json();
 
       if (result.status === 'success') {

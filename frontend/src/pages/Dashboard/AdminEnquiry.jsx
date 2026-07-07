@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import API_BASE from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 import {
   FaEnvelope, FaUserPlus, FaPhoneAlt, FaCheck,
   FaSearch, FaCalendarAlt, FaFilter, FaRedo,
@@ -61,7 +61,7 @@ export default function AdminEnquiry() {
         perPage: perPage.toString()
       });
 
-      const res = await fetch(`${API_BASE}?${queryParams.toString()}`);
+      const res = await fetchWithAuth(`${API_BASE}?${queryParams.toString()}`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const result = await res.json();
 
@@ -102,7 +102,7 @@ export default function AdminEnquiry() {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/update-enquiry-status`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/update-enquiry-status`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -129,7 +129,7 @@ export default function AdminEnquiry() {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`${API_BASE}?r=dashboard/delete-enquiry`, {
+      const res = await fetchWithAuth(`${API_BASE}?r=dashboard/delete-enquiry`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
