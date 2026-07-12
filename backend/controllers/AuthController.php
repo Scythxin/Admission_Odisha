@@ -743,4 +743,153 @@ class AuthController extends Controller
             "message" => "Logout successful"
         ];
     }
+
+    // =========================
+    // GOOGLE LOGIN / SIGNUP
+    // =========================
+    public function actionGoogleLogin()
+    {
+        $data = json_decode(file_get_contents("php://input"), true);
+        $credential = $data['credential'] ?? '';
+
+        if (empty($credential)) {
+            return [
+                "status" => "error",
+                "message" => "Google credential missing"
+            ];
+        }
+
+        // Verify with Google
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://oauth2.googleapis.com/tokeninfo?id_token=" . $credential);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        
+        // Since we are on local development (likely Windows), disable SSL verification to prevent common cURL SSL errors.
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+        $output = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($output === false) {
+            return [
+                "status" => "error",
+                "message" => "cURL Error: " . $curlError
+            ];
+        }
+
+        if ($httpCode !== 200) {
+            return [
+                "status" => "error",
+                "message" => "Invalid Google credential (HTTP $httpCode): " . $output
+            ];
+        }
+
+        $googleData = json_decode($output, true);
+        
+        $email = $googleData['email'] ?? null;
+        $name = $googleData['name'] ?? null;
+        $picture = $googleData['picture'] ?? null;
+
+        if (!$email) {
+            return [
+                "status" => "error",
+                "message" => "Could not retrieve email from Google"
+            ];
+        }
+
+        // FIND USER OR CREATE NEW
+        $user = User::find()->where(['email' => $email])->one();
+
+        if (!$user) {
+            $user = new User();
+            $user->name = $name;
+            $user->email = $email;
+            $user->password = password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT); // random password
+            $user->profile_photo = $picture;
+            $user->created_at = date('Y-m-d H:i:s');
+            $user->is_status = 1;
+            
+            if (!$user->save(false)) {
+                return [
+                    "status" => "error",
+                    "message" => "Failed to create user account"
+                ];
+            }
+        }
+
+        // Check if user is active
+        if ($user->is_status != 1) {
+            return [
+                "status" => "error",
+                "message" => "Account is inactive"
+            ];
+        }
+
+        // GENERATE TOKEN
+        $token = bin2hex(random_bytes(32));
+
+        // DEVICE INFO (from existing login)
+        $userAgent = Yii::$app->request->userAgent;
+        $device = "Desktop";
+        if (preg_match('/mobile/i', $userAgent)) {
+            $device = "Mobile";
+        }
+        $browser = "Unknown";
+        if (strpos($userAgent, 'Chrome') !== false) {
+            $browser = "Chrome";
+        } elseif (strpos($userAgent, 'Firefox') !== false) {
+            $browser = "Firefox";
+        } elseif (strpos($userAgent, 'Safari') !== false) {
+            $browser = "Safari";
+        } elseif (strpos($userAgent, 'Edge') !== false) {
+            $browser = "Edge";
+        }
+        $os = "Unknown";
+        if (strpos($userAgent, 'Windows') !== false) {
+            $os = "Windows";
+        } elseif (strpos($userAgent, 'Linux') !== false) {
+            $os = "Linux";
+        } elseif (strpos($userAgent, 'Mac') !== false) {
+            $os = "Mac";
+        } elseif (strpos($userAgent, 'Android') !== false) {
+            $os = "Android";
+        } elseif (strpos($userAgent, 'iPhone') !== false) {
+            $os = "iOS";
+        }
+
+        // SAVE LOGIN
+        $userLogin = new UserLogin();
+        $userLogin->user_id = $user->id;
+        $userLogin->login_time = date('Y-m-d H:i:s');
+        $userLogin->ip_address = Yii::$app->request->userIP;
+        $userLogin->device = $device;
+        $userLogin->browser = $browser;
+        $userLogin->os = $os;
+        $userLogin->token = $token;
+        $userLogin->created_at = date('Y-m-d H:i:s');
+        $userLogin->is_status = 1;
+        $userLogin->save(false);
+
+        UserActivity::log($user->id, 'Google Login');
+
+        return [
+            "status" => "success",
+            "message" => "Google Login successful",
+            "token" => $token,
+            "user" => [
+                "id" => $user->id,
+                "name" => $user->name,
+                "email" => $user->email,
+                "phone" => $user->phone,
+                "city" => $user->city,
+                "gender" => $user->gender,
+                "dob" => $user->dob,
+                "is_admin" => (int) $user->is_admin,
+                "profile_photo" => $user->profile_photo ?? null
+            ]
+        ];
+    }
 }

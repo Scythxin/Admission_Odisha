@@ -6,6 +6,7 @@ import { RiLockPasswordLine, RiUserLine } from "react-icons/ri";
 import { FiPhone } from "react-icons/fi";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { HiOutlineUserGroup } from "react-icons/hi2";
+import { GoogleLogin } from "@react-oauth/google";
 import registerIllustration from "../../assets/images/register.png";
 
 const Register = () => {
@@ -52,6 +53,39 @@ const Register = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}?r=auth/google-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ credential: credentialResponse.credential })
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        alert("Google Signup Successful");
+        if (data.user.is_admin === 1) {
+          window.location.href = "/dashboard";
+        } else {
+          window.location.href = "/";
+        }
+      } else {
+        alert(data.message || "Google Signup failed");
+      }
+    } catch (err) {
+      console.log("Error:", err);
+      alert("Something went wrong with Google Signup");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    alert("Google Signup Failed");
   };
 
   return (
@@ -204,6 +238,26 @@ const Register = () => {
               {loading ? "Creating Account..." : "Register"}
             </button>
           </form>
+
+          {/* Divider */}
+          <div className="flex items-center my-6">
+            <div className="flex-grow border-t border-gray-300"></div>
+            <span className="px-3 text-sm text-gray-500">or sign up with</span>
+            <div className="flex-grow border-t border-gray-300"></div>
+          </div>
+
+          {/* Google Signup Button */}
+          <div className="flex justify-center w-full [&>div]:w-full">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              useOneTap
+              theme="outline"
+              size="large"
+              shape="rectangular"
+              width="360"
+            />
+          </div>
 
           {/* Login Link */}
           <div className="mt-6 text-center">

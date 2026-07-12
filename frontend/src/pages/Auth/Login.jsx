@@ -7,7 +7,7 @@ import { MdEmail, MdSecurity } from "react-icons/md";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { HiOutlineUserCircle } from "react-icons/hi2";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-
+import { GoogleLogin } from "@react-oauth/google";
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -97,6 +97,39 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}?r=auth/google-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ credential: credentialResponse.credential })
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        alert("Google Login Successful");
+        if (data.user.is_admin === 1) {
+          window.location.href = "/dashboard";
+        } else {
+          window.location.href = "/";
+        }
+      } else {
+        alert(data.message || "Google Login failed");
+      }
+    } catch (err) {
+      alert("Something went wrong with Google Login. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    alert("Google Login Failed");
+  };
+
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
@@ -576,6 +609,26 @@ const Login = () => {
               {loading ? "Logging in..." : "Login"}
             </button>
           </form>
+
+          {/* Divider */}
+          <div className="flex items-center my-6">
+            <div className="flex-grow border-t border-gray-300"></div>
+            <span className="px-3 text-sm text-gray-500">or continue with</span>
+            <div className="flex-grow border-t border-gray-300"></div>
+          </div>
+
+          {/* Google Login Button */}
+          <div className="flex justify-center w-full [&>div]:w-full">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              useOneTap
+              theme="outline"
+              size="large"
+              shape="rectangular"
+              width="360"
+            />
+          </div>
 
           {/* Register - Direct link without divider */}
           <div className="mt-8 text-center">
