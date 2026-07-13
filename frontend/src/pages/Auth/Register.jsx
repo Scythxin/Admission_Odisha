@@ -94,12 +94,12 @@ const Register = () => {
       <div className="max-w-6xl w-full grid md:grid-cols-2 bg-white shadow-xl rounded-2xl overflow-hidden">
         
         {/* Left Panel - Full Image like Login page */}
-        <div className="hidden md:block h-full">
+        <div className="hidden md:flex h-full items-center justify-center bg-gray-50 p-8">
           
           <img 
             src={registerIllustration} 
             alt="Registration Illustration"
-            className="w-full h-auto object-cover object-center"
+            className="w-full h-full object-contain object-center"
           />
         </div>
 
