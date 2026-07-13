@@ -15,7 +15,7 @@ const Login = () => {
 
   // OTP States
   const [showOtpModal, setShowOtpModal] = useState(false);
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState(new Array(6).fill(""));
   const [timer, setTimer] = useState(120);
   const [loading, setLoading] = useState(false);
 
@@ -23,7 +23,7 @@ const Login = () => {
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const [forgotPasswordStep, setForgotPasswordStep] = useState(1); // 1: Email, 2: OTP & New Password
   const [forgotEmail, setForgotEmail] = useState("");
-  const [forgotOtp, setForgotOtp] = useState("");
+  const [forgotOtp, setForgotOtp] = useState(new Array(6).fill(""));
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [forgotTimer, setForgotTimer] = useState(0);
@@ -133,7 +133,8 @@ const Login = () => {
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    if (otp.length !== 6) return alert("Please enter 6-digit OTP");
+    const otpString = otp.join("");
+    if (otpString.length !== 6) return alert("Please enter 6-digit OTP");
 
     try {
       const res = await fetch(`${API_BASE}?r=auth/verify-otp`, {
@@ -141,7 +142,7 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email, otp })
+        body: JSON.stringify({ email, otp: otpString })
       });
 
       const data = await res.json();
@@ -219,7 +220,8 @@ const Login = () => {
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    if (forgotOtp.length !== 6) return alert("Please enter 6-digit OTP");
+    const otpString = forgotOtp.join("");
+    if (otpString.length !== 6) return alert("Please enter 6-digit OTP");
     if (newPassword !== confirmPassword) return alert("Passwords do not match");
     if (newPassword.length < 6) return alert("Password must be at least 6 characters long");
     setLoading(true);
@@ -228,7 +230,7 @@ const Login = () => {
       const res = await fetch(`${API_BASE}?r=auth/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: forgotEmail, otp: forgotOtp, new_password: newPassword })
+        body: JSON.stringify({ email: forgotEmail, otp: otpString, new_password: newPassword })
       });
       const data = await res.json();
       
@@ -237,7 +239,7 @@ const Login = () => {
         setShowForgotPasswordModal(false);
         setForgotPasswordStep(1);
         setForgotEmail("");
-        setForgotOtp("");
+        setForgotOtp(new Array(6).fill(""));
         setNewPassword("");
         setConfirmPassword("");
       } else {
@@ -317,11 +319,25 @@ const Login = () => {
                           className="w-10 h-12 text-center text-xl font-bold border-2 border-gray-200 rounded-xl focus:border-primary outline-none"
                           value={forgotOtp[index] || ""}
                           onChange={(e) => {
-                            const newOtp = forgotOtp.split('');
+                            const newOtp = [...forgotOtp];
                             newOtp[index] = e.target.value.replace(/\D/g, '');
-                            setForgotOtp(newOtp.join(''));
+                            setForgotOtp(newOtp);
                             if (e.target.value && index < 5) {
                               const nextInput = document.querySelector(`input[name="f-otp-${index + 1}"]`);
+                              if (nextInput) nextInput.focus();
+                            }
+                          }}
+                          onPaste={(e) => {
+                            e.preventDefault();
+                            const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6 - index);
+                            if (pastedData) {
+                              const newOtp = [...forgotOtp];
+                              for (let i = 0; i < pastedData.length; i++) {
+                                newOtp[index + i] = pastedData[i];
+                              }
+                              setForgotOtp(newOtp);
+                              const nextIndex = Math.min(index + pastedData.length, 5);
+                              const nextInput = document.querySelector(`input[name="f-otp-${nextIndex}"]`);
                               if (nextInput) nextInput.focus();
                             }
                           }}
@@ -372,7 +388,7 @@ const Login = () => {
                   </div>
 
                   <button
-                    disabled={loading || forgotOtp.length !== 6}
+                    disabled={loading || forgotOtp.join("").length !== 6}
                     className="w-full bg-gradient-to-r from-primary to-purple-600 text-white py-3 rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-50 mt-4 shadow-md"
                   >
                     {loading ? "Resetting..." : "Reset Password"}
@@ -424,11 +440,25 @@ const Login = () => {
                 className="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-bold border-2 border-gray-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all duration-200 bg-gray-50/50"
                 value={otp[index] || ""}
                 onChange={(e) => {
-                  const newOtp = otp.split('');
+                  const newOtp = [...otp];
                   newOtp[index] = e.target.value.replace(/\D/g, '');
-                  setOtp(newOtp.join(''));
+                  setOtp(newOtp);
                   if (e.target.value && index < 5) {
                     const nextInput = document.querySelector(`input[name="otp-${index + 1}"]`);
+                    if (nextInput) nextInput.focus();
+                  }
+                }}
+                onPaste={(e) => {
+                  e.preventDefault();
+                  const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6 - index);
+                  if (pastedData) {
+                    const newOtp = [...otp];
+                    for (let i = 0; i < pastedData.length; i++) {
+                      newOtp[index + i] = pastedData[i];
+                    }
+                    setOtp(newOtp);
+                    const nextIndex = Math.min(index + pastedData.length, 5);
+                    const nextInput = document.querySelector(`input[name="otp-${nextIndex}"]`);
                     if (nextInput) nextInput.focus();
                   }
                 }}
@@ -500,7 +530,7 @@ const Login = () => {
             </button>
             <button
               type="submit"
-              disabled={otp.length !== 6}
+              disabled={otp.join("").length !== 6}
               className="flex-1 px-4 py-3 bg-gradient-to-r from-primary to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-primary/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-95"
             >
               Verify & Continue
@@ -516,11 +546,11 @@ const Login = () => {
       <div className="max-w-6xl w-full grid md:grid-cols-2 bg-white shadow-xl rounded-2xl overflow-hidden">
 
         {/* Left Full Image */}
-        <div className="hidden md:block h-full">
+        <div className="hidden md:flex h-full items-center justify-center bg-gray-50 p-8">
           <img
             src={login_img}
             alt="login banner"
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-contain object-center"
           />
         </div>
 
