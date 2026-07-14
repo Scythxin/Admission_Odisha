@@ -1249,14 +1249,14 @@ class DashboardController extends Controller
     public function actionCreateMapping()
     {
         $data = Yii::$app->request->getBodyParams();
-        if (empty($data['college_id']) || empty($data['course_id'])) {
+        if (!isset($data['college_id']) || $data['college_id'] === '' || !isset($data['course_id']) || $data['course_id'] === '') {
             Yii::$app->response->statusCode = 400;
             return ['status' => 'error', 'message' => 'College and Course IDs are required.'];
         }
         Yii::$app->db->createCommand()->insert('college_course_specializations', [
             'college_id' => $data['college_id'],
             'course_id' => $data['course_id'],
-            'specialization_id' => $data['specialization_id'] ?: null,
+            'specialization_id' => empty($data['specialization_id']) ? null : $data['specialization_id'],
             'total_seats' => $data['total_seats'] ?? 0,
             'short_desc' => $data['short_desc'] ?? '',
             'created_at' => date('Y-m-d H:i:s'),
@@ -1267,14 +1267,14 @@ class DashboardController extends Controller
     public function actionUpdateMapping()
     {
         $data = Yii::$app->request->getBodyParams();
-        if (empty($data['id']) || empty($data['college_id']) || empty($data['course_id'])) {
+        if (empty($data['id']) || !isset($data['college_id']) || $data['college_id'] === '' || !isset($data['course_id']) || $data['course_id'] === '') {
             Yii::$app->response->statusCode = 400;
             return ['status' => 'error', 'message' => 'ID, College, and Course IDs are required.'];
         }
         Yii::$app->db->createCommand()->update('college_course_specializations', [
             'college_id' => $data['college_id'],
             'course_id' => $data['course_id'],
-            'specialization_id' => $data['specialization_id'] ?: null,
+            'specialization_id' => empty($data['specialization_id']) ? null : $data['specialization_id'],
             'total_seats' => $data['total_seats'] ?? 0,
             'short_desc' => $data['short_desc'] ?? '',
             'updated_at' => date('Y-m-d H:i:s'),
