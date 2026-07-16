@@ -21,6 +21,7 @@ import CollegeCourseSpecializations from "../pages/Colleges/CollegeCourseSpecial
 
 import { Navigate } from "react-router-dom";
 import Wishlist from "../pages/Colleges/Wishlist";
+import AdminRoute from "./AdminRoute";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -199,7 +200,11 @@ const AppRoutes = () => {
       {/* Dashboard */}
       <Route
         path="/dashboard"
-        element={<Dashboard />}
+        element={
+          <AdminRoute>
+            <Dashboard />
+          </AdminRoute>
+        }
       />
     </Routes>
     </>
