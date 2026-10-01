@@ -5,6 +5,8 @@ namespace app\controllers;
 use Yii;
 use yii\web\Controller;
 use yii\web\Response;
+use app\models\UserLogin;
+use app\models\User;
 
 class DashboardController extends Controller
 {
@@ -12,7 +14,21 @@ class DashboardController extends Controller
 
     public function beforeAction($action)
     {
-        header("Access-Control-Allow-Origin: *");
+        $origin = Yii::$app->request->headers->get('Origin');
+        $allowedOrigins = Yii::$app->params['allowedOrigins'] ?? [
+            'http://localhost:5173',
+            'http://127.0.0.1:5173',
+            'http://localhost:3000',
+        ];
+
+        if ($origin && in_array($origin, $allowedOrigins, true)) {
+            header("Access-Control-Allow-Origin: " . $origin);
+            header("Access-Control-Allow-Credentials: true");
+        } elseif (empty($origin)) {
+            // Non-browser or direct requests
+            header("Access-Control-Allow-Origin: " . ($allowedOrigins[0] ?? '*'));
+        }
+
         header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
         header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
@@ -31,23 +47,17 @@ class DashboardController extends Controller
             exit;
         }
 
-        $token = str_replace('Bearer ', '', $authHeader);
-
-        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
-            ->bindValue(':token', $token)
-            ->queryOne();
+        $userLogin = UserLogin::validateToken($authHeader);
 
         if (!$userLogin) {
             Yii::$app->response->statusCode = 401;
-            echo json_encode(['status' => 'error', 'message' => 'Unauthorized: Invalid token']);
+            echo json_encode(['status' => 'error', 'message' => 'Unauthorized: Invalid or expired token']);
             exit;
         }
 
-        $user = Yii::$app->db->createCommand("SELECT is_admin FROM users WHERE id = :id")
-            ->bindValue(':id', $userLogin['user_id'])
-            ->queryOne();
+        $user = User::findOne($userLogin->user_id);
 
-        if (!$user || $user['is_admin'] != 1) {
+        if (!$user || (int)$user->is_admin !== 1) {
             Yii::$app->response->statusCode = 403;
             echo json_encode(['status' => 'error', 'message' => 'Forbidden: Admin access required']);
             exit;

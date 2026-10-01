@@ -11,6 +11,7 @@ use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\ApiContactForm;
 use app\models\UserActivity;
+use app\models\UserLogin;
 
 class SiteController extends Controller
 {
@@ -30,19 +31,20 @@ class SiteController extends Controller
      */
     public function behaviors()
     {
+        $allowedOrigins = Yii::$app->params['allowedOrigins'] ?? [
+            'http://localhost:5173',
+            'http://127.0.0.1:5173',
+            'http://localhost:5174', 
+            'http://127.0.0.1:5174',
+            'http://localhost:3000',
+            'http://localhost:4173',
+        ];
+
         return [
             'corsFilter' => [
                 'class' => \yii\filters\Cors::class,
                 'cors' => [
-                    // Allow common development ports
-                    'Origin' => [
-                        'http://localhost:5173',
-                        'http://127.0.0.1:5173',
-                        'http://localhost:5174', 
-                        'http://127.0.0.1:5174',
-                        'http://localhost:3000',
-                        'http://localhost:4173',
-                    ],
+                    'Origin' => $allowedOrigins,
                     'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
                     'Access-Control-Request-Headers' => ['*'],
                     'Access-Control-Allow-Credentials' => true,
@@ -590,10 +592,9 @@ class SiteController extends Controller
 
             $token = Yii::$app->request->headers->get('Authorization');
             if ($token) {
-                $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
-                    ->bindValue(':token', $token)->queryOne();
+                $userLogin = UserLogin::validateToken($token);
                 if ($userLogin) {
-                    UserActivity::log($userLogin['user_id'], 'Enquiry Submitted', 'Enquiry', null, "Enquiry for courses: $courses");
+                    UserActivity::log($userLogin->user_id, 'Enquiry Submitted', 'Enquiry', null, "Enquiry for courses: $courses");
                 }
             }
 
@@ -617,12 +618,11 @@ class SiteController extends Controller
             return ['status' => 'error', 'message' => 'Unauthorized'];
         }
 
-        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
-            ->bindValue(':token', $token)->queryOne();
+        $userLogin = UserLogin::validateToken($token);
 
         if (!$userLogin) {
             Yii::$app->response->statusCode = 401;
-            return ['status' => 'error', 'message' => 'Invalid token'];
+            return ['status' => 'error', 'message' => 'Invalid or expired token'];
         }
 
         $wishlist = Yii::$app->db->createCommand("
@@ -630,7 +630,7 @@ class SiteController extends Controller
     FROM wishlist
     WHERE user_id = :uid
 ")
-            ->bindValue(':uid', $userLogin['user_id'])
+            ->bindValue(':uid', $userLogin->user_id)
             ->queryColumn();
 
         return ['status' => 'success', 'data' => $wishlist];
@@ -649,12 +649,11 @@ class SiteController extends Controller
             return ['status' => 'error', 'message' => 'Unauthorized'];
         }
 
-        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
-            ->bindValue(':token', $token)->queryOne();
+        $userLogin = UserLogin::validateToken($token);
 
         if (!$userLogin) {
             Yii::$app->response->statusCode = 401;
-            return ['status' => 'error', 'message' => 'Invalid token'];
+            return ['status' => 'error', 'message' => 'Invalid or expired token'];
         }
 
         $data = json_decode(Yii::$app->request->getRawBody(), true);
@@ -666,21 +665,21 @@ class SiteController extends Controller
         }
 
         $existing = Yii::$app->db->createCommand("SELECT * FROM wishlist WHERE user_id = :uid AND college_id = :cid")
-            ->bindValue(':uid', $userLogin['user_id'])
+            ->bindValue(':uid', $userLogin->user_id)
             ->bindValue(':cid', $collegeId)
             ->queryOne();
 
         if ($existing) {
-            Yii::$app->db->createCommand()->delete('wishlist', ['user_id' => $userLogin['user_id'], 'college_id' => $collegeId])->execute();
-            UserActivity::log($userLogin['user_id'], 'Wishlist Removed', 'College', $collegeId);
+            Yii::$app->db->createCommand()->delete('wishlist', ['user_id' => $userLogin->user_id, 'college_id' => $collegeId])->execute();
+            UserActivity::log($userLogin->user_id, 'Wishlist Removed', 'College', $collegeId);
             return ['status' => 'success', 'message' => 'Removed from wishlist', 'is_wishlisted' => false];
         } else {
             Yii::$app->db->createCommand()->insert('wishlist', [
-                'user_id' => $userLogin['user_id'],
+                'user_id' => $userLogin->user_id,
                 'college_id' => $collegeId,
                 'created_at' => date('Y-m-d H:i:s')
             ])->execute();
-            UserActivity::log($userLogin['user_id'], 'Wishlist Added', 'College', $collegeId);
+            UserActivity::log($userLogin->user_id, 'Wishlist Added', 'College', $collegeId);
             return ['status' => 'success', 'message' => 'Added to wishlist', 'is_wishlisted' => true];
         }
     }
@@ -698,12 +697,11 @@ class SiteController extends Controller
             return ['status' => 'error', 'message' => 'Unauthorized'];
         }
 
-        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
-            ->bindValue(':token', $token)->queryOne();
+        $userLogin = UserLogin::validateToken($token);
 
         if (!$userLogin) {
             Yii::$app->response->statusCode = 401;
-            return ['status' => 'error', 'message' => 'Invalid token'];
+            return ['status' => 'error', 'message' => 'Invalid or expired token'];
         }
 
         $data = json_decode(Yii::$app->request->getRawBody(), true);
@@ -715,7 +713,7 @@ class SiteController extends Controller
         }
 
         $existing = Yii::$app->db->createCommand("SELECT * FROM wishlist WHERE user_id = :uid AND college_id = :cid")
-            ->bindValue(':uid', $userLogin['user_id'])
+            ->bindValue(':uid', $userLogin->user_id)
             ->bindValue(':cid', $collegeId)
             ->queryOne();
 
@@ -724,12 +722,12 @@ class SiteController extends Controller
         }
 
         Yii::$app->db->createCommand()->insert('wishlist', [
-            'user_id' => $userLogin['user_id'],
+            'user_id' => $userLogin->user_id,
             'college_id' => $collegeId,
             'created_at' => date('Y-m-d H:i:s')
         ])->execute();
 
-        UserActivity::log($userLogin['user_id'], 'Wishlist Added', 'College', $collegeId);
+        UserActivity::log($userLogin->user_id, 'Wishlist Added', 'College', $collegeId);
 
         return ['status' => 'success', 'message' => 'Added to wishlist', 'is_wishlisted' => true];
     }
@@ -747,12 +745,11 @@ class SiteController extends Controller
             return ['status' => 'error', 'message' => 'Unauthorized'];
         }
 
-        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
-            ->bindValue(':token', $token)->queryOne();
+        $userLogin = UserLogin::validateToken($token);
 
         if (!$userLogin) {
             Yii::$app->response->statusCode = 401;
-            return ['status' => 'error', 'message' => 'Invalid token'];
+            return ['status' => 'error', 'message' => 'Invalid or expired token'];
         }
 
         $data = json_decode(Yii::$app->request->getRawBody(), true);
@@ -763,9 +760,9 @@ class SiteController extends Controller
             return ['status' => 'error', 'message' => 'College ID is required'];
         }
 
-        Yii::$app->db->createCommand()->delete('wishlist', ['user_id' => $userLogin['user_id'], 'college_id' => $collegeId])->execute();
+        Yii::$app->db->createCommand()->delete('wishlist', ['user_id' => $userLogin->user_id, 'college_id' => $collegeId])->execute();
 
-        UserActivity::log($userLogin['user_id'], 'Wishlist Removed', 'College', $collegeId);
+        UserActivity::log($userLogin->user_id, 'Wishlist Removed', 'College', $collegeId);
 
         return ['status' => 'success', 'message' => 'Removed from wishlist', 'is_wishlisted' => false];
     }
@@ -783,19 +780,18 @@ class SiteController extends Controller
             return ['status' => 'error', 'message' => 'Unauthorized'];
         }
 
-        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
-            ->bindValue(':token', $token)->queryOne();
+        $userLogin = UserLogin::validateToken($token);
 
         if (!$userLogin) {
             Yii::$app->response->statusCode = 401;
-            return ['status' => 'error', 'message' => 'Invalid token'];
+            return ['status' => 'error', 'message' => 'Invalid or expired token'];
         }
 
         $colleges = Yii::$app->db->createCommand("
             SELECT c.* FROM colleges c
             JOIN wishlist w ON c.id = w.college_id
             WHERE w.user_id = :uid AND c.is_status = 1
-        ")->bindValue(':uid', $userLogin['user_id'])->queryAll();
+        ")->bindValue(':uid', $userLogin->user_id)->queryAll();
 
         foreach ($colleges as &$college) {
             if (!empty($college['courses']) && is_string($college['courses'])) {
@@ -822,15 +818,14 @@ class SiteController extends Controller
             return ['status' => 'error', 'message' => 'Unauthorized'];
         }
 
-        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
-            ->bindValue(':token', $token)->queryOne();
+        $userLogin = UserLogin::validateToken($token);
 
         if (!$userLogin) {
             Yii::$app->response->statusCode = 401;
-            return ['status' => 'error', 'message' => 'Invalid token'];
+            return ['status' => 'error', 'message' => 'Invalid or expired token'];
         }
 
-        Yii::$app->db->createCommand()->delete('wishlist', ['user_id' => $userLogin['user_id']])->execute();
+        Yii::$app->db->createCommand()->delete('wishlist', ['user_id' => $userLogin->user_id])->execute();
 
         return ['status' => 'success', 'message' => 'Wishlist cleared'];
     }

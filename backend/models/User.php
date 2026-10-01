@@ -69,14 +69,9 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        // For JWT or custom token-based auth
-        // You would typically look this up in the user_login table
-        $login = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
-            ->bindValue(':token', $token)
-            ->queryOne();
-        
+        $login = UserLogin::validateToken($token);
         if ($login) {
-            return static::findOne($login['user_id']);
+            return static::findOne($login->user_id);
         }
         return null;
     }
