@@ -17,7 +17,20 @@ class AuthController extends Controller
 
     public function beforeAction($action)
     {
-        header("Access-Control-Allow-Origin: *");
+        $origin = Yii::$app->request->headers->get('Origin');
+        $allowedOrigins = Yii::$app->params['allowedOrigins'] ?? [
+            'http://localhost:5173',
+            'http://127.0.0.1:5173',
+            'http://localhost:3000',
+        ];
+
+        if ($origin && in_array($origin, $allowedOrigins, true)) {
+            header("Access-Control-Allow-Origin: " . $origin);
+            header("Access-Control-Allow-Credentials: true");
+        } elseif (empty($origin)) {
+            header("Access-Control-Allow-Origin: " . ($allowedOrigins[0] ?? '*'));
+        }
+
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
         header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
@@ -78,29 +91,61 @@ class AuthController extends Controller
     {
         $data = json_decode(file_get_contents("php://input"), true);
 
-        $email = $data['email'] ?? '';
+        $email = trim($data['email'] ?? '');
         $password = $data['password'] ?? '';
+
+        if (empty($email) || empty($password)) {
+            return [
+                "status" => "error",
+                "message" => "Email and password are required"
+            ];
+        }
+
+        // RATE LIMITING FAILED LOGINS (Lockout if 5 failed password attempts in 10 minutes)
+        $userIp = Yii::$app->request->userIP;
+        $failKey = 'login_fails_' . md5($email . '_' . $userIp);
+        $lockKey = 'login_lock_' . md5($email . '_' . $userIp);
+
+        if (Yii::$app->cache->get($lockKey)) {
+            $lockTtl = Yii::$app->cache->get($lockKey . '_time');
+            $remaining = $lockTtl ? max(1, $lockTtl - time()) : 60;
+            return [
+                "status" => "error",
+                "message" => "Too many failed login attempts. Please wait $remaining seconds before trying again."
+            ];
+        }
 
         // FIND USER
         $user = User::find()->where(['email' => $email, 'is_status' => 1])->one();
 
-        // USER NOT FOUND
-        if (!$user) {
+        // USER NOT FOUND OR PASSWORD MISMATCH
+        if (!$user || !password_verify($password, $user->password)) {
+            $failedAttempts = ((int) Yii::$app->cache->get($failKey)) + 1;
+            Yii::$app->cache->set($failKey, $failedAttempts, 600); // 10 minutes window
+
+            if ($failedAttempts >= 5) {
+                // Lock for 2 minutes (120 seconds)
+                Yii::$app->cache->set($lockKey, true, 120);
+                Yii::$app->cache->set($lockKey . '_time', time() + 120, 120);
+                Yii::$app->cache->delete($failKey);
+                return [
+                    "status" => "error",
+                    "message" => "Too many failed attempts. Account temporarily locked for 2 minutes."
+                ];
+            }
+
+            $remainingTries = 5 - $failedAttempts;
             return [
                 "status" => "error",
-                "message" => "Account not found"
+                "message" => "Invalid email or password. $remainingTries attempts remaining before temporary lockout."
             ];
         }
 
-        // PASSWORD VERIFY
-        if (!password_verify($password, $user->password)) {
-            return [
-                "status" => "error",
-                "message" => "Invalid password"
-            ];
-        }
+        // Clear failed login attempts on password match
+        Yii::$app->cache->delete($failKey);
+        Yii::$app->cache->delete($lockKey);
 
-        // RATE LIMITING
+        // RATE LIMITING OTP REQUESTS (60s)
         $timeLimit = date('Y-m-d H:i:s', strtotime('-1 minute'));
         $recentOtp = OtpVerification::find()
             ->where(['contact' => $email])
@@ -325,7 +370,7 @@ class AuthController extends Controller
             ];
         }
 
-        $userLogin = UserLogin::find()->where(['token' => $token])->one();
+        $userLogin = UserLogin::validateToken($token);
 
         if (!$userLogin) {
             return [
@@ -372,7 +417,7 @@ class AuthController extends Controller
             ];
         }
 
-        $userLogin = UserLogin::find()->where(['token' => $token])->one();
+        $userLogin = UserLogin::validateToken($token);
 
         if (!$userLogin) {
             return [
@@ -481,7 +526,7 @@ class AuthController extends Controller
             ];
         }
 
-        $userLogin = UserLogin::find()->where(['token' => $token])->one();
+        $userLogin = UserLogin::validateToken($token);
 
         if (!$userLogin) {
             return [

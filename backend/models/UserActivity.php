@@ -33,10 +33,9 @@ class UserActivity extends ActiveRecord
         if (!$userId) {
             $token = Yii::$app->request->headers->get('Authorization');
             if ($token) {
-                $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
-                    ->bindValue(':token', $token)->queryOne();
+                $userLogin = UserLogin::validateToken($token);
                 if ($userLogin) {
-                    $userId = $userLogin['user_id'];
+                    $userId = $userLogin->user_id;
                 }
             }
         }
