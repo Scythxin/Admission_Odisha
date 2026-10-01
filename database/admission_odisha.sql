@@ -10593,7 +10593,7 @@ VALUES (
 -- Table structure for table `enquiries`
 --
 
-CREATE TABLE `enquiries` (
+CREATE TABLE IF NOT EXISTS `enquiries` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `full_name` varchar(255) NOT NULL,
     `phone` varchar(50) NOT NULL,

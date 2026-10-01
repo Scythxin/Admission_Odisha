@@ -6,6 +6,7 @@ import {
   Search, Info, ExternalLink, ChevronRight,
   Target, Award, Building, Globe
 } from 'lucide-react';
+import API_BASE from '../../config/api';
 import { useEnquiry } from '../../context/EnquiryContext';
 
 const CollegeCourseSpecializations = () => {
@@ -17,7 +18,7 @@ const CollegeCourseSpecializations = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=site/api-college-course-specializations&college_id=${collegeId}&course_name=${courseName}`);
+        const response = await fetch(`${API_BASE}?r=site/api-college-course-specializations&college_id=${collegeId}&course_name=${courseName}`);
         const result = await response.json();
         if (result.status === 'success') {
           setData(result.data);

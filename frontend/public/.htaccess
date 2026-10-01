@@ -1,0 +1,22 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. Do NOT rewrite backend API requests and uploaded files to index.html
+  RewriteCond %{REQUEST_URI} ^/backend/ [NC]
+  RewriteRule .* - [L]
+
+  # 2. If the request matches an existing file or directory, serve it directly
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # 3. Otherwise, route all requests to index.html for React Router SPA navigation
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Optional security and caching headers
+<IfModule mod_headers.c>
+  # Prevent MIME-sniffing
+  Header set X-Content-Type-Options "nosniff"
+</IfModule>

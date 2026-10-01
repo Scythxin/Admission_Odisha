@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Phone, MessageSquare, X } from "lucide-react";
+import API_BASE from "../config/api";
 
 export default function GuidancePopup({ isOpen, onClose }) {
   const [visible, setVisible] = useState(false);
@@ -14,7 +15,7 @@ export default function GuidancePopup({ isOpen, onClose }) {
       // Fetch settings from the backend
       const fetchSettings = async () => {
         try {
-          const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=site/api-settings`);
+          const res = await fetch(`${API_BASE}?r=site/api-settings`);
           if (res.ok) {
             const data = await res.json();
             if (data.status === "success" && data.data) {

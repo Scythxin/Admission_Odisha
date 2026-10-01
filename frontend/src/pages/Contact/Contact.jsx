@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import API_BASE from "../../config/api";
 import contact from "../../assets/images/contact.png";
 import {
   FaPhone,
@@ -87,7 +88,7 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=site/api-contact`, {
+      const response = await fetch(`${API_BASE}?r=site/api-contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -125,7 +126,7 @@ const Contact = () => {
 
   const fetchFaqs = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=site/api-faqs`);
+      const response = await fetch(`${API_BASE}?r=site/api-faqs`);
       const result = await response.json();
       if (result.status === "success") {
         const formattedFaqs = result.data.map(faq => {

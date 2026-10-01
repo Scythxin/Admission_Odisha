@@ -32,6 +32,8 @@ class SiteController extends Controller
     public function behaviors()
     {
         $allowedOrigins = Yii::$app->params['allowedOrigins'] ?? [
+            'https://admissionodisha.com',
+            'https://www.admissionodisha.com',
             'http://localhost:5173',
             'http://127.0.0.1:5173',
             'http://localhost:5174', 

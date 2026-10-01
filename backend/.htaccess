@@ -1,0 +1,11 @@
+# Protect Yii2 core directories while allowing backend/web/
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Allow access to backend/web and its contents (scripts, uploads, assets)
+  RewriteCond %{REQUEST_URI} ^/backend/web(/.*)?$ [NC]
+  RewriteRule .* - [L]
+
+  # Block direct access to config, models, controllers, runtime, vendor, etc.
+  RewriteRule .* - [F,L]
+</IfModule>

@@ -1,11 +1,11 @@
 import axios from "axios";
-
-const API_URL = "http://localhost/backend/api/college";
+import API_BASE from "../config/api";
 
 export const getAllColleges = async () => {
-  return await axios.get(`${API_URL}/getColleges.php`, {
+  return await axios.get(`${API_BASE}?r=site/api-colleges`, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+      Authorization: `Bearer ${localStorage.getItem("token") || localStorage.getItem("adminToken")}`,
     },
   });
 };
+

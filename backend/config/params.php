@@ -10,6 +10,10 @@ return [
 
     // Security & CORS configuration
     'allowedOrigins' => [
+        'https://admissionodisha.com',
+        'https://www.admissionodisha.com',
+        'http://admissionodisha.com',
+        'http://www.admissionodisha.com',
         'http://localhost:5173',
         'http://127.0.0.1:5173',
         'http://localhost:5174',

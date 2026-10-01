@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import API_BASE, { fetchWithAuth } from "../../config/api";
+import API_BASE, { ASSETS_BASE, fetchWithAuth } from "../../config/api";
 
 export default function EditCollegeModel({ college, onClose, onUpdated }) {
   const overlayRef = useRef(null);
@@ -228,7 +228,7 @@ export default function EditCollegeModel({ college, onClose, onUpdated }) {
                     </select>
                     {form.image && (
                       <div className="mt-2">
-                        <img src={`http://localhost/sargnexus/admission_odisha/backend/web${form.image}`} alt="Preview" className="h-16 rounded object-cover" />
+                        <img src={`${ASSETS_BASE}${form.image}`} alt="Preview" className="h-16 rounded object-cover" />
                       </div>
                     )}
                   </div>
@@ -250,7 +250,7 @@ export default function EditCollegeModel({ college, onClose, onUpdated }) {
                     </select>
                     {form.banner_image && (
                       <div className="mt-2">
-                        <img src={`http://localhost/sargnexus/admission_odisha/backend/web${form.banner_image}`} alt="Preview" className="h-16 rounded object-cover" />
+                        <img src={`${ASSETS_BASE}${form.banner_image}`} alt="Preview" className="h-16 rounded object-cover" />
                       </div>
                     )}
                   </div>

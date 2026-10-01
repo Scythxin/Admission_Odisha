@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useEnquiry } from "../context/EnquiryContext";
+import API_BASE from "../config/api";
 
 // ── Thank You Success Modal ───────────────────────────────────────────────────
 const EnquirySuccessModal = ({ open, onClose }) => {
@@ -284,7 +285,7 @@ export default function EnquiryFloating() {
     setSubmitted(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=site/api-submit-enquiry`, {
+      const response = await fetch(`${API_BASE}?r=site/api-submit-enquiry`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, guidance }),

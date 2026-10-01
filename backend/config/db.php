@@ -1,30 +1,15 @@
 <?php
 
+$dbHost = getenv('DB_HOST') ?: 'localhost';
+$dbName = getenv('DB_NAME') ?: 'admission_odisha';
+$dbUser = getenv('DB_USER') ?: 'root';
+$dbPass = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '';
+$dbPort = getenv('DB_PORT') ?: '3306';
+
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=admission_odisha',
-    'username' => 'root',
-    'password' => '',
+    'dsn' => "mysql:host={$dbHost};port={$dbPort};dbname={$dbName}",
+    'username' => $dbUser,
+    'password' => $dbPass,
     'charset' => 'utf8mb4',
 ];
-
-$host = "localhost";
-$user = "root";
-$password = "";
-$database = "admission_odisha";
-
-$conn = mysqli_connect(
-    $host,
-    $user,
-    $password,
-    $database
-);
-
-if (!$conn) {
-    die(json_encode([
-        "success" => false,
-        "message" => "Database Connection Failed"
-    ]));
-}
-
-?>
