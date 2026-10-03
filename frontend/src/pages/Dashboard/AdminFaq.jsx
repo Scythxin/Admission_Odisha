@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchWithAuth } from "../../config/api";
+import API_BASE, { fetchWithAuth } from "../../config/api";
 import {
   FaPlus,
   FaQuestion,
@@ -45,7 +45,7 @@ const AdminFaq = ({ setActiveNav }) => {
 
   const fetchFaqs = async () => {
     try {
-      const response = await fetchWithAuth(`${import.meta.env.VITE_API_BASE_URL}?r=dashboard/get-faqs`);
+      const response = await fetchWithAuth(`${API_BASE}?r=dashboard/get-faqs`);
       const result = await response.json();
       if (result.status === "success") {
         setFaqs(result.data);
@@ -59,8 +59,8 @@ const AdminFaq = ({ setActiveNav }) => {
 
   const handleSaveFaq = async (faqData) => {
     const url = modalConfig.mode === "add" 
-      ? `${import.meta.env.VITE_API_BASE_URL}?r=dashboard/create-faq`
-      : `${import.meta.env.VITE_API_BASE_URL}?r=dashboard/update-faq`;
+      ? `${API_BASE}?r=dashboard/create-faq`
+      : `${API_BASE}?r=dashboard/update-faq`;
 
     try {
       const response = await fetchWithAuth(url, {
@@ -83,7 +83,7 @@ const AdminFaq = ({ setActiveNav }) => {
 
   const handleDeleteFaq = async () => {
     try {
-      const response = await fetchWithAuth(`${import.meta.env.VITE_API_BASE_URL}?r=dashboard/delete-faq`, {
+      const response = await fetchWithAuth(`${API_BASE}?r=dashboard/delete-faq`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: deleteModal.id }),

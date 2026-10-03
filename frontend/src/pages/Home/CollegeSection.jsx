@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaStar, FaMapMarkerAlt, FaArrowRight } from "react-icons/fa";
-import { ASSETS_BASE } from "../../config/api";
+import API_BASE, { ASSETS_BASE } from "../../config/api";
 
 import kiit from "/src/assets/images/colleges/kiit.jpg";
 import { useTranslation } from "react-i18next";
@@ -15,7 +15,7 @@ const TopColleges = () => {
   useEffect(() => {
     const fetchColleges = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=site/api-colleges`);
+        const response = await fetch(`${API_BASE}?r=site/api-colleges`);
         const result = await response.json();
         if (result.status === 'success') {
           // Show only top 5 colleges on home page

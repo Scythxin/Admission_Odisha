@@ -8,7 +8,7 @@ import {
   Calendar, Building, Maximize, ExternalLink,
   Images, X, Hotel, FlaskConical, Utensils, ArrowRight
 } from 'lucide-react';
-import { ASSETS_BASE } from '../../config/api';
+import API_BASE, { ASSETS_BASE } from '../../config/api';
 import { useEnquiry } from '../../context/EnquiryContext';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -235,7 +235,7 @@ const CollegeDetail = () => {
       try {
         const token = localStorage.getItem("token");
         const headers = token ? { Authorization: token } : {};
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=site/api-college-detail&id=${id}`, { headers });
+        const response = await fetch(`${API_BASE}?r=site/api-college-detail&id=${id}`, { headers });
         const result = await response.json();
         if (result.status === 'success') {
           setCollege(result.data.college);
