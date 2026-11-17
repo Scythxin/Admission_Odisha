@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/dotenv.php';
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 $secrets = file_exists(__DIR__ . '/secrets.php') ? require __DIR__ . '/secrets.php' : [];
@@ -15,11 +17,11 @@ $config = [
     ],
     'components' => [
         'request' => [
-    'cookieValidationKey' => 'EazsQFD7tKLBk0Da2TzlxvR19Hpst0aV',
-    'parsers' => [
-        'application/json' => 'yii\web\JsonParser',
-    ]
-],
+            'cookieValidationKey' => getenv('COOKIE_VALIDATION_KEY') ?: 'insecure-cookie-key-please-set-in-env',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ]
+        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
@@ -37,13 +39,13 @@ $config = [
             // When true, it just saves emails as files inside backend/runtime/mail/ so I changed it to false to send real emails.
             'useFileTransport' => false,
             
-            // Gmail SMTP Configuration
+            // SMTP Configuration
             'transport' => [
-                'scheme' => 'smtps',
-                'host' => 'smtp.gmail.com',
-                'username' => 'kajalthakur0520@gmail.com', // Your Gmail address
-                'password' => $secrets['gmail_app_password'] ?? 'PUT_YOUR_APP_PASSWORD_HERE',
-                'port' => 465,
+                'scheme' => getenv('SMTP_ENCRYPTION') ?: 'smtps',
+                'host' => getenv('SMTP_HOST') ?: 'smtp.gmail.com',
+                'username' => getenv('SMTP_USERNAME') ?: ($secrets['smtp_username'] ?? ''),
+                'password' => getenv('SMTP_PASSWORD') ?: ($secrets['gmail_app_password'] ?? ''),
+                'port' => (int)(getenv('SMTP_PORT') ?: 465),
             ],
         ],
         'log' => [

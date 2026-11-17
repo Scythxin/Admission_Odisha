@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../config/dotenv.php';
+
 // Automatically enable dev mode on localhost, otherwise run in production mode
 $host = $_SERVER['HTTP_HOST'] ?? '';
 $isLocal = strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false;

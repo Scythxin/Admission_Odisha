@@ -443,7 +443,6 @@ export default function EnquiryFloating() {
                         placeholder={field.placeholder}
                         value={form[field.id]}
                         onChange={field.id === "phone" ? handlePhoneChange : (e) => setForm({ ...form, [field.id]: e.target.value })}
-                        onBlur={field.id === "phone" ? handlePhoneBlur : undefined}
                         style={{
                           width: "100%", 
                           padding: "14px 16px 14px 44px",
@@ -460,7 +459,9 @@ export default function EnquiryFloating() {
                           e.currentTarget.style.boxShadow = `0 0 0 3px ${field.id === "phone" && phoneError ? "rgba(239,68,68,0.1)" : "rgba(108,77,246,0.1)"}`;
                         }}
                         onBlur={(e) => {
-                          if (field.id !== "phone") {
+                          if (field.id === "phone") {
+                            handlePhoneBlur();
+                          } else {
                             e.currentTarget.style.borderColor = "#e9e5ff";
                             e.currentTarget.style.boxShadow = "none";
                           }

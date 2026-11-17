@@ -1,12 +1,11 @@
 <?php
 
+require_once __DIR__ . '/dotenv.php';
+
 return [
-    // PUT YOUR EMAIL ID HERE to receive messages from the contact form
-    'adminEmail' => 'kajalthakur0520@gmail.com', 
-    
-    // PUT A SENDER EMAIL HERE (can be the same as your email, or a noreply email)
-    'senderEmail' => 'kajalthakur0520@gmail.com', 
-    'senderName' => 'Admission Odisha',
+    'adminEmail' => getenv('ADMIN_EMAIL') ?: 'admin@admissionodisha.com', 
+    'senderEmail' => getenv('SENDER_EMAIL') ?: 'noreply@admissionodisha.com', 
+    'senderName' => getenv('SENDER_NAME') ?: 'Admission Odisha',
 
     // Security & CORS configuration
     'allowedOrigins' => [
